@@ -4,7 +4,7 @@ from griphook.api import parsers
 
 
 class DataSource:
-    def __init__(self, parser: parsers.APIParser, data_formatter):
+    def __init__(self, parser: parsers.APIParser, data_formatter) -> None:
         """
         DataSource constructor
 

@@ -12,7 +12,7 @@ class APIParser(metaclass=abc.ABCMeta):
     Every parser is synchronous and uses requests.Session
     """
 
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str) -> None:
         self.base_url = base_url
         self._session = requests.Session()
 
@@ -47,9 +47,9 @@ class GraphiteAPIParser(APIParser):
 
         # Add optional parameters if set
         if time_from is not None:
-            params['from'] = time_from
+            params['from'] = str(time_from)
         if time_until is not None:
-            params['until'] = time_until
+            params['until'] = str(time_until)
 
         # Perform GET request via session and return plain data
         return self._session.get(
