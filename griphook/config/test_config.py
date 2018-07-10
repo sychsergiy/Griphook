@@ -1,54 +1,76 @@
 import os
-
+import trafaret
 import unittest
+import yaml
 
 from trafaret_config import ConfigError
 
 from config import Config, BASE_DIR
-from template import template
 
 
 class TestConfig(unittest.TestCase):
-    FILE_PATH = BASE_DIR + '/config.yaml'
-    expected_config = {
-        "api": "value",
-        "cli": "value",
-        "tasks": "value",
-        "db": "value",
-    }
+
+    def setUp(self):
+        self.FILE_NAME = BASE_DIR + '/config.yml'
+
+        self.test_template = trafaret.Dict({
+            'api': trafaret.String(),
+            'cli': trafaret.String(),
+            'db': trafaret.String(),
+            'tasks': trafaret.String(),
+        })
+
+    def tearDown(self):
+        os.remove(self.FILE_NAME)
+
+    def write_yml_config(self, data):
+        with open(self.FILE_NAME, 'w') as file:
+            yaml.dump(data, file, default_flow_style=False)
+
+    def remove_config_file(self):
+        os.remove(self.FILE_NAME)
 
     def test_correct_config(self):
-        with open(self.FILE_PATH, 'w') as file:
-            file.write("api: value\n")
-            file.write("cli: value\n")
-            file.write("tasks: value\n")
-            file.write("db: value\n")
-        config = Config().config
+        data = {
+            "api": "value",
+            "cli": "value",
+            "tasks": "value",
+            "db": "value",
+        }
+        self.write_yml_config(data)
 
-        self.assertEqual(config, self.expected_config)
-        os.remove(self.FILE_PATH)
-
-    def test_correct_config_with_default_template(self):
-        with open(self.FILE_PATH, 'w') as file:
-            file.write("api: value\n")
-            file.write("cli: value\n")
-            file.write("tasks: value\n")
-            file.write("db: value\n")
-        config = Config(template).config
-
-        self.assertEqual(config, self.expected_config)
-        os.remove(self.FILE_PATH)
+        config = Config(self.test_template).config
+        self.assertEqual(config, data)
 
     def test_wrong_config(self):
-        with open(self.FILE_PATH, 'w') as file:
-            file.write("api: value\n")
-            file.write("cli: 1\n")
-            file.write("tasks: value\n")
-            file.write("db: value\n")
+        data = {
+            "api": "value",
+            "cli": "value",
+            "tasks": 1,
+            "db": "value",
+        }
+        self.write_yml_config(data)
 
         with self.assertRaises(SystemExit):
-            self.assertRaises(ConfigError, Config())
-        os.remove(self.FILE_PATH)
+            with self.assertRaises(ConfigError):
+                Config(self.test_template)
+
+    def test_current_config(self):
+        data = {
+            "api": "value",
+            "cli": "value",
+            "db": "value",
+            "tasks": {
+                "DATA_SOURCE_DATA_EXPIRES": "test",
+                "CELERY_BROKER_URL": "test",
+                "TRYING_SETUP_PARSER_INTERVAL": 1,
+                "PARSE_METRIC_EXPIRES": 1,
+            },
+        }
+        self.write_yml_config(data)
+
+        config = Config().config
+        self.assertEqual(config, data)
 
 
 if __name__ == '__main__':

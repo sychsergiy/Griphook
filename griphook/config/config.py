@@ -6,7 +6,7 @@ from trafaret_config import read_and_validate, ConfigError
 
 from template import template as default_template
 
-DEFAULT_CONFIG_PATH = '/config.yaml'
+DEFAULT_CONFIG_PATH = '/config.yml'
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # todo: find better way to get root dir path
 
