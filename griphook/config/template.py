@@ -1,6 +1,6 @@
 import trafaret
 
-CONFIG_TEMPLATE = trafaret.Dict({
+template = trafaret.Dict({
     'api': trafaret.String(),
     'cli': trafaret.String(),
     'tasks': trafaret.String(),
