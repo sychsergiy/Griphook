@@ -12,7 +12,7 @@ class Metric(Base):
     type = db.Column(db.String)
     services_group = db.Column(db.String)
     service = db.Column(db.String)
-    time_from = db.Column(db.Integer)
+    time_from = db.Column(db.DateTime)
 
     def __repr__(self):
         return "<Metric(type={}, value={},)>".format(self.type, self.value)
