@@ -5,7 +5,7 @@ import unittest
 
 from trafaret_config import ConfigError
 
-from config import Config, BASE_DIR
+from griphook.config.config import Config, BASE_DIR
 
 
 class TestConfig(unittest.TestCase):

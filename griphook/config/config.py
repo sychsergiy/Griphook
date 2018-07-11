@@ -4,7 +4,7 @@ import trafaret
 
 from trafaret_config import ConfigError, parse_and_validate
 
-from template import template as default_template
+from griphook.config.template import template as default_template
 
 DEFAULT_CONFIG_PATH = '/config.yml'
 BASE_DIR = os.path.dirname(
