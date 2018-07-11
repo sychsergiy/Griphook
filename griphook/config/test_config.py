@@ -1,9 +1,7 @@
 import os
+import yaml
 import trafaret
 import unittest
-import yaml
-
-from unittest import mock
 
 from trafaret_config import ConfigError
 
@@ -23,10 +21,7 @@ class TestConfig(unittest.TestCase):
         })
 
     def tearDown(self):
-        try:
-            os.remove(self.FILE_NAME)
-        except FileNotFoundError:
-            pass
+        os.remove(self.FILE_NAME)
 
     def write_yml_config(self, data):
         with open(self.FILE_NAME, 'w') as file:
@@ -94,6 +89,29 @@ class TestConfig(unittest.TestCase):
         config = Config()
 
         self.assertEqual(config.options, data)
+
+    def test_overwriting_by_env_variable_with_wrong_type(self):
+        data = {
+            "api": "value",
+            "cli": "value",
+            "db": "value",
+            "tasks": {
+                "DATA_SOURCE_DATA_EXPIRES": "test",
+                "CELERY_BROKER_URL": "test",
+                "TRYING_SETUP_PARSER_INTERVAL": 1,
+                "PARSE_METRIC_EXPIRES": 1,
+            },
+        }
+
+        self.write_yml_config(data)
+
+        os.environ['GH_PARSE_METRIC_EXPIRES'] = "string here"  # set wrong data type
+
+        with self.assertRaises(SystemExit):
+            with self.assertRaises(trafaret.DataError):
+                Config()
+
+        os.environ.pop("GH_PARSE_METRIC_EXPIRES", None)
 
 
 if __name__ == '__main__':
