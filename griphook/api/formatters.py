@@ -15,13 +15,11 @@ def format_cantal_data(data: str) -> list:
 
     formatted_metrics = []
     for serie in series_data:
-        target = (findall(r'\bcantal+.[\w:.-]+', serie['target']))[0].split('.')
-
+        target = findall(r'\.([\w:-]+)', serie['target'])
         metric = Metric(value=serie['datapoints'][0][0],
-                        type=target[7],
-                        services_group=target[5].split(':')[0],
-                        service=target[5].split(':')[1]
+                        type=target[6],
+                        services_group=target[4].split(':')[0],
+                        service=target[4].split(':')[1]
                         )
         formatted_metrics.append(metric)
     return formatted_metrics
-
