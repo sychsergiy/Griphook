@@ -11,10 +11,6 @@
     {
         "target": "summarize(removeAbovePercentile(cantal.kalm.aphrodite.cgroups.lithos.galdr--backend:by.0.user_cpu_percent, 99), \"1hour\", \"max\", true)",
         "datapoints": [
-            [
-                0.016668333500016667,
-                1531044060
-            ]
         ]
     },
     {
