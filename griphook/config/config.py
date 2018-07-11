@@ -12,11 +12,15 @@ BASE_DIR = os.path.dirname(
 
 CONFIG_PATH = BASE_DIR + os.environ.get("CONFIG_PATH", DEFAULT_CONFIG_PATH)
 
+PREFIX = "GH_"
+
 
 class Config(object):
     def __init__(self, template: trafaret.base.Dict = default_template):
         try:
-            self._config = read_and_validate(CONFIG_PATH, template)
+            self._options = read_and_validate(CONFIG_PATH, template)
+            self.override_options_from_environ()
+            template.check(self._options)
         except ConfigError as e:
             e.output()
             sys.exit(1)
@@ -26,5 +30,24 @@ class Config(object):
             sys.exit(1)
 
     @property
-    def config(self) -> trafaret.base.Dict:
-        return self._config
+    def options(self) -> dict:
+        return self._options
+
+    def override_options_from_environ(self):
+        """
+        For every options group (tasks, db, general) check
+        if environ variables with the same name and GH_ prefix exists overwrite option
+            yes: overwrite option
+
+        """
+        for key, value in self._options.items():
+            if isinstance(value, dict):
+                for nested_key in value:
+                    environ_variable = os.environ.get(PREFIX + nested_key)
+                    if environ_variable:
+                        self._options[key][nested_key] = environ_variable
+
+
+if __name__ == "__main__":
+    config = Config()
+    print(config.options)

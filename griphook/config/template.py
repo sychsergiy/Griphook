@@ -12,3 +12,8 @@ template = trafaret.Dict({
     })
 
 })
+
+# DATABASE_URL
+# BROKER_DATABASE_URL
+
+# GRAPHITE_URL
