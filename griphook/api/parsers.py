@@ -1,5 +1,4 @@
 import abc
-from typing import Optional
 
 import requests
 
@@ -17,9 +16,7 @@ class APIParser(metaclass=abc.ABCMeta):
         self._session = requests.Session()
 
     @abc.abstractmethod
-    def fetch(self,
-              time_from: Optional[int] = None,
-              time_until: Optional[int] = None) -> str:
+    def fetch(self, *, time_from: int, time_until: int) -> str:
         """
         Performs a request and returns plain response data as string
         """
@@ -31,25 +28,19 @@ class GraphiteAPIParser(APIParser):
     Parser with implementation details for Grahite API
     """
 
-    def fetch(self,
-              time_from: Optional[int] = None,
-              time_until: Optional[int] = None) -> str:
+    def fetch(self, *, time_from: int, time_until: int) -> str:
 
         target = ''\
-            'summarize(cantal.*.*.cgroups.*.*.*.{user_cpu_percent,'\
+            'summarize(cantal.*.*.cgroups.lithos.*.*.{user_cpu_percent,'\
             'system_cpu_percent,vsize},"1hour","max",true)'
 
         # Parameters for GET request
         params = {
             'format': 'json',
-            'target': target
+            'target': target,
+            'from': str(time_from),
+            'until': str(time_until),
         }
-
-        # Add optional parameters if set
-        if time_from is not None:
-            params['from'] = str(time_from)
-        if time_until is not None:
-            params['until'] = str(time_until)
 
         # Perform GET request via session and return plain data
         return self._session.get(
