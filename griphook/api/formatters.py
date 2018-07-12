@@ -1,6 +1,6 @@
-from typing import NamedTuple
-from json import loads
-from re import findall
+import json
+from re import compile
+from typing import NamedTuple, Union
 
 
 class Metric(NamedTuple):
@@ -10,18 +10,31 @@ class Metric(NamedTuple):
     service: str
 
 
-def format_cantal_data(data: str) -> list:
-    series_data = loads(data)
+def format_cantal_data(data: str) -> Union[list, None]:
+    try:
+        series_data = json.loads(data)
+    except json.decoder.JSONDecodeError:
+        return None
 
     formatted_metrics = []
+    pattern = compile(".*lithos\."
+                      "(?P<services_group>[\w-]+):"
+                      "(?P<service>[\w-]+)\..*\."
+                      "(?P<type>[\w-]+)"
+                      )
     for serie in series_data:
-        target = (findall(r'\bcantal+.[\w:.-]+', serie['target']))[0].split('.')
+        target = pattern.match(serie['target'])
 
-        metric = Metric(value=serie['datapoints'][0][0],
-                        type=target[7],
-                        services_group=target[5].split(':')[0],
-                        service=target[5].split(':')[1]
-                        )
-        formatted_metrics.append(metric)
+        try:
+            datapoint_value = serie['datapoints'][0][0]
+        except IndexError:
+            continue
+
+        if datapoint_value is not None:
+            metric = Metric(value=round(datapoint_value, 5),
+                            type=target.group('type'),
+                            services_group=target.group('services_group'),
+                            service=target.group('service')
+                            )
+            formatted_metrics.append(metric)
     return formatted_metrics
-
