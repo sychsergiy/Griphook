@@ -8,10 +8,10 @@ template = trafaret.Dict({
         "DATABASE_URL": trafaret.String(),
     }),
     "tasks": trafaret.Dict({
-        "DATA_SOURCE_DATA_EXPIRES": trafaret.String(),
+        "DATA_SOURCE_DATA_EXPIRES": trafaret.Int(),
         "CELERY_BROKER_URL": trafaret.String(),
-        "BROKER_DATABASE_URL": trafaret.String(),
         "TRYING_SETUP_PARSER_INTERVAL": trafaret.Int(),
         "PARSE_METRIC_EXPIRES": trafaret.Int(),
+        "DATA_GRANULATION": trafaret.Int(),
     })
 })
