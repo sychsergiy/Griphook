@@ -2,9 +2,9 @@
 
 Create *.yml file and provide CONFIG_PATH env variable with relative path
 ```
-export CONFIG_PATH=/griphook/tasks/config.yml
+export GH_DEFAULT_CONFIG_FILE_NAME=/griphook/tasks/config.yml
 ```
-Or use default value ```/config.yml``` (just a root of our project)
+Or use default value ```config.yml``` (just a root of our project)
 
 Import Config class create instance and use options property:
 ```

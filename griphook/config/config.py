@@ -1,22 +1,23 @@
-import sys
 import os
-import trafaret
+import pathlib
+import sys
 
+import trafaret
 from trafaret_config import ConfigError, parse_and_validate
 
 from griphook.config.template import template as default_template
 
-DEFAULT_CONFIG_PATH = '/config.yml'
-BASE_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # todo: find better way to get root dir path
+BASE_DIR = pathlib.Path(__file__).parents[2]
 
-CONFIG_PATH = BASE_DIR + os.environ.get("CONFIG_PATH", DEFAULT_CONFIG_PATH)
-
+DEFAULT_CONFIG_FILE_NAME = 'config.yml'
 PREFIX = "GH_"
+
+CONFIG_PATH = os.path.join(BASE_DIR, os.environ.get(PREFIX + "DEFAULT_CONFIG_FILE_NAME", DEFAULT_CONFIG_FILE_NAME))
 
 
 class Config(object):
-    def __init__(self, template: trafaret.base.Dict = default_template):
+    def __init__(self, template: trafaret.base.Dict = default_template) -> None:
+
         self.template = template
         self._options = self.read_and_validate_options_from_config_file()
         self.override_options_from_environ()
@@ -39,7 +40,8 @@ class Config(object):
             e.output()
             sys.exit(1)
         except FileNotFoundError:
-            error_message = "No such file {}. Provide CONFIG_PATH env variable or create file".format(CONFIG_PATH)
+            error_message = "No such file {}. Provide GH_DEFAULT_CONFIG_FILE_NAME env variable or create file".format(
+                CONFIG_PATH)
             sys.stderr.write(error_message)
             sys.exit(1)
 
@@ -47,7 +49,7 @@ class Config(object):
     def options(self) -> dict:
         return self._options
 
-    def override_options_from_environ(self):
+    def override_options_from_environ(self) -> None:
         """
         For every options group (tasks, db, general) check
         if environ variables with the same name and GH_ prefix exists
@@ -71,8 +73,3 @@ class Config(object):
         except trafaret.DataError as e:
             sys.stderr.write(str(e) + "\n")
             sys.exit(1)
-
-
-if __name__ == "__main__":
-    config = Config()
-    print(config.options)
