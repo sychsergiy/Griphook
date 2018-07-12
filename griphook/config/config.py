@@ -1,8 +1,8 @@
-import sys
 import os
-import trafaret
 import pathlib
+import sys
 
+import trafaret
 from trafaret_config import ConfigError, parse_and_validate
 
 from griphook.config.template import template as default_template
@@ -16,7 +16,7 @@ CONFIG_PATH = os.path.join(BASE_DIR, os.environ.get(PREFIX + "DEFAULT_CONFIG_FIL
 
 
 class Config(object):
-    def __init__(self, template: trafaret.base.Dict = default_template):
+    def __init__(self, template: trafaret.base.Dict = default_template) -> None:
 
         self.template = template
         self._options = self.read_and_validate_options_from_config_file()
@@ -49,7 +49,7 @@ class Config(object):
     def options(self) -> dict:
         return self._options
 
-    def override_options_from_environ(self):
+    def override_options_from_environ(self) -> None:
         """
         For every options group (tasks, db, general) check
         if environ variables with the same name and GH_ prefix exists

@@ -1,13 +1,12 @@
 import os
-import yaml
-import trafaret
 import unittest
+from unittest import mock
 
+import trafaret
+import yaml
 from trafaret_config import ConfigError
 
-from griphook.config.config import Config, BASE_DIR
-
-from unittest import mock
+from griphook.config.config import BASE_DIR, Config
 
 
 class TestConfig(unittest.TestCase):
