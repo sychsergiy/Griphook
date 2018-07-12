@@ -17,19 +17,24 @@ def format_cantal_data(data: str) -> Union[list, None]:
         return None
 
     formatted_metrics = []
+    pattern = compile(".*lithos\."
+                      "(?P<services_group>[\w-]+):"
+                      "(?P<service>[\w-]+)\..*\."
+                      "(?P<type>[\w-]+)"
+                      )
     for serie in series_data:
-        pattern = compile('\.([\w:-]+)')
-        target = pattern.findall(serie['target'])
+        target = pattern.match(serie['target'])
 
-        if serie['datapoints'] and serie['datapoints'][0][0] is not None:
-            try:
-                metric = Metric(value=round(serie['datapoints'][0][0], 5),
-                                type=target[6],
-                                services_group=target[4].split(':')[0],
-                                service=target[4].split(':')[1]
-                                )
-            except IndexError:
-                continue
+        try:
+            datapoint_value = serie['datapoints'][0][0]
+        except IndexError:
+            continue
 
+        if datapoint_value is not None:
+            metric = Metric(value=round(datapoint_value, 5),
+                            type=target.group('type'),
+                            services_group=target.group('services_group'),
+                            service=target.group('service')
+                            )
             formatted_metrics.append(metric)
     return formatted_metrics

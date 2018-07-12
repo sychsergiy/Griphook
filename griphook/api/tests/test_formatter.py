@@ -10,9 +10,9 @@ def get_test_data():
 def test_format_cantal_data():
     test_data = get_test_data()
     result = format_cantal_data(test_data)
-    last_element = result[-1]
+    for metric in result:
+        assert isinstance(metric, Metric)
 
-    assert isinstance(last_element, Metric)
     assert len(result) == 8
     assert result[-1].value == 573423616
     assert result[-1].type == 'vsize'
