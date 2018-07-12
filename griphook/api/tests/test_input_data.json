@@ -1,9 +1,9 @@
 [
     {
-        "target": "summarize(removeAbovePercentile(cantal.kalm.aphrodite.cgroups.lithos.galdr--backend:by.0.system_cpu_percent, 99), \"1hour\", \"max\", true)",
+        "target": "summarize(removeAbovePercentile(cantal.kalm.aphrodite.cgroups.lithos.galdr--backend:ua.0.system_cpu_percent, 99), \"1hour\", \"max\", true)",
         "datapoints": [
             [
-                0.016666666666666666,
+                null,
                 1531044060
             ]
         ]
@@ -11,17 +11,13 @@
     {
         "target": "summarize(removeAbovePercentile(cantal.kalm.aphrodite.cgroups.lithos.galdr--backend:by.0.user_cpu_percent, 99), \"1hour\", \"max\", true)",
         "datapoints": [
-            [
-                0.016668333500016667,
-                1531044060
-            ]
         ]
     },
     {
         "target": "summarize(removeAbovePercentile(cantal.kalm.aphrodite.cgroups.lithos.galdr--backend:by.0.vsize, 99), \"1hour\", \"max\", true)",
         "datapoints": [
             [
-                573603840,
+                null,
                 1531044060
             ]
         ]
@@ -29,10 +25,6 @@
     {
         "target": "summarize(removeAbovePercentile(cantal.kalm.aphrodite.cgroups.lithos.galdr--backend:kz.0.system_cpu_percent, 99), \"1hour\", \"max\", true)",
         "datapoints": [
-            [
-                0.016666666666666666,
-                1531044060
-            ]
         ]
     },
     {
