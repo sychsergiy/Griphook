@@ -84,3 +84,4 @@ venv.bak/
 .mypy_cache/
 # idea
 .idea/
+griphook.db
