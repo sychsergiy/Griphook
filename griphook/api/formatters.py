@@ -1,6 +1,6 @@
-from typing import NamedTuple, Union
-from re import compile
 import json
+from re import compile
+from typing import NamedTuple, Union
 
 
 class Metric(NamedTuple):
