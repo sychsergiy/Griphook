@@ -8,7 +8,7 @@ REQUIRED_PYTHON = '>=3.6.0'
 VERSION = '1.0.0'
 
 REQUIRED_PACKAGES = [
-    'requests', 'celery', 'sqlalchemy', 'trafaret', 'trafaret_config'
+    'requests', 'celery', 'sqlalchemy', 'trafaret', 'trafaret_config', 'pathlib'
 ]
 
 setup(
