@@ -9,7 +9,7 @@ VERSION = '1.0.0'
 
 REQUIRED_PACKAGES = [
     'requests', 'celery', 'sqlalchemy', 'trafaret',
-    'trafaret_config', 'mypy', 'pytest'
+    'trafaret_config', 'mypy', 'pytest',  'alembic'
 ]
 
 setup(
