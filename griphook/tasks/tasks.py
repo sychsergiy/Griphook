@@ -6,15 +6,13 @@ from celery import Task
 from celery.decorators import periodic_task
 from celery.utils.log import get_task_logger
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc, select
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import desc
-from sqlalchemy import select
 
 from griphook.config.config import Config
 from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
-from griphook.db.models import Metric
+from griphook.db.models import Metric, MetricType, Service, ServicesGroup
 
 
 conf = Config().options
@@ -22,9 +20,11 @@ app = Celery(broker_url=conf['tasks']['CELERY_BROKER_URL'])
 logger = get_task_logger(__name__)
 
 engine = create_engine(conf['db']['DATABASE_URL'])
-if not engine.dialect.has_table(engine, Metric.__tablename__):
-    Metric.__table__.create(engine)
 Session = sessionmaker(bind=engine)
+
+# Creating tables
+from griphook.db.models import Base
+Base.metadata.create_all(engine)
 
 
 @periodic_task(
@@ -36,6 +36,8 @@ def start_parser():
     """
     Celery beat task.
     Start parser according to schedule
+    :TODO
+        Check if parser is working then don't add new task to queue
     """
     parse_metrics.delay()
 
@@ -76,15 +78,53 @@ def parse_metrics():
 
     if time_until <= datetime.now().timestamp():
         logger.info('Getting data from api (time_from={}; time_until={})'.format(time_from, time_until))
-        data = cantal_source.read(time_from=time_from, time_until=time_until)
+
+        data = cantal_source.read(time_from=time_from, time_until=time_until - 1)
         if data:
-            # Generate db Metric objects and save to db
-            session.add_all([
-                Metric(**metric._asdict(), time_from=datetime.fromtimestamp(time_from)) for metric in data
-            ])
-            session.commit()
+            save_metric_to_db(metrics=data, time_from=datetime.fromtimestamp(time_from))
             logger.info('Saved {} metrics'.format(len(data)))
         else:
             logger.info('Got no data from api')
 
         parse_metrics.delay()
+
+
+def save_metric_to_db(metrics: formatters.Metric, time_from: datetime): # time_from: datetime -> ONLY FOR SQLITE (int for psql)
+    session = Session()
+    for metric_tuple in metrics:
+        type_ = session.query(MetricType).filter(MetricType.title == metric_tuple.type).first()
+        type_ = type_ if type_ is not None else MetricType(title=metric_tuple.type)
+
+        services_group = session.query(ServicesGroup).filter(
+            ServicesGroup.title == metric_tuple.services_group
+        ).first()
+        if services_group is not None:
+            service = session.query(Service).filter(Service.title == metric_tuple.service,
+                                                    Service.services_group == services_group,
+                                                    Service.instance == metric_tuple.instance,
+                                                    Service.server == metric_tuple.server_name).first()
+            if service is None:
+                service = Service(title=metric_tuple.service, 
+                                  services_group=services_group,
+                                  instance=metric_tuple.instance,
+                                  server=metric_tuple.server_name)
+        else:
+            services_group = ServicesGroup(title=metric_tuple.services_group)
+            service = Service(title=metric_tuple.service, 
+                             services_group=services_group,
+                             instance=metric_tuple.instance,
+                             server=metric_tuple.server_name)
+
+        session.add(Metric(
+            value=metric_tuple.value,
+            time_from=time_from,
+            type=type_,
+            service = service
+            
+        ))
+    session.commit()
+        
+
+        
+        
+
