@@ -26,15 +26,16 @@ class Service(Base):
     __tablename__ = 'services'
 
     id = sa.Column(sa.Integer, primary_key=True)
-    title = sa.Column(sa.String, unique=True)
+    title = sa.Column(sa.String)
+    instance = sa.Column(sa.String)
+    server = sa.Column(sa.String)
 
-    services_group_id = sa.Column(
-        sa.Integer,
-        sa.ForeignKey(
-            'services_groups.id'
-        )
-    )
+    services_group_id = sa.Column(sa.Integer, sa.ForeignKey('services_groups.id'))
     services_group = relationship("ServicesGroup", backref="services")
+
+    __table_args__ = (
+        sa.UniqueConstraint('title', 'instance', 'services_group_id', 'server'),
+    )
 
 
 class MetricType(Base):
