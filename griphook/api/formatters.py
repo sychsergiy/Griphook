@@ -6,7 +6,7 @@ from typing import NamedTuple, Union
 class Metric(NamedTuple):
     value: float
     type: str
-    server_name: str
+    server: str
     services_group: str
     service: str
     instance: str
@@ -28,7 +28,7 @@ def format_cantal_data(data: str) -> Union[list, None]:
 
     formatted_metrics = []
     pattern = compile(".*\."
-                      "(?P<server_name>[\w]+)\.cgroups\.lithos\."
+                      "(?P<server>[\w]+)\.cgroups\.lithos\."
                       "(?P<services_group>[\w-]+):"
                       "(?P<service>[\w-]+)\."
                       "(?P<instance>[\w-]+)\."
@@ -46,7 +46,7 @@ def format_cantal_data(data: str) -> Union[list, None]:
         if datapoint_value is not None:
             metric = Metric(value=round(datapoint_value, 5),
                             type=target.group('type'),
-                            server_name=target.group('server_name'),
+                            server=target.group('server'),
                             services_group=target.group('services_group'),
                             service=target.group('service'),
                             instance=target.group('instance'),
