@@ -102,18 +102,18 @@ def save_metric_to_db(metrics: formatters.Metric, time_from: datetime): # time_f
             service = session.query(Service).filter(Service.title == metric_tuple.service,
                                                     Service.services_group == services_group,
                                                     Service.instance == metric_tuple.instance,
-                                                    Service.server == metric_tuple.server_name).first()
+                                                    Service.server == metric_tuple.server).first()
             if service is None:
                 service = Service(title=metric_tuple.service, 
                                   services_group=services_group,
                                   instance=metric_tuple.instance,
-                                  server=metric_tuple.server_name)
+                                  server=metric_tuple.server)
         else:
             services_group = ServicesGroup(title=metric_tuple.services_group)
             service = Service(title=metric_tuple.service, 
                              services_group=services_group,
                              instance=metric_tuple.instance,
-                             server=metric_tuple.server_name)
+                             server=metric_tuple.server)
 
         session.add(Metric(
             value=metric_tuple.value,
