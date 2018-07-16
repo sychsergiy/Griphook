@@ -1,0 +1,10 @@
+api:
+  GRAPHITE_URL: https://graphite.olympus.evo/render
+db:
+  DATABASE_URL: postgresql://user:password@host/database_name
+tasks:
+  CELERY_BROKER_URL: "ampq://user:password@localhost/root"
+  DATA_SOURCE_DATA_EXPIRES: 7776000
+  PARSE_METRIC_EXPIRES: 900
+  TRYING_SETUP_PARSER_INTERVAL: 20
+  DATA_GRANULATION: 3600
