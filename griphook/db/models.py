@@ -63,3 +63,25 @@ class Metric(Base):
             'type_id', 'service_id', 'time_from'
         ),
     )
+
+
+class TaskFlag(Base):
+    """
+    Store last datetime when was started 
+    `griphook.tasks.tasks.parsing_metrics` execution
+    """
+    __tablename__ = 'task_flags'
+    
+    id = sa.Column(sa.Integer, primary_key=True)
+    datetime = sa.Column(sa.DateTime)
+
+
+def get_or_create(session, model, defaults=None, **kwargs):
+    instance = session.query(model).filter_by(**kwargs).first()
+    if instance:
+        return instance, False
+    else:
+        kwargs.update(defaults or {})
+        instance = model(**kwargs)
+        session.add(instance)
+        return instance, True

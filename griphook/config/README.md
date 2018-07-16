@@ -2,11 +2,11 @@
 
 Create *.yml file and provide CONFIG_PATH env variable with relative path
 ```
-export GH_DEFAULT_CONFIG_FILE_NAME=/griphook/tasks/config.yml
+export GH_DEFAULT_CONFIG_FILE_NAME=/griphook/*/*.yml
 ```
 Or use default value ```config.yml``` (just a root of our project)
 
-Import Config class create instance and use options property:
+Import Config, class create instance and use options property:
 ```
 config = Config()
 config.options
@@ -17,19 +17,19 @@ config.options
 ```
 {
     "api": {
-        "GRAPHITE_URL": "String",
+        "GRAPHITE_URL": "url_here"
     },
     "db": {
-        "DATABASE_URL": "String",
+        "DATABASE_URL": "url here"
     },
     "tasks": {
-        "DATA_SOURCE_DATA_EXPIRES": "String",
+        "DATA_SOURCE_DATA_EXPIRES": 1,
         "CELERY_BROKER_URL": "String",
-        "BROKER_DATABASE_URL": "String",
-        "TRYING_SETUP_PARSER_INTERVAL": "Int",
-        "PARSE_METRIC_EXPIRES": "Int",
-    }
-})
+        "TRYING_SETUP_PARSER_INTERVAL": 1,
+        "PARSE_METRIC_EXPIRES": 1,
+        "DATA_GRANULATION": 1,
+    },
+}
 ```
 
 ### Example of config.yml file:
@@ -39,16 +39,16 @@ api:
 db:
   DATABASE_URL: url here
 tasks:
-  BROKER_DATABASE_URL: url here
+  DATA_SOURCE_DATA_EXPIRES: 1
   CELERY_BROKER_URL: test
-  DATA_SOURCE_DATA_EXPIRES: test
-  PARSE_METRIC_EXPIRES: 1
   TRYING_SETUP_PARSER_INTERVAL: 1
+  PARSE_METRIC_EXPIRES: 1
+  DATA_GRANULATION: 1
 ```
 
 
 ### Also you can overwrite options using environment variables with GH_ prefix
 
 ```
-export GH_BROKER_DATABASE_URL=value
+export GH_CELERY_BROKER_URL=value
 ```
