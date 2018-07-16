@@ -13,20 +13,16 @@ from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
 from griphook.db.models import (
     Metric, MetricType, Service, 
-    ServicesGroup, get_or_create
+    ServicesGroup, TaskFlag, get_or_create
 )
 
 
 conf = Config().options
-app = Celery(broker_url=conf['tasks']['CELERY_BROKER_URL'])
+app = Celery(broker=conf['tasks']['CELERY_BROKER_URL'])
 logger = get_task_logger(__name__)
 
 engine = create_engine(conf['db']['DATABASE_URL'])
 Session = sessionmaker(bind=engine)
-
-# Creating tables
-from griphook.db.models import Base
-Base.metadata.create_all(engine)
 
 
 @periodic_task(
@@ -38,10 +34,20 @@ def start_parser():
     """
     Celery beat task.
     Start parser according to schedule
-    :TODO
-        Check if parser is working then don't add new task to queue
     """
-    parse_metrics.delay()
+    session = Session()
+    last_parsing_time = session.query(TaskFlag).get(1)
+    if last_parsing_time is None:
+        logger.info('Watchdog: No last parsing time in db. Starting parsing...')
+        parse_metrics.delay()
+    else:
+        delta = datetime.now() - last_parsing_time.datetime
+        logger.info(
+            'Watchdog: Delta between last parsing and now is %d' % delta.total_seconds()
+        )
+        if delta.total_seconds() > conf['tasks']['PARSE_METRIC_EXPIRES']:
+            logger.info('Watchdog: Start parsing...')
+            parse_metrics.delay()
 
 
 class ParsingTask(Task):
@@ -61,6 +67,8 @@ def parse_metrics():
     :TODO
         Change task to parse data from different API's
     """
+    refresh_task_flag()
+
     session = Session()
     cantal_source = DataSource(
         parser=parsers.GraphiteAPIParser(base_url=conf['api']['GRAPHITE_URL']),
@@ -91,7 +99,18 @@ def parse_metrics():
         parse_metrics.delay()
 
 
-def save_metric_to_db(metrics: formatters.Metric, time_from: datetime): # time_from: datetime -> ONLY FOR SQLITE (int for psql)
+def refresh_task_flag():
+    """
+    Set TaskFlag.datetime field to datetime.now(), this function should be
+    called at the beginning of every parsing task.
+    """
+    session = Session()
+    flag, _ = get_or_create(session=session, model=TaskFlag, id=1)
+    flag.datetime = datetime.now()
+    session.commit()
+
+
+def save_metric_to_db(metrics: formatters.Metric, time_from: datetime):
     session = Session()
     for metric_tuple in metrics:
         type_, _ = get_or_create(session=session, 
