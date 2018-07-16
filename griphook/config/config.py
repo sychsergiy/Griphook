@@ -3,7 +3,7 @@ import pathlib
 import sys
 
 import trafaret
-from trafaret_config import ConfigError, parse_and_validate
+import yaml
 
 from griphook.config.template import template as default_template
 
@@ -17,28 +17,21 @@ CONFIG_PATH = os.path.join(BASE_DIR, os.environ.get(PREFIX + "DEFAULT_CONFIG_FIL
 
 class Config(object):
     def __init__(self, template: trafaret.base.Dict = default_template) -> None:
-
         self.template = template
-        self._options = self.read_and_validate_options_from_config_file()
-        self.override_options_from_environ()
-        self.validate_options()
+        self._options = self.read_options_from_config_file()
+        self.override_options_from_environ(self._options)
+        self.validate_options(self._options)
 
-    def read_and_validate_options_from_config_file(self) -> dict:
+    @staticmethod
+    def read_options_from_config_file() -> dict:
         """
-        Read .yml file and validate  with trafaret template
-
+        Read options from YML file
         exit with code 1 if configuration file doesn't exist
-        exit with code 1 if file has wrong configuration
-
-        :return: parsed configuration from .yml file
+        :return: parsed dict
         """
-        with open(CONFIG_PATH) as f:
-            text = f.read()
         try:
-            return parse_and_validate(text, self.template, filename=CONFIG_PATH)
-        except ConfigError as e:
-            e.output()
-            sys.exit(1)
+            with open(CONFIG_PATH) as stream:
+                return yaml.safe_load(stream)
         except FileNotFoundError:
             error_message = "No such file {}. Provide GH_DEFAULT_CONFIG_FILE_NAME env variable or create file".format(
                 CONFIG_PATH)
@@ -49,27 +42,28 @@ class Config(object):
     def options(self) -> dict:
         return self._options
 
-    def override_options_from_environ(self) -> None:
+    def override_options_from_environ(self, option_dict) -> None:
         """
-        For every options group (tasks, db, general) check
-        if environ variables with the same name and GH_ prefix exists
-         overwrite option
-
+        Recursively check options dict.
+        If option is nested dict call this function with nested_dict as argument
+        Else option is primitive, so just check if environment variable with the same (PREFIX + name),
+         overwrite if yes.
         """
-        for key, value in self._options.items():
+        for key, value in option_dict.items():
             if isinstance(value, dict):
-                for nested_key in value:
-                    environ_variable = os.environ.get(PREFIX + nested_key)
-                    if environ_variable:
-                        self._options[key][nested_key] = environ_variable
+                self.override_options_from_environ(value)
+            else:
+                env_variable = os.environ.get(PREFIX + key)
+                if env_variable:
+                    option_dict[key] = env_variable
 
-    def validate_options(self):
+    def validate_options(self, options):
         """
         Validate options with trafaret template
         with code 1 and print errors to stderr
         """
         try:
-            self.template.check(self._options)
+            self.template.check(options)
         except trafaret.DataError as e:
             sys.stderr.write(str(e) + "\n")
             sys.exit(1)

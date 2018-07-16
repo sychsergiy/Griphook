@@ -4,7 +4,6 @@ from unittest import mock
 
 import trafaret
 import yaml
-from trafaret_config import ConfigError
 
 from griphook.config.config import BASE_DIR, Config
 
@@ -77,7 +76,7 @@ class TestConfig(unittest.TestCase):
         self.write_yml_config(data)
 
         with self.assertRaises(SystemExit):
-            with self.assertRaises(ConfigError):
+            with self.assertRaises(trafaret.DataError):
                 Config(self.test_template)
 
     def test_current_config(self):
@@ -107,6 +106,34 @@ class TestConfig(unittest.TestCase):
         with self.assertRaises(SystemExit):
             with self.assertRaises(trafaret.DataError):
                 Config(self.test_template)
+
+    @mock.patch.dict(os.environ,
+                     {'GH_TOP_LEVEL_VARIABLE': "2", "GH_NESTED_DICT": "test", "GH_DATA_SOURCE_DATA_EXPIRES": "2"}
+                     )
+    def test_override_options_from_environ_method_with_nested_dict(self):
+        data = {
+            "TOP_LEVEL_VARIABLE": 1,
+            "NESTED_DICT": {
+                "DATA_SOURCE_DATA_EXPIRES": 1,
+            }
+        }
+        self.write_yml_config(data)
+
+        template = trafaret.Dict({
+            "TOP_LEVEL_VARIABLE": trafaret.Int(),
+            "NESTED_DICT": trafaret.Dict({
+                "DATA_SOURCE_DATA_EXPIRES": trafaret.Int(),
+            })
+        })
+
+        expected_data = {
+            "TOP_LEVEL_VARIABLE": '2',
+            "NESTED_DICT": {
+                "DATA_SOURCE_DATA_EXPIRES": '2',
+            }
+        }
+        config = Config(template)
+        self.assertEqual(config.options, expected_data)
 
 
 if __name__ == "__main__":
