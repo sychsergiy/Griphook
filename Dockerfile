@@ -10,5 +10,5 @@ RUN apt-get update && \
 
 RUN mkdir -p /etc/grip
 COPY . /etc/grip
-WORKDIR /etc/grip/griphook/tasks 
-RUN pip install -e /etc/grip
+WORKDIR /etc/grip
+RUN pip install -e .
