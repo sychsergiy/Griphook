@@ -1,8 +1,7 @@
 import os
 from datetime import datetime
 
-from celery import Celery
-from celery import Task
+from celery import Celery, Task
 from celery.decorators import periodic_task
 from celery.utils.log import get_task_logger
 
@@ -12,7 +11,10 @@ from sqlalchemy.orm import sessionmaker
 from griphook.config.config import Config
 from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
-from griphook.db.models import Metric, MetricType, Service, ServicesGroup
+from griphook.db.models import (
+    Metric, MetricType, Service, 
+    ServicesGroup, get_or_create
+)
 
 
 conf = Config().options
@@ -92,35 +94,23 @@ def parse_metrics():
 def save_metric_to_db(metrics: formatters.Metric, time_from: datetime): # time_from: datetime -> ONLY FOR SQLITE (int for psql)
     session = Session()
     for metric_tuple in metrics:
-        type_ = session.query(MetricType).filter(MetricType.title == metric_tuple.type).first()
-        type_ = type_ if type_ is not None else MetricType(title=metric_tuple.type)
-
-        services_group = session.query(ServicesGroup).filter(
-            ServicesGroup.title == metric_tuple.services_group
-        ).first()
-        if services_group is not None:
-            service = session.query(Service).filter(Service.title == metric_tuple.service,
-                                                    Service.services_group == services_group,
-                                                    Service.instance == metric_tuple.instance,
-                                                    Service.server == metric_tuple.server).first()
-            if service is None:
-                service = Service(title=metric_tuple.service, 
-                                  services_group=services_group,
-                                  instance=metric_tuple.instance,
-                                  server=metric_tuple.server)
-        else:
-            services_group = ServicesGroup(title=metric_tuple.services_group)
-            service = Service(title=metric_tuple.service, 
-                             services_group=services_group,
-                             instance=metric_tuple.instance,
-                             server=metric_tuple.server)
-
+        type_, _ = get_or_create(session=session, 
+                              model=MetricType, 
+                              title=metric_tuple.type)
+        services_group, _ = get_or_create(session=session, 
+                                       model=ServicesGroup, 
+                                       title=metric_tuple.services_group)
+        service, _ = get_or_create(session=session,
+                                model=Service,
+                                title=metric_tuple.service, 
+                                services_group=services_group, 
+                                instance=metric_tuple.instance, 
+                                server=metric_tuple.server)
         session.add(Metric(
             value=metric_tuple.value,
             time_from=time_from,
             type=type_,
             service = service
-            
         ))
     session.commit()
         
