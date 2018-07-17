@@ -2,6 +2,8 @@ import abc
 
 import requests
 
+from griphook.api.exceptions import APIConnectionError
+
 
 class APIParser(metaclass=abc.ABCMeta):
     """
@@ -42,6 +44,9 @@ class GraphiteAPIParser(APIParser):
             'until': str(time_until),
         }
 
-        # Perform GET request via session and return plain data
-        return self._session.get(
-            self.base_url, params=params, verify=False).text
+        try:
+            # Perform GET request via session and return plain data
+            return self._session.get(
+                self.base_url, params=params, verify=False).text
+        except requests.exceptions.ConnectionError as e:
+            raise APIConnectionError(str(e))
