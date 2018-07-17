@@ -1,6 +1,5 @@
 import os
 import unittest
-from unittest import mock
 
 import trafaret
 import yaml
@@ -9,7 +8,8 @@ from griphook.config.config import BASE_DIR, Config
 
 
 class TestConfig(unittest.TestCase):
-
+    # todo: find better way to mock environ (without changing real env)
+    # todo: separate test for template and config class
     def setUp(self):
         self.CONFIG_FILE_PATH = os.path.join(BASE_DIR, "config.yml")
 
@@ -93,13 +93,13 @@ class TestConfig(unittest.TestCase):
         self.write_yml_config(data)
         data["tasks"]["CELERY_BROKER_URL"] = "new_value"
 
-        os.environ["GH_CELERY_BROKER_URL"] = "new_value"
+        self.create_environ_variable_if_doesnt_exists("GH_CELERY_BROKER_URL", "new_value")
         config = Config()
 
         self.assertEqual(config.options, data)
 
-    @mock.patch.dict(os.environ, {'GH_EXPIRES_TIME': 'str'})
     def test_overwriting_by_env_variable_with_wrong_type(self):
+        self.create_environ_variable_if_doesnt_exists('GH_EXPIRES_TIME', 'str')
         data = self.test_data
         self.write_yml_config(data)
 
@@ -107,14 +107,15 @@ class TestConfig(unittest.TestCase):
             with self.assertRaises(trafaret.DataError):
                 Config(self.test_template)
 
-    @mock.patch.dict(os.environ,
-                     {'GH_TOP_LEVEL_VARIABLE': "2", "GH_NESTED_DICT": "test", "GH_DATA_SOURCE_DATA_EXPIRES": "2"}
-                     )
     def test_override_options_from_environ_method_with_nested_dict(self):
+        self.create_environ_variable_if_doesnt_exists('GH_TOP_LEVEL_VARIABLE', '2')
+        self.create_environ_variable_if_doesnt_exists('GH_NESTED_DICT', "test")
+        self.create_environ_variable_if_doesnt_exists('GH_SOURCE_DATA_EXPIRES', '2')
+
         data = {
             "TOP_LEVEL_VARIABLE": 1,
             "NESTED_DICT": {
-                "DATA_SOURCE_DATA_EXPIRES": 1,
+                "SOURCE_DATA_EXPIRES": 1,
             }
         }
         self.write_yml_config(data)
@@ -122,18 +123,24 @@ class TestConfig(unittest.TestCase):
         template = trafaret.Dict({
             "TOP_LEVEL_VARIABLE": trafaret.Int(),
             "NESTED_DICT": trafaret.Dict({
-                "DATA_SOURCE_DATA_EXPIRES": trafaret.Int(),
+                "SOURCE_DATA_EXPIRES": trafaret.Int(),
             })
         })
 
         expected_data = {
-            "TOP_LEVEL_VARIABLE": '2',
+            "TOP_LEVEL_VARIABLE": os.environ.get('GH_TOP_LEVEL_VARIABLE'),
             "NESTED_DICT": {
-                "DATA_SOURCE_DATA_EXPIRES": '2',
+                "SOURCE_DATA_EXPIRES": os.environ.get('GH_SOURCE_DATA_EXPIRES'),
             }
         }
         config = Config(template)
         self.assertEqual(config.options, expected_data)
+
+    @staticmethod
+    def create_environ_variable_if_doesnt_exists(env_var_name, default_value):
+        env_var = os.environ.get(env_var_name)
+        if not env_var:
+            os.environ[env_var_name] = default_value
 
 
 if __name__ == "__main__":
