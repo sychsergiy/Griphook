@@ -7,7 +7,7 @@ from griphook.api.exceptions import APIConnectionError
 
 class APIParser(metaclass=abc.ABCMeta):
     """
-    API parser inteface. Every API parser should redefine
+    API parser interface. Every API parser should redefine
     fetch() method since the way in order you fetch data from each other API
     differs. This method should implement those details.
     Every parser is synchronous and uses requests.Session
@@ -27,7 +27,7 @@ class APIParser(metaclass=abc.ABCMeta):
 
 class GraphiteAPIParser(APIParser):
     """
-    Parser with implementation details for Grahite API
+    Parser with implementation details for Graphite API
     """
 
     def fetch(self, *, time_from: int, time_until: int) -> str:
@@ -44,8 +44,8 @@ class GraphiteAPIParser(APIParser):
             'until': str(time_until),
         }
 
+        # Perform GET request via session and return plain data
         try:
-            # Perform GET request via session and return plain data
             return self._session.get(
                 self.base_url, params=params, verify=False).text
         except requests.exceptions.ConnectionError as e:
