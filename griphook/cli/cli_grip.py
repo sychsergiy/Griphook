@@ -16,11 +16,11 @@ from griphook.cli.utils import make_query, metric_data
               help="What type of metrics would you like to get?")
 @click.option('--days',  type=int, default=0, help="For the period of how many days?")
 @click.option('--hours',  type=int, default=1, help="For the period of how many hours?")
-def grip(process, type, hours, days):
+def griphook(process, type, hours, days):
     """Simple CLI  utillity to print metrics."""
     metrics = make_query(process, type, days, hours)
     click.echo(tabulate(metric_data(metrics), headers="keys", tablefmt="fancy_grid"))
 
 
 if __name__ == '__main__':
-    grip()
+    griphook()
