@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -5,11 +7,28 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
+class Team(Base):
+    __tablename__ = 'teams'
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    title = sa.Column(sa.String, unique=True)
+    created = sa.Column(
+        sa.DateTime,
+        default=datetime.utcnow,
+        server_default=sa.func.now()
+    )
+
+
 class Project(Base):
     __tablename__ = 'projects'
 
     id = sa.Column(sa.Integer, primary_key=True)
     title = sa.Column(sa.String, unique=True)
+    created = sa.Column(
+        sa.DateTime,
+        default=datetime.utcnow,
+        server_default=sa.func.now()
+    )
 
 
 class ServicesGroup(Base):
@@ -18,8 +37,11 @@ class ServicesGroup(Base):
     id = sa.Column(sa.Integer, primary_key=True)
     title = sa.Column(sa.String, unique=True)
 
-    project_id = sa.Column(sa.Integer, sa.ForeignKey('projects.id'))
+    project_id = sa.Column(sa.Integer, sa.ForeignKey('projects.id', name='project_fk'))
     project = relationship("Project", backref="services_groups")
+
+    team_id = sa.Column(sa.Integer, sa.ForeignKey('teams.id', name='team_fk'))
+    team = relationship("Team", backref="services_groups")
 
 
 class Service(Base):
@@ -71,7 +93,7 @@ class TaskFlag(Base):
     `griphook.tasks.tasks.parsing_metrics` execution
     """
     __tablename__ = 'task_flags'
-    
+
     id = sa.Column(sa.Integer, primary_key=True)
     datetime = sa.Column(sa.DateTime)
 
