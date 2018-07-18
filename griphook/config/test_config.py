@@ -1,5 +1,6 @@
 import os
 import unittest
+from unittest import mock
 
 import trafaret
 import yaml
@@ -8,9 +9,8 @@ from griphook.config.config import BASE_DIR, Config
 
 
 class TestConfig(unittest.TestCase):
-    # todo: find better way to mock environ (without changing real env)
-    # todo: separate test for template and config class
     def setUp(self):
+        self.PREFIX = "TEST_GH_"
         self.CONFIG_FILE_PATH = os.path.join(BASE_DIR, "config.yml")
 
         self.test_template = trafaret.Dict({
@@ -60,7 +60,7 @@ class TestConfig(unittest.TestCase):
         data = self.test_data
         self.write_yml_config(data)
 
-        options = Config(self.test_template).options
+        options = Config(self.test_template, prefix=self.PREFIX).options
         self.assertEqual(options, data)
 
     def test_wrong_config_data(self):
@@ -77,41 +77,39 @@ class TestConfig(unittest.TestCase):
 
         with self.assertRaises(SystemExit):
             with self.assertRaises(trafaret.DataError):
-                Config(self.test_template)
+                Config(self.test_template, prefix=self.PREFIX)
 
     def test_current_config(self):
         data = self.current_config_data
 
         self.write_yml_config(data)
 
-        options = Config().options
+        options = Config(prefix=self.PREFIX).options
         self.assertEqual(options, data)
 
+    @mock.patch.dict(os.environ, {"TEST_GH_CELERY_BROKER_URL": "new_value"})
     def test_overwriting_options_from_env_of_current_template(self):
         data = self.current_config_data
 
         self.write_yml_config(data)
         data["tasks"]["CELERY_BROKER_URL"] = "new_value"
 
-        self.create_environ_variable_if_doesnt_exists("GH_CELERY_BROKER_URL", "new_value")
-        config = Config()
-
+        config = Config(prefix=self.PREFIX)
         self.assertEqual(config.options, data)
 
+    @mock.patch.dict(os.environ, {'TEST_GH_EXPIRES_TIME': 'str'})
     def test_overwriting_by_env_variable_with_wrong_type(self):
-        self.create_environ_variable_if_doesnt_exists('GH_EXPIRES_TIME', 'str')
         data = self.test_data
         self.write_yml_config(data)
 
         with self.assertRaises(SystemExit):
             with self.assertRaises(trafaret.DataError):
-                Config(self.test_template)
+                Config(self.test_template, prefix=self.PREFIX)
 
+    @mock.patch.dict(os.environ, {'TEST_GH_TOP_LEVEL_VARIABLE': '2',
+                                  'TEST_GH_NESTED_DICT': "test",
+                                  'TEST_GH_SOURCE_DATA_EXPIRES': '2'})
     def test_override_options_from_environ_method_with_nested_dict(self):
-        self.create_environ_variable_if_doesnt_exists('GH_TOP_LEVEL_VARIABLE', '2')
-        self.create_environ_variable_if_doesnt_exists('GH_NESTED_DICT', "test")
-        self.create_environ_variable_if_doesnt_exists('GH_SOURCE_DATA_EXPIRES', '2')
-
         data = {
             "TOP_LEVEL_VARIABLE": 1,
             "NESTED_DICT": {
@@ -128,19 +126,13 @@ class TestConfig(unittest.TestCase):
         })
 
         expected_data = {
-            "TOP_LEVEL_VARIABLE": os.environ.get('GH_TOP_LEVEL_VARIABLE'),
+            "TOP_LEVEL_VARIABLE": '2',
             "NESTED_DICT": {
-                "SOURCE_DATA_EXPIRES": os.environ.get('GH_SOURCE_DATA_EXPIRES'),
+                "SOURCE_DATA_EXPIRES": '2',
             }
         }
-        config = Config(template)
+        config = Config(template, prefix=self.PREFIX)
         self.assertEqual(config.options, expected_data)
-
-    @staticmethod
-    def create_environ_variable_if_doesnt_exists(env_var_name, default_value):
-        env_var = os.environ.get(env_var_name)
-        if not env_var:
-            os.environ[env_var_name] = default_value
 
 
 if __name__ == "__main__":
