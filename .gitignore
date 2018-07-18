@@ -89,3 +89,4 @@ griphook.db
 # VSCode
 .vscode/
 dev/
+/bin
