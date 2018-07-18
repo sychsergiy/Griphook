@@ -90,3 +90,4 @@ griphook.db
 .vscode/
 dev/
 /bin
+local.yml

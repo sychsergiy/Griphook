@@ -15,17 +15,29 @@ def get_session_class():
 Session = get_session_class()
 
 
+class ManagerException(Exception):
+    pass
+
+
 class Manager(object):
     def __init__(self):
         self.session = Session()
 
     def create_team(self, title):
+        team = self.session.query(Team).filter_by(title=title).first()
+        if team:
+            raise ManagerException('Team with the same name already exists')
+
         instance = Team(title=title)
         self.session.add(instance)
         self.session.commit()
         return instance
 
     def create_project(self, title):
+        team = self.session.query(Project).filter_by(title=title).first()
+        if team:
+            raise ManagerException('Project with the same name already exists')
+
         instance = Project(title=title)
         self.session.add(instance)
         self.session.commit()
