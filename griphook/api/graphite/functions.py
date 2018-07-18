@@ -2,14 +2,20 @@ from typing import Type, Union
 
 from griphook.api.graphite.target import Target, Path
 
-# Type aliases
+# Type alias for base type of types
 BuiltInOrTarget = Union[Type[Target], Type[str],
                         Type[bool], Type[int], Type[float]]
 
 
 class Argument(object):
     """
-    Graphite Function argument
+    Wrapper for Function argument that renders it
+    Every argument has it's type.
+
+    string argument will be wrapped in double quotes.
+    bool will be lowercased.
+    any other type should implement __str__ method and will
+    be rendered as result of __str__ call
     """
 
     def __init__(self, arg_type: BuiltInOrTarget) -> None:
@@ -49,7 +55,10 @@ class Argument(object):
 
 class Function(Target):
     """
-    Graphite Function for constructing api requests
+    Class for building Graphite API functions as string.
+    Before constructing function you have to declare it and
+    its arguments types. Type specifies how argument will be treated and
+    rendered to string.
     """
 
     def __init__(self,
@@ -68,15 +77,15 @@ class Function(Target):
         self.name = name
         self._args = [Argument(t) for t in arg_types]
 
-    def __call__(self, *values) -> str:
+    def __call__(self, *args) -> str:
         """
         Constructs string representation of function call with arguments
 
-        :param values:
+        :param arguments: function parameters values
         """
-        # TODO: refactor this
+        # Fill function arguments with values
         for i in range(len(self._args)):
-            self._args[i].value = values[i]
+            self._args[i].value = args[i]
 
         # Join all arguments with period
         arguments = Path(*self._args, sep=',')
