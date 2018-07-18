@@ -1,8 +1,12 @@
 from abc import ABCMeta, abstractmethod
+from typing import Dict, Union, Tuple
 
 import requests
 
 from griphook.api.exceptions import APIConnectionError
+
+# Type alias for timeout
+Timeout = Union[None, float, Tuple[float, float]]
 
 
 class GenericParser(metaclass=ABCMeta):
@@ -16,9 +20,6 @@ class GenericParser(metaclass=ABCMeta):
         """
         pass
 
-    def fetch_one(self, request):
-        pass
-
 
 class APIParser(GenericParser):
     """
@@ -30,39 +31,28 @@ class APIParser(GenericParser):
         self.base_url = base_url
         self._session = requests.Session()
 
-
-class GraphiteAPIParser(APIParser):
-    """
-    Parser with implementation details for Graphite API
-    """
-
-    def fetch(self, *, time_from: int, time_until: int) -> str:
+    def request(self,
+                method: str = 'GET',
+                params: Dict[str, str] = {},
+                timeout: Timeout = 20.0) -> str:
         """
-        Fetch all metric data for CPU and RAM from Graphite API
+        Performs request on base url using session and returns
+        text as string.
 
-        :param time_from: timestamp for lower time limit
-        :type time_from: int
-        :param time_until: timestamp for upper time limit
-        :type time_until: int
-        :returns: json-formatted string
-        :raises: APIConnectionError
+        :param method: GET, POST, or any that requests module accepts
+        :param params: request parameters as dict
+        :timeout:
+            (float or tuple) – (optional)
+            How long to wait for theserver to send data before giving up,
+            as a float, or a (connect timeout, read timeout) tuple.
+            If set to None - wait until server will respond.
         """
-
-        target = ''\
-            'summarize(cantal.*.*.cgroups.lithos.*.*.{user_cpu_percent,'\
-            'system_cpu_percent,vsize},"1hour","max",true)'
-
-        # Parameters for GET request
-        params = {
-            'format': 'json',
-            'target': target,
-            'from': str(time_from),
-            'until': str(time_until),
-        }
-
-        # Perform GET request via session and return plain data
         try:
-            return self._session.get(
-                self.base_url, params=params, verify=False).text
+            response = self._session.request(url=self.base_url,
+                                             method=method,
+                                             params=params,
+                                             timeout=timeout,
+                                             verify=False)
+            return response.text
         except requests.exceptions.ConnectionError as e:
             raise APIConnectionError(str(e))
