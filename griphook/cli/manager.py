@@ -1,9 +1,8 @@
-
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
 from griphook.config.config import Config
-from griphook.db.models import Team
+from griphook.db.models import Team, Project
 
 
 def get_session_class():
@@ -16,7 +15,6 @@ def get_session_class():
 Session = get_session_class()
 
 
-# ----------------------------------------------------------------------------
 class Manager(object):
     def __init__(self):
         self.session = Session()
@@ -26,6 +24,11 @@ class Manager(object):
         self.session.add(instance)
         self.session.commit()
         return instance
+
+    def create_project(self, title):
+        instance = Project(title=title)
+        self.session.add(instance)
+        self.session.commit()
 
     def __del__(self):
         self.session.close()
