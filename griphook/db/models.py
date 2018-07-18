@@ -56,7 +56,7 @@ class Service(Base):
     services_group = relationship("ServicesGroup", backref="services")
 
     __table_args__ = (
-        sa.UniqueConstraint('title', 'instance', 'services_group_id', 'server'),
+        sa.UniqueConstraint('title', 'instance', 'services_group_id', 'server', name='ut_1'),
     )
 
 

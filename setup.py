@@ -8,7 +8,8 @@ REQUIRED_PYTHON = '>=3.6.0'
 VERSION = '1.0.0'
 
 REQUIRED_PACKAGES = [
-    'requests', 'celery', 'sqlalchemy', 'trafaret', 'mypy', 'pytest', 'alembic'
+    'requests', 'celery', 'sqlalchemy', 'trafaret', 'mypy', 'pytest', 'alembic', 'pyaml',
+    'psycopg2'
 ]
 
 setup(
