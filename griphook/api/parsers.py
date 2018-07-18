@@ -1,28 +1,34 @@
-import abc
+from abc import ABCMeta, abstractmethod
 
 import requests
 
 from griphook.api.exceptions import APIConnectionError
 
 
-class APIParser(metaclass=abc.ABCMeta):
+class GenericParser(metaclass=ABCMeta):
+    """Generic parser interface"""
+    @abstractmethod
+    def fetch(self, *, time_from: int, time_until: int) -> str:
+        """
+        Get data with time limits
+        Every GenericParser should redefine fetch() method
+        This method should implement those details
+        """
+        pass
+
+    def fetch_one(self, request):
+        pass
+
+
+class APIParser(GenericParser):
     """
-    API parser interface. Every API parser should redefine
-    fetch() method since the way in order you fetch data from each other API
-    differs. This method should implement those details.
+    API parser interface.
     Every parser is synchronous and uses requests.Session
     """
 
     def __init__(self, base_url: str) -> None:
         self.base_url = base_url
         self._session = requests.Session()
-
-    @abc.abstractmethod
-    def fetch(self, *, time_from: int, time_until: int) -> str:
-        """
-        Performs a request and returns plain response data as string
-        """
-        pass
 
 
 class GraphiteAPIParser(APIParser):
@@ -31,6 +37,16 @@ class GraphiteAPIParser(APIParser):
     """
 
     def fetch(self, *, time_from: int, time_until: int) -> str:
+        """
+        Fetch all metric data for CPU and RAM from Graphite API
+
+        :param time_from: timestamp for lower time limit
+        :type time_from: int
+        :param time_until: timestamp for upper time limit
+        :type time_until: int
+        :returns: json-formatted string
+        :raises: APIConnectionError
+        """
 
         target = ''\
             'summarize(cantal.*.*.cgroups.lithos.*.*.{user_cpu_percent,'\
