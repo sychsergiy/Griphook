@@ -34,7 +34,7 @@ class Service(Base):
     services_group = relationship("ServicesGroup", backref="services")
 
     __table_args__ = (
-        sa.UniqueConstraint('title', 'instance', 'services_group_id', 'server'),
+        sa.UniqueConstraint('title', 'instance', 'services_group_id', 'server', name='ut_1'),
     )
 
 
@@ -71,7 +71,7 @@ class TaskFlag(Base):
     `griphook.tasks.tasks.parsing_metrics` execution
     """
     __tablename__ = 'task_flags'
-    
+
     id = sa.Column(sa.Integer, primary_key=True)
     datetime = sa.Column(sa.DateTime)
 
