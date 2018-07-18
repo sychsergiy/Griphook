@@ -2,6 +2,14 @@ stages:
   - test
   - deploy
 
-job 1:
+pytest:
   stage: test
   script: docker-compose -f compose-test.yml build && docker-compose -f compose-test.yml run pytest
+
+build:
+  stage: deploy
+  script: docker build . -t griphook
+
+push:
+  stage: deploy
+  script: docker tag griphook registry.gitlab.uaprom:7000/griphook/tasks && docker push registry.gitlab.uaprom:7000/griphook/tasks
