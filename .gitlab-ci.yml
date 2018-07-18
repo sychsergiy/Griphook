@@ -4,4 +4,4 @@ stages:
 
 job 1:
   stage: test
-  script: docker-compose -f compose-test.yml run pytest --build
+  script: docker-compose -f compose-test.yml build && docker-compose -f compose-test.yml run pytest

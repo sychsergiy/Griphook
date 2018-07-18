@@ -1,6 +1,6 @@
 version: "2.1"
 services:
-    celery_worker:
+    pytest:
         build: .
         depends_on:
             rabbit:
