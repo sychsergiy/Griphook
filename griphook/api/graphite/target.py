@@ -15,6 +15,7 @@ class Path(Target):
             >>> str(p)
             >>> 'foo.bar.spam'
     """
+
     def __init__(self, *chunks: Any, sep: str = '.') -> None:
         self.sep = sep
         self.chunks = list(chunks)
@@ -29,8 +30,17 @@ class Path(Target):
         chunks = map(str, self.chunks)
         return sep.join(chunks)
 
-    def __iadd__(self, other: 'Path') -> 'Path':
-        self.chunks.extend(other.chunks)
+    def __iadd__(self, other: Any) -> 'Path':
+        """
+        Overloaded += operator
+        If you are adding Path instance this will extend self.chunks
+        with that instance's chunks. Otherwise just append str(instance).
+        """
+        if isinstance(other, Path):
+            self.chunks.extend(other.chunks)
+        else:
+            self.chunks.append(str(other))
+
         return self
 
 
