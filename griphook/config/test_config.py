@@ -49,9 +49,6 @@ class TestConfig(unittest.TestCase):
             },
         }
 
-    def tearDown(self):
-        os.remove(self.CONFIG_FILE_PATH)
-
     def write_yml_config(self, data):
         with open(self.CONFIG_FILE_PATH, "w") as file:
             yaml.dump(data, file, default_flow_style=False)
