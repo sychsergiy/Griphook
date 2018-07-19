@@ -1,5 +1,4 @@
 import pytest
-
 from griphook.api.graphite.target import MultipleValues
 
 

@@ -1,7 +1,6 @@
 import pytest
-
 from griphook.api.graphite.functions import Argument, Function
-from griphook.api.graphite.target import Target, Path
+from griphook.api.graphite.target import Path, Target
 
 
 class TestArgument(object):

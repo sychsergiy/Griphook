@@ -1,6 +1,6 @@
 from typing import Type, Union
 
-from griphook.api.graphite.target import Target, Path
+from griphook.api.graphite.target import Path, Target
 
 # Type alias for base type of types
 BuiltInOrTarget = Union[Type[Target], Type[str],

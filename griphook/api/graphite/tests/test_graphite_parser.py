@@ -5,9 +5,8 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from griphook.api.data_source import DataSource
-from griphook.api.graphite.parser import GraphiteAPIParser
 from griphook.api.graphite.formatters import format_cantal_data
-
+from griphook.api.graphite.parser import GraphiteAPIParser
 
 # To ignore insecure https connection
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
