@@ -5,10 +5,13 @@ from griphook.cli.manager import Manager, get_session_class
 Session = get_session_class()
 
 
+# todo: handle ManagerException
+# todo: add test for every edge situations after handling ManagerException
+
 @click.group()
 @click.pass_context
 def cli(ctx):
-    if ctx.obj is None:  # Doesn't work as of 3.0
+    if ctx.obj is None:
         ctx.obj = {}
     ctx.obj['manager'] = Manager(Session())
 
