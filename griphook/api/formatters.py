@@ -1,9 +1,8 @@
 import json
 import re
-from typing import *
+from typing import List, NamedTuple, Optional, Tuple
 
-from pydantic import BaseModel, ValidationError, validator
-
+from pydantic import BaseModel, PydanticValueError, ValidationError, validator
 
 CANTAL_PATTERN = re.compile(".*\."
                             "(?P<cluster>[\w]+)\."
@@ -24,52 +23,68 @@ class Metric(NamedTuple):
     instance: str
 
 
-class DataSeries(BaseModel): #TODO: change datatypes, add check empty list
+class DataSeries(BaseModel):
     target: str
-    datapoints: List[List[Union[float, int]]]
+    datapoints: List[Tuple[float, int]]
 
     @classmethod
     def validate(cls, value):
         try:
             return super().validate(value)
-        except ValidationError:
+        except ValidationError as e:
+            # print(e.__str__()) #TODO: add to logging
             return None
 
-    @validator('target')
-    def target_must_contain_cantal(cls, value):
-        if ('cantal' and 'lithos') not in value:
-            raise ValidationError
+    @validator("target")
+    def target_validate(cls, value):
+        if "cantal" not in value or "lithos" not in value:
+            raise WrongTargetStructure(wrong_target=value)
         return value
 
 
-class Data(BaseModel):
+class CantalData(BaseModel):
     series: List[Optional[DataSeries]]
 
 
-def filter_input_data(data_series):
-    valid_data = Data(series=data_series)
-    yield from filter(lambda x: x, valid_data.series)
+class WrongTargetStructure(PydanticValueError):
+    code = "wrong_target_structure"
+    msg_template = "wrong target structure for cantal system, " \
+                   "got target:'{wrong_target}'"
+
+
+def validate_input_cantal_data(decoded_input_data):
+    """
+    Validates input data according to defined hierarchical data structures.
+
+    :param: decoded data
+    :return: valid DataSeries objects
+    """
+    validated_data = CantalData(series=decoded_input_data)
+    # separate None objects from validated data
+    filtered_data = filter(lambda x: x, validated_data.series)
+    yield from filtered_data
 
 
 def format_cantal_data(input_data):
     """
-    Parses metric target, takes data point value and creates metric object
-    with parameters.
+    Parses metric target, creates metric object with metric value and with
+    information data about service topology.
 
-    :param input_data: row data from Grahite API(cantal metric system)
+    :param: row data from Grahite API(cantal metric system)
     :return: metric objects
     """
     try:
-        series_data = json.loads(input_data)
+        decoded_input_data = json.loads(input_data)
     except json.decoder.JSONDecodeError:
         return
 
-    filtered_series_list = filter_input_data(series_data)
+    valid_data = validate_input_cantal_data(decoded_input_data)
 
-    for data in filtered_series_list:
-        target = CANTAL_PATTERN.match(data.target)
+    for data_series_object in valid_data:
+        # parse metric target according to pattern
+        target = CANTAL_PATTERN.match(data_series_object.target)
 
-        metric = Metric(value=round(data.datapoints[0][0], 5),
+        metric = Metric(value=round(data_series_object.datapoints[0][0], 5),
                         type=target.group('type'),
                         cluster=target.group('cluster'),
                         server=target.group('server'),
