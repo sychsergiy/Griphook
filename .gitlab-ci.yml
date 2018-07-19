@@ -10,10 +10,14 @@ pytest:
 build:
   stage: deploy
   script: docker build . -t griphook
+  only:
+    - master
 
 push:
   stage: deploy
   script: docker tag griphook registry.gitlab.uaprom:7000/griphook/tasks && docker push registry.gitlab.uaprom:7000/griphook/tasks
+  only:
+    - master
 
 #flake8:
 #  stage: lint
