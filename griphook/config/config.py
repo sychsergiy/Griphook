@@ -16,7 +16,8 @@ CONFIG_PATH = os.path.join(BASE_DIR, os.environ.get(PREFIX + "DEFAULT_CONFIG_FIL
 
 
 class Config(object):
-    def __init__(self, template: trafaret.base.Dict = default_template) -> None:
+    def __init__(self, template: trafaret.base.Dict = default_template, prefix=PREFIX) -> None:
+        self.prefix = prefix
         self.template = template
         self._options = self.read_options_from_config_file()
         self.override_options_from_environ(self._options)
@@ -53,7 +54,7 @@ class Config(object):
             if isinstance(value, dict):
                 self.override_options_from_environ(value)
             else:
-                env_variable = os.environ.get(PREFIX + key)
+                env_variable = os.environ.get(self.prefix + key)
                 if env_variable:
                     option_dict[key] = env_variable
 
