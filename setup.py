@@ -9,7 +9,7 @@ VERSION = '1.0.0'
 
 REQUIRED_PACKAGES = [
     'requests', 'celery', 'sqlalchemy', 'trafaret', 'mypy', 'pytest', 'alembic', 'click', 'tabulate', 'pyaml',
-    'psycopg2-binary'
+    'psycopg2-binary', 'flake8',
 ]
 
 setup(
