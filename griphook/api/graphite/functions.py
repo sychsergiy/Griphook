@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Type, Union, Optional, Any
 
 from griphook.api.graphite.target import Path, Target
 
@@ -18,7 +18,8 @@ class Argument(object):
     be rendered as result of __str__ call
     """
 
-    def __init__(self, arg_type: BuiltInOrTarget) -> None:
+    def __init__(self, arg_type: BuiltInOrTarget,
+                 default: Optional[Any] = None) -> None:
         """
         Function Argument constructor
 
@@ -27,6 +28,7 @@ class Argument(object):
         """
         self.type = arg_type
         self.value = None
+        self.default = default
 
     def __str__(self):
         """
@@ -35,7 +37,8 @@ class Argument(object):
         :returns: str
         :raises:  ValueError if self.value is not set
         """
-        value = self.value
+        # Set value to default if not set
+        value = self.value if self.value is not None else self.default
         if value is None:
             raise ValueError("The value should be set!")
 
@@ -49,9 +52,6 @@ class Argument(object):
         else:
             return str(value)
 
-    def __repr__(self):
-        return self.__str__()
-
 
 class Function(Target):
     """
@@ -63,21 +63,35 @@ class Function(Target):
 
     def __init__(self,
                  name: str,
-                 *arg_types: BuiltInOrTarget) -> None:
+                 *arg_types: Union[BuiltInOrTarget, Argument]) -> None:
         """
         Function constructor.
         Creates Graphite function object, sets the name to function and
         declares function parameter types
+        First declare function and it arg types, then call it.
+
+        Example:
+            >>> pow = Function('pow', int, Argument(int, default=2))
+            >>> print(pow(2))
+            >>> 'pow(2,2)'
+            >>> print(pow(2, 3))
+            >>> 'pow(2,3)'
 
         :param name:       name of the function
         :type name:        str
         :param *arg_types: list of type declarations for arguments
-        :type *arg_types:  Target, str, bool, int or float
+        :type *arg_types:  Argument, Target, str, bool, int or float,
         """
         if not isinstance(name, str):
             raise TypeError('Function name should be str instance')
         self.name = name
-        self._args = [Argument(t) for t in arg_types]
+        self._args = [self._wrap_argument(t) for t in arg_types]
+
+    @staticmethod
+    def _wrap_argument(arg_type: Union[BuiltInOrTarget, Argument]):
+        if isinstance(arg_type, Argument):
+            return arg_type
+        return Argument(arg_type)
 
     def __call__(self, *args) -> str:
         """
@@ -96,10 +110,3 @@ class Function(Target):
 
         return '{func_name}({args})'.format(func_name=self.name,
                                             args=arguments)
-
-
-if __name__ == "__main__":
-    target = Path('foo', 'bar', 'spam', 'eggs')
-    maximumAbove = Function('maximumAbove', Target, int)
-    summarize = Function('summarize', Target)
-    print(summarize(maximumAbove(target, 50)))
