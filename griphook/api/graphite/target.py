@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 
 class Target(object):
@@ -53,14 +53,14 @@ class MultipleValues(object):
     This class defines interface for building that value list
 
     Example:
-        >>> values = GraphiteMultipleValue(values=['foo', bar', 'spam'])
+        >>> values = GraphiteMultipleValue('foo', bar', 'spam')
         >>> str(values)
         >>> '{foo,bar,spam}'
     """
 
-    def __init__(self, *, values: List[str]) -> None:
-        if not values:
-            raise ValueError("values should be non-empty iterable")
+    def __init__(self, *values: str) -> None:
+        if len(values) < 2:
+            raise ValueError("There should be two or more multiple values")
         self.values = values
 
     def __str__(self) -> str:
