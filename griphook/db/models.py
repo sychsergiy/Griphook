@@ -75,7 +75,7 @@ class Service(Base):
 
     __table_args__ = (
         sa.UniqueConstraint("title", "instance", "services_group_id", "server",
-                            name='ut_1'),
+                            name='ut_2'),
     )
 
 
@@ -85,6 +85,8 @@ class BatchStory(Base):
     id = sa.Column(sa.Integer, primary_key=True)
     time = sa.Column(sa.DateTime, unique=True)
     status = sa.Column(sa.Integer)
+
+    put_into_queue = sa.Column(sa.DateTime)
 
 
 class MetricType(Base):
@@ -132,17 +134,6 @@ class Metric(Base):
             "type_id", "service_id", "batch_id", name="ut_1"
         ),
     )
-
-
-class TaskFlag(Base):
-    """
-    Store last datetime when was started 
-    `griphook.tasks.tasks.parsing_metrics` execution
-    """
-    __tablename__ = 'task_flags'
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    datetime = sa.Column(sa.DateTime)
 
 
 def get_or_create(session, model, defaults=None, **kwargs):
