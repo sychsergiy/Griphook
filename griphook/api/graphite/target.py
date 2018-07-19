@@ -18,6 +18,7 @@ class Path(Target):
 
     def __init__(self, *chunks: Any, sep: str = '.') -> None:
         self.sep = sep
+        # Validation of chunks
         self.chunks = list(chunks)
 
     def __str__(self) -> str:
