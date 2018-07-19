@@ -18,5 +18,4 @@ push:
 #flake8:
 #  stage: lint
 #  script:
-#   - flake8 --exclude=griphook/db/migrations --show-source griphook/
 #   - git diff HEAD^ | flake8 --diff # lint only changed files
