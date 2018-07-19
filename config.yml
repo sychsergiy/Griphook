@@ -1,7 +1,7 @@
 api:
   GRAPHITE_URL: https://graphite.olympus.evo/render
 db:
-  DATABASE_URL: postgresql://user:password@host/database_name
+  DATABASE_URL: postgresql://enver:qwerty123@localhost:5432/test2
 tasks:
   CELERY_BROKER_URL: "ampq://user:password@localhost/root"
   DATA_SOURCE_DATA_EXPIRES: 7776000

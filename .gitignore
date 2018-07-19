@@ -88,4 +88,4 @@ venv.bak/
 griphook.db
 # VSCode
 .vscode/
-/bin
+dev/

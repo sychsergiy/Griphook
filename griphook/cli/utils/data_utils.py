@@ -1,6 +1,8 @@
 import click
-from collections import OrderedDict
 from datetime import datetime
+from collections import OrderedDict
+
+from griphook.cli.utils.sql_utils import all_groups
 
 
 def metric_data(metrics):
@@ -25,3 +27,19 @@ class CustomDateParamType(click.ParamType):
             return valid_date
         except ValueError:
             self.fail('%s is not a valid date' % value, param, ctx)
+
+
+class ServicesChoiceIterator(object):
+    def __init__(self, session):
+        self.session = session
+        self.services = []
+
+    def __iter__(self):
+        # Get list of services and assign it to self.services
+        #  fill it
+        for group in all_groups(self.session):
+            print(type(group))
+            self.services.append(group)
+
+        return iter(self.services)
+
