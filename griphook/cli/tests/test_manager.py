@@ -1,30 +1,15 @@
 import unittest
 
-from griphook.cli.manager import Manager, ManagerException, get_session_class
+from griphook.cli.manager import Manager, ManagerException
 from griphook.db.models import Team, Project, ServicesGroup
 
-Session = get_session_class()
+from griphook.cli.tests.base import BaseWithDBSession
 
 
-class ManagerTestCase(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.session = Session()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.session.close()
-
+class ManagerTestCase(BaseWithDBSession):
     def setUp(self):
         self.manager = Manager(self.session)
         self.clean_up_db()
-
-    def clean_up_db(self):
-        self.session.query(ServicesGroup).delete()
-        self.session.query(Project).delete()
-        self.session.query(Team).delete()
-        self.session.commit()
 
     def test_create_team_method(self):
         title = 'test'
