@@ -9,10 +9,18 @@ from griphook.config.config import BASE_DIR, Config
 
 
 class TestConfig(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        os.environ['TEST_GH_CONFIG_FILE_NAME'] = "test_config.yml"
+        cls.CONFIG_FILE_PATH = os.path.join(BASE_DIR, "test_config.yml")
+
+    @classmethod
+    def tearDownClass(cls):
+        os.environ.pop("TEST_GH_CONFIG_FILE_NAME", None)
+        os.remove(cls.CONFIG_FILE_PATH)
+
     def setUp(self):
         self.PREFIX = "TEST_GH_"
-        self.CONFIG_FILE_PATH = os.path.join(BASE_DIR, "config.yml")
-
         self.test_template = trafaret.Dict({
             "api": trafaret.String(),
             "cli": trafaret.String(),
