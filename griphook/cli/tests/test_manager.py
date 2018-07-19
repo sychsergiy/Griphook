@@ -72,6 +72,36 @@ class ManagerTestCase(BaseWithDBSession):
 
         self.assertEqual(str(context.exception), 'ServiceGroup with title test doesn\'t exists')
 
+    def test_attach_service_group_to_team_method(self):
+        title = 'test'
+        self.session.add(Team(title=title))
+        self.session.add(ServicesGroup(title=title))
+        self.session.commit()
+
+        self.manager.attach_service_group_to_team(title, title)
+        service_group = self.session.query(ServicesGroup).filter_by(title=title).first()
+        self.assertEqual(title, service_group.team.title)
+
+    def test_attach_service_group_to_team_method_when_team_doesnt_exists(self):
+        title = 'test'
+        self.session.add(ServicesGroup(title=title))
+        self.session.commit()
+
+        with self.assertRaises(ManagerException) as context:
+            self.manager.attach_service_group_to_team(title, title)
+
+        self.assertEqual(str(context.exception), 'Team with title test doesn\'t exists')
+
+    def test_attach_service_group_to_team_method_when_service_group_doesnt_exists(self):
+        title = 'test'
+        self.session.add(Team(title=title))
+        self.session.commit()
+
+        with self.assertRaises(ManagerException) as context:
+            self.manager.attach_service_group_to_team(title, title)
+
+        self.assertEqual(str(context.exception), 'ServiceGroup with title test doesn\'t exists')
+
 
 if __name__ == "__main__":
     unittest.main()

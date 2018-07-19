@@ -57,3 +57,16 @@ class Manager(object):
         service_group.project = project
         self.session.add(service_group)
         self.session.commit()
+
+    def attach_service_group_to_team(self, service_group_title, team_title):
+        team = self.session.query(Team).filter_by(title=team_title).first()
+        if not team:
+            raise ManagerException('Team with title {} doesn\'t exists'.format(team_title))
+
+        service_group = self.session.query(ServicesGroup).filter_by(title=service_group_title).first()
+        if not service_group:
+            raise ManagerException('ServiceGroup with title {} doesn\'t exists'.format(service_group_title))
+
+        service_group.team = team
+        self.session.add(service_group)
+        self.session.commit()
