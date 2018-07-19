@@ -18,7 +18,8 @@ class Argument(object):
     be rendered as result of __str__ call
     """
 
-    def __init__(self, arg_type: BuiltInOrTarget,
+    def __init__(self, arg_type: BuiltInOrTarget, *,
+                 name: Optional[str] = None,
                  default: Optional[Any] = None) -> None:
         """
         Function Argument constructor
@@ -29,6 +30,7 @@ class Argument(object):
         self.type = arg_type
         self.value = None
         self.default = default
+        self.name = name
 
     def __str__(self):
         """
@@ -110,3 +112,10 @@ class Function(Target):
 
         return '{func_name}({args})'.format(func_name=self.name,
                                             args=arguments)
+
+
+# Built-in functions
+summarize = Function('summarize',
+                     Argument(Target, name='seriesList'),
+                     Argument(str, name='func', default='sum',),
+                     Argument(bool, name='AlignToFrom', default=False))
