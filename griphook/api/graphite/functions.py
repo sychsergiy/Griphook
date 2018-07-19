@@ -74,18 +74,22 @@ class Function(Target):
         :param *arg_types: list of type declarations for arguments
         :type *arg_types:  Target, str, bool, int or float
         """
+        if not isinstance(name, str):
+            raise TypeError('Function name should be str instance')
         self.name = name
         self._args = [Argument(t) for t in arg_types]
 
     def __call__(self, *args) -> str:
         """
         Constructs string representation of function call with arguments
+        If argument count given less than declared - render only given, ignore
+        others (assume them as defaults)
 
         :param arguments: function parameters values
         """
         # Fill function arguments with values
-        for i in range(len(self._args)):
-            self._args[i].value = args[i]
+        for value, arg in zip(args, self._args):
+            arg.value = value
 
         # Join all arguments with period
         arguments = Path(*self._args, sep=',')
