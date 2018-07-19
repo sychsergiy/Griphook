@@ -5,7 +5,7 @@ stages:
 
 pytest:
   stage: test
-  script: docker-compose -f compose-test.yml build && docker-compose -f compose-test.yml run pytest
+  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml build && docker-compose -f compose-test.yml run pytest
 
 build:
   stage: deploy
