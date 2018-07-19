@@ -40,7 +40,7 @@ class BusinessCreateCommandsTestCase(BaseWithDBSession):
         self.assertEqual(result.exit_code, -1)
 
 
-class BusinessAttachCommandsTestCase(BaseWithDBSession):
+class BusinessAttachProcessToProjectCommandTestCase(BaseWithDBSession):
 
     @classmethod
     def setUpClass(cls):
@@ -69,6 +69,38 @@ class BusinessAttachCommandsTestCase(BaseWithDBSession):
         self.session.commit()
 
         result = self.runner.invoke(cli, ['attach_process_to_project', 'test', 'test'])
+        self.assertEqual(result.exit_code, -1)
+
+
+class BusinessAttachProcessToTeamCommandTestCase(BaseWithDBSession):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.runner = CliRunner()
+
+    def setUp(self):
+        self.clean_up_db()
+
+    def test_attach_process_to_team_command(self):
+        self.session.add_all([ServicesGroup(title='test'), Team(title='test')])
+        self.session.commit()
+
+        result = self.runner.invoke(cli, ['attach_process_to_team', 'test', 'test'])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_attach_process_to_team_command_when_services_group_doesnt_exists(self):
+        self.session.add(Team(title='test'))
+        self.session.commit()
+
+        result = self.runner.invoke(cli, ['attach_process_to_team', 'test', 'test'])
+        self.assertEqual(result.exit_code, -1)
+
+    def test_attach_process_to_team_command_when_team_doesnt_exists(self):
+        self.session.add(ServicesGroup(title='test'))
+        self.session.commit()
+
+        result = self.runner.invoke(cli, ['attach_process_to_team', 'test', 'test'])
         self.assertEqual(result.exit_code, -1)
 
 

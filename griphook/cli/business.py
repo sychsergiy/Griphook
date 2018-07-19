@@ -6,6 +6,7 @@ Session = get_session_class()
 
 
 # todo: handle ManagerException
+# todo: rename Manager class
 # todo: add test for every edge situations after handling ManagerException
 
 @click.group()
@@ -34,8 +35,16 @@ def create_project(context, title):
 @click.argument('service_group_title', type=click.STRING)
 @click.argument('project_title', type=click.STRING)
 @click.pass_context
-def attach_process_to_project(ctx, project_title, service_group_title):
+def attach_process_to_project(ctx, service_group_title, project_title):
     ctx.obj['manager'].attach_service_group_to_project(service_group_title, project_title)
+
+
+@cli.command()
+@click.argument('service_group_title', type=click.STRING)
+@click.argument('team_title', type=click.STRING)
+@click.pass_context
+def attach_process_to_team(ctx, service_group_title, team_title):
+    ctx.obj['manager'].attach_service_group_to_team(service_group_title, team_title)
 
 
 if __name__ == "__main__":
