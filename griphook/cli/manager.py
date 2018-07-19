@@ -2,7 +2,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
 from griphook.config.config import Config
-from griphook.db.models import Team, Project
+from griphook.db.models import Team, Project, ServicesGroup
 
 
 def get_session_class():
@@ -20,8 +20,11 @@ class ManagerException(Exception):
 
 
 class Manager(object):
-    def __init__(self):
-        self.session = Session()
+    def __init__(self, session):
+        self.session = session
+
+    def __del__(self):
+        self.session.close()
 
     def create_team(self, title):
         team = self.session.query(Team).filter_by(title=title).first()
@@ -42,5 +45,15 @@ class Manager(object):
         self.session.add(instance)
         self.session.commit()
 
-    def __del__(self):
-        self.session.close()
+    def attach_service_group_to_project(self, service_group_title, project_title):
+        project = self.session.query(Project).filter_by(title=project_title).first()
+        if not project:
+            raise ManagerException('Project with title {} doesn\'t exists'.format(project_title))
+
+        service_group = self.session.query(ServicesGroup).filter_by(title=service_group_title).first()
+        if not service_group:
+            raise ManagerException('ServiceGroup with title {} doesn\'t exists'.format(service_group_title))
+
+        service_group.project = project
+        self.session.add(service_group)
+        self.session.commit()
