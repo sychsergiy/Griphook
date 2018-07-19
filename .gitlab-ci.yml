@@ -1,4 +1,5 @@
 stages:
+  - lint
   - test
   - deploy
 
@@ -13,3 +14,9 @@ build:
 push:
   stage: deploy
   script: docker tag griphook registry.gitlab.uaprom:7000/griphook/tasks && docker push registry.gitlab.uaprom:7000/griphook/tasks
+
+flake8:
+  stage: lint
+  script:
+#   - flake8 --exclude=griphook/db/migrations --show-source griphook/
+   - git diff HEAD^ | flake8 --diff # lint only changed files
