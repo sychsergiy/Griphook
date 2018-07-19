@@ -3,16 +3,16 @@ services:
     pytest:
         build: .
         depends_on:
-            rabbit:
-                condition: service_healthy
             postgres:
+                condition: service_healthy
+            rabbit:
                 condition: service_healthy
         environment:
             - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
             - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
         healthcheck:
                 test: "exit 0"
-        command: bash -c "alembic upgrade head && pytest"
+        command: bash -c "sleep 2 && alembic upgrade head && pytest"
 
     rabbit:
         image: rabbitmq
