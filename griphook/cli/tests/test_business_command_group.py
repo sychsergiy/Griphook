@@ -47,12 +47,29 @@ class BusinessAttachCommandsTestCase(BaseWithDBSession):
         super().setUpClass()
         cls.runner = CliRunner()
 
+    def setUp(self):
+        self.clean_up_db()
+
     def test_attach_process_to_project_command(self):
         self.session.add_all([ServicesGroup(title='test'), Project(title='test')])
         self.session.commit()
 
         result = self.runner.invoke(cli, ['attach_process_to_project', 'test', 'test'])
         self.assertEqual(result.exit_code, 0)
+
+    def test_attach_process_to_project_command_when_services_group_doesnt_exists(self):
+        self.session.add(Project(title='test'))
+        self.session.commit()
+
+        result = self.runner.invoke(cli, ['attach_process_to_project', 'test', 'test'])
+        self.assertEqual(result.exit_code, -1)
+
+    def test_attach_process_to_project_command_when_project_doesnt_exists(self):
+        self.session.add(ServicesGroup(title='test'))
+        self.session.commit()
+
+        result = self.runner.invoke(cli, ['attach_process_to_project', 'test', 'test'])
+        self.assertEqual(result.exit_code, -1)
 
 
 if __name__ == "__main__":

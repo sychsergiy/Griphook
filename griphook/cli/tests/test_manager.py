@@ -50,7 +50,27 @@ class ManagerTestCase(BaseWithDBSession):
 
         self.manager.attach_service_group_to_project(title, title)
         service_group = self.session.query(ServicesGroup).filter_by(title=title).first()
-        self.assertEquals(title, service_group.project.title)
+        self.assertEqual(title, service_group.project.title)
+
+    def test_attach_service_group_to_project_method_when_project_doesnt_exists(self):
+        title = 'test'
+        self.session.add(ServicesGroup(title=title))
+        self.session.commit()
+
+        with self.assertRaises(ManagerException) as context:
+            self.manager.attach_service_group_to_project(title, title)
+
+        self.assertEqual(str(context.exception), 'Project with title test doesn\'t exists')
+
+    def test_attach_service_group_to_project_method_when_services_groups_doesnt_exists(self):
+        title = 'test'
+        self.session.add(Project(title=title))
+        self.session.commit()
+
+        with self.assertRaises(ManagerException) as context:
+            self.manager.attach_service_group_to_project(title, title)
+
+        self.assertEqual(str(context.exception), 'ServiceGroup with title test doesn\'t exists')
 
 
 if __name__ == "__main__":
