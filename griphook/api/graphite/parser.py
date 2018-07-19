@@ -1,4 +1,6 @@
 from griphook.api.parsers import APIParser
+from griphook.api.graphite.functions import summarize
+from griphook.api.graphite.target import Path, MultipleValues
 
 
 class GraphiteAPIParser(APIParser):
@@ -18,11 +20,9 @@ class GraphiteAPIParser(APIParser):
         :raises: APIConnectionError
         """
 
-        target = ''\
-            'summarize(cantal.*.*.cgroups.lithos.*.*.{user_cpu_percent,'\
-            'system_cpu_percent,vsize},"1hour","max",true)'
-
         # Parameters for GET request
+        target = self._construct_target()
+
         params = {
             'format': 'json',
             'target': target,
@@ -32,3 +32,15 @@ class GraphiteAPIParser(APIParser):
 
         # Perform GET request via session and return plain data
         return self.request(params=params)
+
+    @staticmethod
+    def _construct_target():
+        metrics = MultipleValues('user_cpu_percent',
+                                 'system_cpu_percent',
+                                 'vsize')
+        # path to all cpu and memory metrics
+        path = Path('cantal', '*', '*', 'cgroups', 'lithos', '*', '*',
+                    metrics)
+
+        target = summarize(path, "1hour", "max", True)
+        return str(target)
