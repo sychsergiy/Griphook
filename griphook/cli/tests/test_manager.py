@@ -102,6 +102,18 @@ class ManagerTestCase(BaseWithDBSession):
 
         self.assertEqual(str(context.exception), 'ServiceGroup with title test doesn\'t exists')
 
+    def test_filter_services_group_by_project(self):
+        title = 'test'
+        project = Project(title=title)
+        self.session.add(project)
+
+        self.session.add_all([ServicesGroup(title='test1', project=project),
+                              ServicesGroup(title='test2', project=project),
+                              ServicesGroup(title='test3')])
+        self.session.commit()
+
+        # self.manager.filter
+
 
 if __name__ == "__main__":
     unittest.main()

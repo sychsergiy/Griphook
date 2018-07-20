@@ -19,6 +19,8 @@ class ManagerException(Exception):
     pass
 
 
+# todo: remote __del__ method
+# todo:  divide manager to different classes (TeamManager(BaseManager), ProjectManager(BaseManager), FilterManager)
 class Manager(object):
     def __init__(self, session):
         self.session = session
@@ -26,7 +28,7 @@ class Manager(object):
     def __del__(self):
         self.session.close()
 
-    def create_team(self, title):
+    def create_team(self, title) -> None:
         team = self.session.query(Team).filter_by(title=title).first()
         if team:
             raise ManagerException('Team with the same name already exists')
@@ -34,9 +36,8 @@ class Manager(object):
         instance = Team(title=title)
         self.session.add(instance)
         self.session.commit()
-        return instance
 
-    def create_project(self, title):
+    def create_project(self, title) -> None:
         team = self.session.query(Project).filter_by(title=title).first()
         if team:
             raise ManagerException('Project with the same name already exists')
@@ -45,7 +46,7 @@ class Manager(object):
         self.session.add(instance)
         self.session.commit()
 
-    def attach_service_group_to_project(self, service_group_title, project_title):
+    def attach_service_group_to_project(self, service_group_title: str, project_title: str) -> None:
         project = self.session.query(Project).filter_by(title=project_title).first()
         if not project:
             raise ManagerException('Project with title {} doesn\'t exists'.format(project_title))
@@ -58,7 +59,7 @@ class Manager(object):
         self.session.add(service_group)
         self.session.commit()
 
-    def attach_service_group_to_team(self, service_group_title, team_title):
+    def attach_service_group_to_team(self, service_group_title: str, team_title: str) -> None:
         team = self.session.query(Team).filter_by(title=team_title).first()
         if not team:
             raise ManagerException('Team with title {} doesn\'t exists'.format(team_title))
