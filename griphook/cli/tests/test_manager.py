@@ -1,19 +1,20 @@
 import unittest
 
-from griphook.cli.managers.base import Manager, ManagerException
+from griphook.cli.managers.base import TeamManager, ProjectManager
+from griphook.cli.managers.exceptions import TeamManagerException, ProjectManagerException
 from griphook.db.models import Team, Project, ServicesGroup
 
 from griphook.cli.tests.base import BaseWithDBSession
 
 
-class ManagerTestCase(BaseWithDBSession):
+class TeamManagerTestCase(BaseWithDBSession):
     def setUp(self):
-        self.manager = Manager(self.session)
+        self.manager = TeamManager(self.session)
         self.clean_up_db()
 
     def test_create_team_method(self):
         title = 'test'
-        self.manager.create_team(title=title)
+        self.manager.create(title=title)
         teams_quantity = self.session.query(Team).count()
         self.assertEqual(teams_quantity, 1)
 
@@ -22,13 +23,49 @@ class ManagerTestCase(BaseWithDBSession):
         self.session.add(Team(title=title))
         self.session.commit()
 
-        with self.assertRaises(ManagerException):
-            self.manager.create_team(title=title)
+        with self.assertRaises(TeamManagerException):
+            self.manager.create(title=title)
             self.session.commit()
+
+    def test_attach_service_group_to_team_method(self):
+        title = 'test'
+        self.session.add(Team(title=title))
+        self.session.add(ServicesGroup(title=title))
+        self.session.commit()
+
+        self.manager.attach_to_service_group(title, title)
+        service_group = self.session.query(ServicesGroup).filter_by(title=title).first()
+        self.assertEqual(title, service_group.team.title)
+
+    def test_attach_service_group_to_team_method_when_team_doesnt_exists(self):
+        title = 'test'
+        self.session.add(ServicesGroup(title=title))
+        self.session.commit()
+
+        with self.assertRaises(TeamManagerException) as context:
+            self.manager.attach_to_service_group(title, title)
+
+        self.assertEqual(str(context.exception), 'Team with title test doesn\'t exists')
+
+    def test_attach_service_group_to_team_method_when_service_group_doesnt_exists(self):
+        title = 'test'
+        self.session.add(Team(title=title))
+        self.session.commit()
+
+        with self.assertRaises(TeamManagerException) as context:
+            self.manager.attach_to_service_group(title, title)
+
+        self.assertEqual(str(context.exception), 'ServiceGroup with title test doesn\'t exists')
+
+
+class ProjectManagerTestCase(BaseWithDBSession):
+    def setUp(self):
+        self.manager = ProjectManager(self.session)
+        self.clean_up_db()
 
     def test_create_project_method(self):
         title = 'test'
-        self.manager.create_project(title=title)
+        self.manager.create(title=title)
 
         projects_quantity = self.session.query(Project).count()
         self.assertEqual(projects_quantity, 1)
@@ -38,8 +75,8 @@ class ManagerTestCase(BaseWithDBSession):
         self.session.add(Project(title=title))
         self.session.commit()
 
-        with self.assertRaises(ManagerException):
-            self.manager.create_project(title=title)
+        with self.assertRaises(ProjectManagerException):
+            self.manager.create(title=title)
             self.session.commit()
 
     def test_attach_service_group_to_project_method(self):
@@ -48,7 +85,7 @@ class ManagerTestCase(BaseWithDBSession):
         self.session.add(ServicesGroup(title=title))
         self.session.commit()
 
-        self.manager.attach_service_group_to_project(title, title)
+        self.manager.attach_to_service_group(title, title)
         service_group = self.session.query(ServicesGroup).filter_by(title=title).first()
         self.assertEqual(title, service_group.project.title)
 
@@ -57,8 +94,8 @@ class ManagerTestCase(BaseWithDBSession):
         self.session.add(ServicesGroup(title=title))
         self.session.commit()
 
-        with self.assertRaises(ManagerException) as context:
-            self.manager.attach_service_group_to_project(title, title)
+        with self.assertRaises(ProjectManagerException) as context:
+            self.manager.attach_to_service_group(title, title)
 
         self.assertEqual(str(context.exception), 'Project with title test doesn\'t exists')
 
@@ -67,52 +104,10 @@ class ManagerTestCase(BaseWithDBSession):
         self.session.add(Project(title=title))
         self.session.commit()
 
-        with self.assertRaises(ManagerException) as context:
-            self.manager.attach_service_group_to_project(title, title)
+        with self.assertRaises(ProjectManagerException) as context:
+            self.manager.attach_to_service_group(title, title)
 
         self.assertEqual(str(context.exception), 'ServiceGroup with title test doesn\'t exists')
-
-    def test_attach_service_group_to_team_method(self):
-        title = 'test'
-        self.session.add(Team(title=title))
-        self.session.add(ServicesGroup(title=title))
-        self.session.commit()
-
-        self.manager.attach_service_group_to_team(title, title)
-        service_group = self.session.query(ServicesGroup).filter_by(title=title).first()
-        self.assertEqual(title, service_group.team.title)
-
-    def test_attach_service_group_to_team_method_when_team_doesnt_exists(self):
-        title = 'test'
-        self.session.add(ServicesGroup(title=title))
-        self.session.commit()
-
-        with self.assertRaises(ManagerException) as context:
-            self.manager.attach_service_group_to_team(title, title)
-
-        self.assertEqual(str(context.exception), 'Team with title test doesn\'t exists')
-
-    def test_attach_service_group_to_team_method_when_service_group_doesnt_exists(self):
-        title = 'test'
-        self.session.add(Team(title=title))
-        self.session.commit()
-
-        with self.assertRaises(ManagerException) as context:
-            self.manager.attach_service_group_to_team(title, title)
-
-        self.assertEqual(str(context.exception), 'ServiceGroup with title test doesn\'t exists')
-
-    def test_filter_services_group_by_project(self):
-        title = 'test'
-        project = Project(title=title)
-        self.session.add(project)
-
-        self.session.add_all([ServicesGroup(title='test1', project=project),
-                              ServicesGroup(title='test2', project=project),
-                              ServicesGroup(title='test3')])
-        self.session.commit()
-
-        # self.manager.filter
 
 
 if __name__ == "__main__":
