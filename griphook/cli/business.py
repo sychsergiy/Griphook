@@ -1,7 +1,8 @@
 import click
 
 from griphook.cli.utils.db_utils import get_session_class
-from griphook.cli.managers.base import TeamManager, ProjectManager
+from griphook.cli.managers.team import TeamManager
+from griphook.cli.managers.project import ProjectManager
 
 Session = get_session_class()
 

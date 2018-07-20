@@ -1,6 +1,8 @@
 import unittest
 
-from griphook.cli.managers.base import TeamManager, ProjectManager
+from griphook.cli.managers.team import TeamManager
+from griphook.cli.managers.project import ProjectManager
+
 from griphook.cli.managers.exceptions import TeamManagerException, ProjectManagerException
 from griphook.db.models import Team, Project, ServicesGroup
 
@@ -25,7 +27,6 @@ class TeamManagerTestCase(BaseWithDBSession):
 
         with self.assertRaises(TeamManagerException):
             self.manager.create(title=title)
-            self.session.commit()
 
     def test_attach_service_group_to_team_method(self):
         title = 'test'
@@ -77,7 +78,6 @@ class ProjectManagerTestCase(BaseWithDBSession):
 
         with self.assertRaises(ProjectManagerException):
             self.manager.create(title=title)
-            self.session.commit()
 
     def test_attach_service_group_to_project_method(self):
         title = 'test'

@@ -4,15 +4,12 @@ from griphook.db.models import Project, Team, ServicesGroup
 
 
 class ServiceGroupFilter(object):
-    def __init__(self, session, query: Query = None):
+    def __init__(self, session, query: Query = None) -> None:
         self.session = session
         self.query = query if query else self.session.query(ServicesGroup)
 
         self.team_joined = False
         self.project_joined = False
-
-    def __del__(self):
-        self.session.close()
 
     def filter_by_titles(self, *args: str):
         self.query = self.query.filter(ServicesGroup.title.in_(args))

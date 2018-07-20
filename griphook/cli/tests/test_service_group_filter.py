@@ -3,7 +3,7 @@ import unittest
 from griphook.db.models import Team, Project, ServicesGroup
 
 from griphook.cli.tests.base import BaseWithDBSession
-from cli.filters.filter import ServiceGroupFilter
+from griphook.cli.filters.filter import ServiceGroupFilter
 
 
 class ServiceGroupFilterTestCase(BaseWithDBSession):
