@@ -1,6 +1,6 @@
 import unittest
 
-from griphook.cli.manager import get_session_class
+from griphook.cli.managers.base import get_session_class
 from griphook.db.models import ServicesGroup, Project, Team
 
 Session = get_session_class()

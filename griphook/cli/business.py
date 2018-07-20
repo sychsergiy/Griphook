@@ -1,6 +1,7 @@
 import click
 
-from griphook.cli.manager import Manager, get_session_class
+from griphook.cli.utils.db_utils import get_session_class
+from griphook.cli.managers.base import Manager
 
 Session = get_session_class()
 

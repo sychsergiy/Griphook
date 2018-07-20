@@ -1,18 +1,7 @@
 from contextlib import contextmanager, ContextDecorator
 
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-
-from griphook.config.config import Config
+from griphook.cli.utils.db_utils import get_session_class
 from griphook.db.models import Team
-
-
-def get_session_class():
-    config = Config()
-    db_url = config.options["db"]["DATABASE_URL"]
-    engine = create_engine(db_url)
-    return sessionmaker(bind=engine)
-
 
 Session = get_session_class()
 

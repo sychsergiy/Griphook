@@ -1,6 +1,6 @@
 import unittest
 
-from griphook.cli.manager import Manager, ManagerException
+from griphook.cli.managers.base import Manager, ManagerException
 from griphook.db.models import Team, Project, ServicesGroup
 
 from griphook.cli.tests.base import BaseWithDBSession
