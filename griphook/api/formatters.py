@@ -29,6 +29,8 @@ class DataSeries(BaseModel):
 
     @classmethod
     def validate(cls, value):
+        if not value['datapoints']:
+            return None
         try:
             return super().validate(value)
         except ValidationError as e:
@@ -93,3 +95,11 @@ def format_cantal_data(input_data):
                         instance=target.group('instance'),
                         )
         yield metric
+
+
+if __name__ == '__main__':
+    with open('tests/test_input_data.json') as file:
+        test_data = file.read()
+    metrics = format_cantal_data(test_data)
+    for metric in metrics:
+        print(metric)
