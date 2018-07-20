@@ -51,9 +51,6 @@ class TestCantalFormatter:
         for metric in metrics:
             assert isinstance(metric, Metric)
 
-    def test_format_cantal_data_fail(self):  # TODO: check result for fail data
-        pass
-
 
 def get_test_data():
     with open(TEST_DATA_PATH) as data_source:
