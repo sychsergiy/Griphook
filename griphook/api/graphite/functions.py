@@ -24,8 +24,8 @@ class Argument(object):
         """
         Function Argument constructor
 
-        :param arg_type: python type argument will be rendered as
-        :type arg_type:  Target, str, bool, int or float
+        :param type_: python type argument will be rendered as
+        :type type_:  Target, str, bool, int or float
         """
         self.type_ = type_
         self.value = None
