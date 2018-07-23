@@ -24,6 +24,16 @@ class TestArgument(object):
         with pytest.raises(ValueError):
             str(arg)
 
+    def test_integer_zero(self):
+        int_arg = Argument(int)
+        int_arg.value = 0
+        assert str(int_arg) == '0'
+
+    def test_empty_string(self):
+        str_arg = Argument(str)
+        str_arg.value = ''
+        assert str(str_arg) == '""'
+
 
 class TestFunction(object):
     def test_without_args(self):
