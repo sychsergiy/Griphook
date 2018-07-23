@@ -1,12 +1,13 @@
 import json
-import os
 import pathlib
 
-from griphook.api.formatters import (Metric, format_cantal_data,
-                                     validate_input_cantal_data)
+from griphook.api.formatters import (
+    Metric,
+    format_cantal_data,
+    validate_input_cantal_data
+)
 
-BASE_DIR = pathlib.Path(__file__).parents[0]
-TEST_DATA_PATH = os.path.join(BASE_DIR, "test_input_data.json")
+TEST_DATA_PATH = pathlib.Path(__file__).parent / "test_input_data.json"
 
 # test data for check fields metric object
 LAST_METRIC_SERVICES_GROUP = 'galdr--backend'
@@ -53,6 +54,6 @@ class TestCantalFormatter:
 
 
 def get_test_data():
-    with open(TEST_DATA_PATH) as data_source:
-        test_data = data_source.read()
+    data_source = pathlib.Path(TEST_DATA_PATH)
+    test_data = data_source.read_text()
     return test_data

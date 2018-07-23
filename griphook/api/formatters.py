@@ -1,16 +1,26 @@
 import json
 import re
-from typing import List, NamedTuple, Optional, Tuple
+from typing import (
+    List,
+    Tuple,
+    Optional,
+    NamedTuple
+)
 
-from pydantic import BaseModel, PydanticValueError, ValidationError, validator
+from pydantic import (
+    BaseModel,
+    ValidationError,
+    PydanticValueError,
+    validator
+)
 
-CANTAL_PATTERN = re.compile(".*\."
-                            "(?P<cluster>[\w]+)\."
-                            "(?P<server>[\w]+)\.cgroups\.lithos\."
-                            "(?P<services_group>[\w-]+):"
-                            "(?P<service>[\w-]+)\."
-                            "(?P<instance>[\w-]+)\."
-                            "(?P<type>[\w-]+)")
+CANTAL_PATTERN = re.compile(r""".*\.
+                                (?P<cluster>[\w]+)\.    
+                                (?P<server>[\w]+)\.cgroups\.lithos\.
+                                (?P<services_group>[\w-]+):
+                                (?P<service>[\w-]+)\.
+                                (?P<instance>[\w-]+)\.
+                                (?P<type>[\w-]+)""", re.X)
 
 
 class Metric(NamedTuple):
@@ -62,8 +72,7 @@ def validate_input_cantal_data(decoded_input_data):
     """
     validated_data = CantalData(series=decoded_input_data)
     # separate None objects from validated data
-    filtered_data = filter(lambda x: x, validated_data.series)
-    yield from filtered_data
+    yield from filter(lambda x: x, validated_data.series)
 
 
 def format_cantal_data(input_data):
@@ -77,7 +86,7 @@ def format_cantal_data(input_data):
     try:
         decoded_input_data = json.loads(input_data)
     except json.decoder.JSONDecodeError:
-        return
+        return None
 
     valid_data = validate_input_cantal_data(decoded_input_data)
 
@@ -85,12 +94,11 @@ def format_cantal_data(input_data):
         # parse metric target according to pattern
         target = CANTAL_PATTERN.match(data_series_object.target)
 
-        metric = Metric(value=round(data_series_object.datapoints[0][0], 5),
-                        type=target.group('type'),
-                        cluster=target.group('cluster'),
-                        server=target.group('server'),
-                        services_group=target.group('services_group'),
-                        service=target.group('service'),
-                        instance=target.group('instance'),
-                        )
-        yield metric
+        yield Metric(value=round(data_series_object.datapoints[0][0], 5),
+                     type=target.group('type'),
+                     cluster=target.group('cluster'),
+                     server=target.group('server'),
+                     services_group=target.group('services_group'),
+                     service=target.group('service'),
+                     instance=target.group('instance'),
+                     )
