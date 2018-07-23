@@ -52,7 +52,7 @@ class Argument(object):
             # Change 'True' to 'true', since Graphite uses lowercase bool
             return str(value).lower()
         else:
-            return str(value)
+            return repr(value)
 
 
 class Function(Target):
