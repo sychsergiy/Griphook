@@ -28,19 +28,6 @@ class Path(Target):
         # Convert every piece of path to str
         return '.'.join(map(str, self.chunks))
 
-    def __iadd__(self, other: Any) -> 'Path':
-        """
-        Overloaded += operator
-        If you add Path instance this will extend self.chunks
-        with that instance's chunks. Otherwise just append str(instance).
-        """
-        if isinstance(other, Path):
-            self.chunks.extend(other.chunks)
-        else:
-            self.chunks.append(str(other))
-
-        return self
-
     def __add__(self, other: Any) -> 'Path':
         """
         Overloaded plus operator
@@ -78,5 +65,4 @@ class MultipleValues(object):
 
         :returns: string of comma-separated values wrapped in curly braces
         """
-        values = map(str, self.values)
-        return '{{{}}}'.format(','.join(values))
+        return f'{{{",".join(map(str, self.values))}}}'
