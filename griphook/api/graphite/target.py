@@ -34,7 +34,7 @@ class Path(Target):
     def __iadd__(self, other: Any) -> 'Path':
         """
         Overloaded += operator
-        If you are adding Path instance this will extend self.chunks
+        If you add Path instance this will extend self.chunks
         with that instance's chunks. Otherwise just append str(instance).
         """
         if isinstance(other, Path):
@@ -43,6 +43,20 @@ class Path(Target):
             self.chunks.append(str(other))
 
         return self
+
+    def __add__(self, other: Any) -> 'Path':
+        """
+        Overloaded plus operator
+
+        :returns: Path object with copy of chunks from both operands
+        """
+        chunks = self.chunks.copy()
+        if isinstance(other, Path):
+            chunks += other.chunks
+        else:
+            chunks.append(str(other))
+
+        return Path(*chunks)
 
 
 class MultipleValues(object):
