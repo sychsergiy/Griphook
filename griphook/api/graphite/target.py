@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Union
 
 
 class Target(object):
@@ -16,7 +16,7 @@ class DotPath(Target):
             >>> 'foo.bar.spam'
     """
 
-    def __init__(self, *chunks: Any) -> None:
+    def __init__(self, *chunks: str) -> None:
         # Validation of chunks
         self.chunks = list(chunks)
 
@@ -25,10 +25,9 @@ class DotPath(Target):
         Builds string of chunks joined with separator and returns it.
         Any object with __str__ method implemented is suitable
         """
-        # Convert every piece of path to str
-        return '.'.join(map(str, self.chunks))
+        return '.'.join(self.chunks)
 
-    def __add__(self, other: Any) -> 'DotPath':
+    def __add__(self, other: Union[str, 'DotPath']) -> 'DotPath':
         """
         Overloaded plus operator
 
@@ -38,7 +37,7 @@ class DotPath(Target):
         if isinstance(other, DotPath):
             chunks += other.chunks
         else:
-            chunks.append(str(other))
+            chunks.append(other)
 
         return DotPath(*chunks)
 
@@ -65,4 +64,4 @@ class MultipleValues(object):
 
         :returns: string of comma-separated values wrapped in curly braces
         """
-        return f'{{{",".join(map(str, self.values))}}}'
+        return f'{{{",".join(self.values)}}}'
