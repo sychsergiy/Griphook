@@ -9,7 +9,11 @@ from sqlalchemy.orm import sessionmaker
 
 from griphook.config.config import Config
 from griphook.db.models import BatchStory
-from griphook.tasks.utils import BatchStatus, DATA_GRANULATION, datetime_range
+from griphook.tasks.utils import (
+    BatchStatus,
+    DATA_GRANULATION,
+    datetime_range
+)
 from griphook.tasks import tasks
 
 
@@ -18,6 +22,10 @@ engine = create_engine(conf['db']['DATABASE_URL'])
 Session = sessionmaker(bind=engine)
 
 MAX_TASKS = conf['tasks']['MAX_PARSE_TASKS_IN_QUEUE']
+DATA_SOURCE_DATA_EXPIRES = conf['tasks']['DATA_SOURCE_DATA_EXPIRES']
+PARSE_METRIC_EXPIRES = conf['tasks']['PARSE_METRIC_EXPIRES']
+CREATING_BATCHES_INTERVAL = conf['tasks']['CREATING_BATCHES_INTERVAL']
+FILLING_TASK_QUEUE_INTERVAL = conf['tasks']['FILLING_TASK_QUEUE_INTERVAL']
 
 
 def create_batches_until_now():
@@ -29,14 +37,17 @@ def create_batches_until_now():
     session = Session()
 
     now = datetime.now().replace(microsecond=0, second=0, minute=0)
-    last_batch = session.query(BatchStory).order_by(
-        desc(BatchStory.time)
-    ).limit(1).first()
+    last_batch = (
+        session.query(BatchStory)
+        .order_by(desc(BatchStory.time))
+        .limit(1)
+        .first()
+    )
     step = timedelta(seconds=DATA_GRANULATION)
 
     if last_batch is None:
         time_from = now - \
-            timedelta(seconds=conf['tasks']['DATA_SOURCE_DATA_EXPIRES'])
+            timedelta(seconds=DATA_SOURCE_DATA_EXPIRES)
     else:
         time_from = last_batch.time + step
 
@@ -53,10 +64,12 @@ def create_batches_until_now():
 def requeue_expired_batches():
     """Put expired batches to the tasks queue again"""
     session = Session()
-    expired_batches = session.query(BatchStory).filter(
-        BatchStory.put_into_queue < datetime.now() -
-        timedelta(seconds=conf['tasks']['PARSE_METRIC_EXPIRES'])
-    ).all()
+    expired_batches = (
+        session.query(BatchStory)
+        .filter(BatchStory.put_into_queue < datetime.now() -
+                timedelta(seconds=PARSE_METRIC_EXPIRES))
+        .all()
+    )
 
     push_batches_into_queue(expired_batches)
 
@@ -77,15 +90,19 @@ def fill_task_queue():
     """
     session = Session()
 
-    queued_tasks_count = session.query(BatchStory).filter(
-        BatchStory.status == BatchStatus.QUEUED
-    ).count()
+    queued_tasks_count = (
+        session.query(BatchStory)
+        .filter(BatchStory.status == BatchStatus.QUEUED)
+        .count()
+    )
 
     if queued_tasks_count < MAX_TASKS:
         lack_of_tasks = MAX_TASKS - queued_tasks_count
-        batches = session.query(BatchStory).filter(
-            BatchStory.status == BatchStatus.EMPTY
-        ).limit(lack_of_tasks)
+        batches = (
+            session.query(BatchStory)
+            .filter(BatchStory.status == BatchStatus.EMPTY)
+            .limit(lack_of_tasks)
+        )
 
         push_batches_into_queue(batches)
     session.commit()
@@ -101,11 +118,11 @@ def main():
     ).seconds.do(requeue_expired_batches)
 
     schedule.every(
-        conf['tasks']['CREATING_BATCHES_INTERVAL']
+        CREATING_BATCHES_INTERVAL
     ).seconds.do(create_batches_until_now)
 
     schedule.every(
-        conf['tasks']['FILLING_TASK_QUEUE_INTERVAL']
+        FILLING_TASK_QUEUE_INTERVAL
     ).seconds.do(fill_task_queue)
 
     while True:

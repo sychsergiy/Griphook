@@ -11,11 +11,16 @@ from griphook.config.config import Config
 from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
 from griphook.db.models import (
-    Metric, MetricType, Service,
-    ServicesGroup, BatchStory, get_or_create
+    Metric,
+    MetricType,
+    Service,
+    ServicesGroup,
+    BatchStory
 )
 from griphook.tasks.utils import (
-    DATA_GRANULATION, BatchStatus, concurrent_get_or_create
+    DATA_GRANULATION,
+    BatchStatus,
+    concurrent_get_or_create
 )
 
 
