@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Dict, Union, Tuple
+from typing import Dict, Tuple, Union
 
 import requests
 
@@ -54,5 +54,5 @@ class APIParser(GenericParser):
                                              timeout=timeout,
                                              verify=False)
             return response.text
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.RequestException as e:
             raise APIConnectionError(str(e))
