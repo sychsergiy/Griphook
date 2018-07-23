@@ -51,13 +51,22 @@ def create_batches_until_now():
 
 
 def requeue_expired_batches():
-    pass
+    """Put expired batches to the tasks queue again"""
+    session = Session()
+    expired_batches = session.query(BatchStory).filter(
+        BatchStory.put_into_queue < datetime.now() -
+        timedelta(seconds=conf['tasks']['PARSE_METRIC_EXPIRES'])
+    ).all()
+
+    push_batches_into_queue(expired_batches)
 
 
 def push_batches_into_queue(batches: Sequence[BatchStory]):
     """Push batches into queue and set their status to BatchStatus.QUEUED."""
     for batch in batches:
         tasks.parse_metrics.delay(batch_id=batch.id)
+
+        batch.put_into_queue = datetime.now()
         batch.status = BatchStatus.QUEUED
 
 
@@ -87,9 +96,17 @@ def main():
     create_batches_until_now()
     fill_task_queue()
 
-    schedule.every(10).minutes.do(requeue_expired_batches)
-    schedule.every(15).seconds.do(create_batches_until_now)
-    schedule.every(15).seconds.do(fill_task_queue)
+    schedule.every(
+        DATA_GRANULATION
+    ).seconds.do(requeue_expired_batches)
+
+    schedule.every(
+        conf['tasks']['CREATING_BATCHES_INTERVAL']
+    ).seconds.do(create_batches_until_now)
+
+    schedule.every(
+        conf['tasks']['FILLING_TASK_QUEUE_INTERVAL']
+    ).seconds.do(fill_task_queue)
 
     while True:
         schedule.run_pending()
