@@ -53,6 +53,11 @@ class APIParser(GenericParser):
                                              params=params,
                                              timeout=timeout,
                                              verify=False)
+
+            if response.status_code != 200:
+                raise APIConnectionError(f'Connection error, '
+                                         'status [{response.status_code}]')
+
             return response.text
         except requests.exceptions.RequestException as e:
-            raise APIConnectionError(str(e))
+            raise APIConnectionError("Connection error") from e
