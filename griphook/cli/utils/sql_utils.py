@@ -1,7 +1,8 @@
 import datetime
 
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 
 from griphook.db.models import (ServicesGroup, Service, MetricType,
                                 Metric, BatchStory)
@@ -19,18 +20,20 @@ def create_session():
 def make_query(session, process, data_type, since, until=None, group=False):
     if not until:
         until = datetime.datetime.now()
-    query = session.query(Metric)\
+    query = (
+        session.query(Metric)
+        .join(MetricType, Service, ServicesGroup)
         .filter(
         ServicesGroup.title == process,
         BatchStory.time.between(since, until),
         MetricType.title == data_type)
-    results = query.join(MetricType).join(Service).join(ServicesGroup)\
-        .order_by(Service.title)\
-        .order_by(BatchStory.time)\
-        .group_by(Metric.service)
-    # print(str(results))
+        .join(MetricType).join(Service).join(ServicesGroup)
+        .order_by(Service.title)
+        .order_by(BatchStory.time).all()
+    )
 
-    return results
+    return query
+
 
 
 def all_groups(session):

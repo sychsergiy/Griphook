@@ -19,14 +19,11 @@ SERVICES_GROUPS = data_utils.ServicesChoiceIterator(SESSION)
               help="What type of metrics would you like to get?")
 @click.option('--since',  type=CUSTOM_DATE, help="Provide a start date from which to start a query in a form of YEAR-MONTH-YEAR")
 @click.option('--until', type=CUSTOM_DATE, help="Provide an end date of a query in a form of YEAR-MONTH-DATE")
-@click.option('--group', is_flag=True)
 def grip(process, mtype, since, until, group): # Don't forget to rename this
     """Simple CLI  utility to show metrics."""
-    # if since:
+
     metrics = sql_utils.make_query(SESSION, process, mtype, since, until, group)
     click.echo(tabulate(data_utils.metric_data(metrics), headers="keys", tablefmt="fancy_grid"))
-    # else:
-    #     raise click.ClickException("Since option cannot be greater than until option.")
 
 
 if __name__ == '__main__':
