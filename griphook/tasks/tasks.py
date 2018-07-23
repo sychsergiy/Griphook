@@ -11,7 +11,7 @@ from griphook.config.config import Config
 from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
 from griphook.db.models import (
-    Metric, MetricType, Service, 
+    Metric, MetricType, Service,
     ServicesGroup, BatchStory, get_or_create
 )
 from griphook.tasks.utils import (
@@ -36,7 +36,7 @@ class ParsingTask(Task):
         logger.retry('Retry parse metrics')
 
 
-@app.task(base=ParsingTask)
+@app.task(base=ParsingTask, time_limit=conf['tasks']['PARSE_METRIC_EXPIRES'])
 def parse_metrics(batch_id: int):
     """
     Parse data from Cantal API and save it to specified in Session db.
