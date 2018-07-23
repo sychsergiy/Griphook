@@ -1,12 +1,12 @@
 from abc import ABCMeta, abstractmethod
-from typing import Dict, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 import requests
 
 from griphook.api.exceptions import APIConnectionError
 
 # Type alias for timeout
-Timeout = Union[None, float, Tuple[float, float]]
+Timeout = Union[float, Tuple[float, float]]
 
 
 class GenericParser(metaclass=ABCMeta):
@@ -33,8 +33,8 @@ class APIParser(GenericParser):
 
     def request(self,
                 method: str = 'GET',
-                params: Dict[str, str] = {},
-                timeout: Timeout = 20.0) -> str:
+                params: Dict[str, str] = None,
+                timeout: Optional[Timeout] = 20.0) -> str:
         """
         Performs request on base url using session and returns
         text as string.
@@ -50,7 +50,7 @@ class APIParser(GenericParser):
         try:
             response = self._session.request(url=self.base_url,
                                              method=method,
-                                             params=params,
+                                             params=params or {},
                                              timeout=timeout,
                                              verify=False)
 
