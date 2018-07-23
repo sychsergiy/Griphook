@@ -5,13 +5,13 @@ class Target(object):
     pass
 
 
-class Path(Target):
+class DotPath(Target):
     """
     Class for constructing path with custom rules
     Converts every path part to string before joining them
 
     Example:
-            >>> p = Path('foo', 'bar', 'spam')
+            >>> p = DotPath('foo', 'bar', 'spam')
             >>> str(p)
             >>> 'foo.bar.spam'
     """
@@ -28,25 +28,25 @@ class Path(Target):
         # Convert every piece of path to str
         return '.'.join(map(str, self.chunks))
 
-    def __add__(self, other: Any) -> 'Path':
+    def __add__(self, other: Any) -> 'DotPath':
         """
         Overloaded plus operator
 
-        :returns: Path object with copy of chunks from both operands
+        :returns: DotPath object with copy of chunks from both operands
         """
         chunks = self.chunks.copy()
-        if isinstance(other, Path):
+        if isinstance(other, DotPath):
             chunks += other.chunks
         else:
             chunks.append(str(other))
 
-        return Path(*chunks)
+        return DotPath(*chunks)
 
 
 class MultipleValues(object):
     """
     Graphite API allows to get data from multiple sources in one request
-    using curly brace notation, in example:
+    using curly brace notation, for example:
         'my_server.{my_instance1,my_instance2}.cpu'
     This class defines interface for building that value list
 

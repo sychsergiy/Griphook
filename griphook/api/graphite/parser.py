@@ -1,13 +1,13 @@
 from griphook.api.parsers import APIParser
 from griphook.api.graphite.functions import summarize
-from griphook.api.graphite.target import Path, MultipleValues
+from griphook.api.graphite.target import DotPath, MultipleValues
 
 
 class GraphiteAPIParser(APIParser):
     """
     Parser with implementation details for Graphite API
     """
-    __path = Path('cantal', '*', '*', 'cgroups', 'lithos', '*', '*')
+    __path = DotPath('cantal', '*', '*', 'cgroups', 'lithos', '*', '*')
     __metrics = MultipleValues('user_cpu_percent',
                                'system_cpu_percent',
                                'vsize')
