@@ -7,6 +7,10 @@ class GraphiteAPIParser(APIParser):
     """
     Parser with implementation details for Graphite API
     """
+    __path = Path('cantal', '*', '*', 'cgroups', 'lithos', '*', '*')
+    __metrics = MultipleValues('user_cpu_percent',
+                               'system_cpu_percent',
+                               'vsize')
 
     def fetch(self, *, time_from: int, time_until: int) -> str:
         """
@@ -21,7 +25,7 @@ class GraphiteAPIParser(APIParser):
         """
 
         # Parameters for GET request
-        target = self._construct_target()
+        target = self.__construct_target()
 
         params = {
             'format': 'json',
@@ -33,14 +37,10 @@ class GraphiteAPIParser(APIParser):
         # Perform GET request via session and return plain data
         return self.request(params=params)
 
-    @staticmethod
-    def _construct_target():
-        metrics = MultipleValues('user_cpu_percent',
-                                 'system_cpu_percent',
-                                 'vsize')
+    def __construct_target(self):
+
         # path to all cpu and memory metrics
-        path = Path('cantal', '*', '*', 'cgroups', 'lithos', '*', '*',
-                    metrics)
+        path = self.__path + self.__metrics
 
         target = summarize(path, "1hour", "max", True)
         return str(target)
