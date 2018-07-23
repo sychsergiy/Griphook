@@ -12,7 +12,7 @@ def metric_data(metrics):
             ('Process', metric.service.services_group.title),
             ('Service', metric.service.title),
             ('Instance', metric.service.instance),
-            ('Date/Time', metric.time_from),
+            ('Date/Time', metric.batch.time),
             ('Metric Type', metric.type.title),
             ('Value', metric.value),
         ])
@@ -31,15 +31,11 @@ class CustomDateParamType(click.ParamType):
 
 class ServicesChoiceIterator(object):
     def __init__(self, session):
-        self.session = session
         self.services = []
+        groups = all_groups(session)
+        for group in groups:
+            self.services.append(group.title)
 
     def __iter__(self):
         # Get list of services and assign it to self.services
-        #  fill it
-        for group in all_groups(self.session):
-            print(type(group))
-            self.services.append(group)
-
         return iter(self.services)
-
