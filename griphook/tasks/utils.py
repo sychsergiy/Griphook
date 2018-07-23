@@ -2,8 +2,6 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.exc import IntegrityError
 
-from griphook.db.models import get_or_create
-
 
 # Changing this variable if there is some data in database
 # may occur data corruption
@@ -23,13 +21,17 @@ def datetime_range(start: datetime, end: datetime, step: timedelta):
 
 
 def concurrent_get_or_create(session, model, defaults=None, **kwargs):
-    while True:
+    instance = session.query(model).filter_by(**kwargs).first()
+    if instance:
+        return instance, False
+    else:
         try:
             session.begin_nested()
-            obj, created = get_or_create(session, model, defaults, **kwargs)
-            session.flush()
-        except IntegrityError as e:
-            session.rollback()
-        else:
+            kwargs.update(defaults or {})
+            instance = model(**kwargs)
+            session.add(instance)
             session.commit()
-            return obj, created
+        except IntegrityError:
+            session.rollback()
+            return session.query(model).filter_by(**kwargs).first(), False
+        return instance, True
