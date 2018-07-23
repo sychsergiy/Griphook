@@ -1,6 +1,6 @@
-from typing import Type, Union, Optional, Any
+from typing import Any, Optional, Type, Union
 
-from griphook.api.graphite.target import Path, Target
+from griphook.api.graphite.target import Target
 
 # Type alias for base type of types
 BuiltInOrTarget = Union[Type[Target], Type[str],
@@ -18,7 +18,7 @@ class Argument(object):
     be rendered as result of __str__ call
     """
 
-    def __init__(self, arg_type: BuiltInOrTarget, *,
+    def __init__(self, type_: BuiltInOrTarget, *,
                  name: Optional[str] = None,
                  default: Optional[Any] = None) -> None:
         """
@@ -27,7 +27,7 @@ class Argument(object):
         :param arg_type: python type argument will be rendered as
         :type arg_type:  Target, str, bool, int or float
         """
-        self.type = arg_type
+        self.type_ = type_
         self.value = None
         self.default = default
         self.name = name
@@ -45,10 +45,10 @@ class Argument(object):
             raise ValueError("The value should be set!")
 
         # Render according to type
-        if self.type is str:
+        if self.type_ is str:
             # Wrap string argument value in double quotes
-            return '"{}"'.format(value)
-        if self.type is bool:
+            return f'"{value}"'
+        if self.type_ is bool:
             # Change 'True' to 'true', since Graphite uses lowercase bool
             return str(value).lower()
         else:
@@ -87,13 +87,13 @@ class Function(Target):
         if not isinstance(name, str):
             raise TypeError('Function name should be str instance')
         self.name = name
-        self._args = [self._wrap_argument(t) for t in arg_types]
+        self._args = [self._type_to_argument(t) for t in arg_types]
 
     @staticmethod
-    def _wrap_argument(arg_type: Union[BuiltInOrTarget, Argument]):
-        if isinstance(arg_type, Argument):
-            return arg_type
-        return Argument(arg_type)
+    def _type_to_argument(type_: Union[BuiltInOrTarget, Argument]):
+        if isinstance(type_, Argument):
+            return type_
+        return Argument(type_)
 
     def __call__(self, *args) -> str:
         """
@@ -108,10 +108,9 @@ class Function(Target):
             arg.value = value
 
         # Join all arguments with period
-        arguments = Path(*self._args, sep=',')
+        arguments = ','.join(map(str, self._args))
 
-        return '{func_name}({args})'.format(func_name=self.name,
-                                            args=arguments)
+        return f'{self.name}({arguments})'
 
 
 # Built-in functions
