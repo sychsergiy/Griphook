@@ -1,6 +1,6 @@
 import pytest
 from griphook.api.graphite.functions import Argument, Function
-from griphook.api.graphite.target import Path, Target
+from griphook.api.graphite.target import DotPath, Target
 
 
 class TestArgument(object):
@@ -54,5 +54,5 @@ def test_less_arguments_than_specified():
 # Integration tests
 def test_path_in_function():
     f = Function('summarize', Target, int)
-    p = Path('foo', 'bar', 'spam')
+    p = DotPath('foo', 'bar', 'spam')
     assert f(p, 1) == 'summarize(foo.bar.spam,1)'

@@ -17,7 +17,6 @@ class DotPath(Target):
     """
 
     def __init__(self, *chunks: str) -> None:
-        # Validation of chunks
         self.chunks = list(chunks)
 
     def __str__(self) -> str:
@@ -25,7 +24,7 @@ class DotPath(Target):
         Builds string of chunks joined with separator and returns it.
         Any object with __str__ method implemented is suitable
         """
-        return '.'.join(self.chunks)
+        return '.'.join(map(str, self.chunks))
 
     def __add__(self, other: Union[str, 'DotPath']) -> 'DotPath':
         """
@@ -56,6 +55,8 @@ class MultipleValues(object):
     """
 
     def __init__(self, *values: str) -> None:
+        if not values:
+            raise ValueError("values cannot be empty")
         self.values = values
 
     def __str__(self) -> str:

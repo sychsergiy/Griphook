@@ -7,11 +7,6 @@ def test_multiple_value_works():
     assert str(values) == '{foo,bar,spam}'
 
 
-def test_non_strings():
-    values = MultipleValues(1, 2, 3, True, 1.54)
-    assert str(values) == '{1,2,3,True,1.54}'
-
-
 def test_empty_values():
     with pytest.raises(ValueError):
         values = MultipleValues()
