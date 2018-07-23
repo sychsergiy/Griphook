@@ -16,8 +16,7 @@ class Path(Target):
             >>> 'foo.bar.spam'
     """
 
-    def __init__(self, *chunks: Any, sep: str = '.') -> None:
-        self.sep = sep
+    def __init__(self, *chunks: Any) -> None:
         # Validation of chunks
         self.chunks = list(chunks)
 
@@ -26,10 +25,8 @@ class Path(Target):
         Builds string of chunks joined with separator and returns it.
         Any object with __str__ method implemented is suitable
         """
-        sep = self.sep
         # Convert every piece of path to str
-        chunks = map(str, self.chunks)
-        return sep.join(chunks)
+        return '.'.join(map(str, self.chunks))
 
     def __iadd__(self, other: Any) -> 'Path':
         """
@@ -73,8 +70,6 @@ class MultipleValues(object):
     """
 
     def __init__(self, *values: str) -> None:
-        if len(values) < 2:
-            raise ValueError("There should be two or more multiple values")
         self.values = values
 
     def __str__(self) -> str:
