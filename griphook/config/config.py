@@ -10,32 +10,34 @@ from griphook.config.template import template as default_template
 BASE_DIR = pathlib.Path(__file__).parents[2]
 
 DEFAULT_CONFIG_FILE_NAME = 'config.yml'
-PREFIX = "GH_"
-
-CONFIG_PATH = os.path.join(BASE_DIR, os.environ.get(PREFIX + "DEFAULT_CONFIG_FILE_NAME", DEFAULT_CONFIG_FILE_NAME))
+DEFAULT_PREFIX = "GH_"
 
 
 class Config(object):
-    def __init__(self, template: trafaret.base.Dict = default_template, prefix=PREFIX) -> None:
+    def __init__(self, template: trafaret.base.Dict = default_template,
+                 prefix=DEFAULT_PREFIX) -> None:
         self.prefix = prefix
+
+        config_file_name = os.environ.get(self.prefix + "CONFIG_FILE_NAME", DEFAULT_CONFIG_FILE_NAME)
+        self.config_file_path = os.path.join(BASE_DIR, config_file_name)
+
         self.template = template
         self._options = self.read_options_from_config_file()
         self.override_options_from_environ(self._options)
         self.validate_options(self._options)
 
-    @staticmethod
-    def read_options_from_config_file() -> dict:
+    def read_options_from_config_file(self) -> dict:
         """
         Read options from YML file
         exit with code 1 if configuration file doesn't exist
         :return: parsed dict
         """
         try:
-            with open(CONFIG_PATH) as stream:
+            with open(self.config_file_path) as stream:
                 return yaml.safe_load(stream)
         except FileNotFoundError:
             error_message = "No such file {}. Provide GH_DEFAULT_CONFIG_FILE_NAME env variable or create file".format(
-                CONFIG_PATH)
+                self.config_file_path)
             sys.stderr.write(error_message)
             sys.exit(1)
 
