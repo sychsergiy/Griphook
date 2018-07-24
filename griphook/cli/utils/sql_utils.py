@@ -17,16 +17,16 @@ def create_session():
     return Session()
 
 
-def make_query(session, process, data_type, since, until=None, group=False):
+def make_query(session, process, data_type, since, until=None):
     if not until:
         until = datetime.datetime.now()
     query = (
         session.query(Metric)
         .join(MetricType, Service, ServicesGroup)
         .filter(
-        ServicesGroup.title == process,
-        BatchStory.time.between(since, until),
-        MetricType.title == data_type)
+            ServicesGroup.title == process,
+            BatchStory.time.between(since, until),
+            MetricType.title == data_type)
         .join(MetricType).join(Service).join(ServicesGroup)
         .order_by(Service.title)
         .order_by(BatchStory.time).all()
@@ -35,11 +35,5 @@ def make_query(session, process, data_type, since, until=None, group=False):
     return query
 
 
-
 def all_groups(session):
     return session.query(ServicesGroup).distinct(ServicesGroup.title)
-
-
-
-
-

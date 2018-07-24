@@ -16,16 +16,6 @@ def metric_data(metrics):
             'Value': metric.value
         }
 
-        # yield OrderedDict([
-        #     ('Server', metric.service.server),
-        #     ('Process', metric.service.services_group.title),
-        #     ('Service', metric.service.title),
-        #     ('Instance', metric.service.instance),
-        #     ('Date/Time', metric.batch.time),
-        #     ('Metric Type', metric.type.title),
-        #     ('Value', metric.value),
-        # ])
-
 
 class CustomDateParamType(click.ParamType):
     name = "CustomDate"
@@ -42,5 +32,4 @@ class ServicesChoiceIterator(object):
         self.services = [g.title for g in all_groups(session)]
 
     def __iter__(self):
-        # Get list of services and assign it to self.services
         return iter(self.services)

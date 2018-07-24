@@ -24,10 +24,10 @@ SERVICES_GROUPS = data_utils.ServicesChoiceIterator(SESSION)
 @click.option('--until',
               type=CUSTOM_DATE,
               help="Provide an end date of a query in a form of YEAR-MONTH-DATE")
-def grip(process, mtype, since, until, group): # Don't forget to rename this
+def grip(process, mtype, since, until):
     """Simple CLI  utility to show metrics."""
 
-    metrics = sql_utils.make_query(SESSION, process, mtype, since, until, group)
+    metrics = sql_utils.make_query(SESSION, process, mtype, since, until)
     click.echo(tabulate(data_utils.metric_data(metrics), headers="keys", tablefmt="fancy_grid"))
 
 
