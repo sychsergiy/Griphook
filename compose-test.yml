@@ -1,0 +1,29 @@
+version: "2.1"
+services:
+    pytest:
+        build: .
+        depends_on:
+            postgres:
+                condition: service_healthy
+            rabbit:
+                condition: service_healthy
+        environment:
+            - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
+            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
+        healthcheck:
+                test: "exit 0"
+        command: bash -c "sleep 2 && alembic upgrade head && pytest"
+
+    rabbit:
+        image: rabbitmq
+        healthcheck:
+            test: "exit 0"
+
+    postgres:
+        image: postgres
+        environment:
+            - POSTGRES_PASSWORD=password
+            - POSTGRES_USER=user
+            - POSTGRES_DB=database_name
+        healthcheck:
+            test: "exit 0"
