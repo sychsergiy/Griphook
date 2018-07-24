@@ -22,7 +22,6 @@ def query_metrics(session, process, data_type, since, until=None):
         until = datetime.datetime.now()
     query = (
         session.query(Metric)
-        .join(MetricType, Service, ServicesGroup)
         .filter(
             ServicesGroup.title == process,
             BatchStory.time.between(since, until),
