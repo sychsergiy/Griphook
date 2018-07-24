@@ -17,6 +17,7 @@ class Argument(object):
     any other type should implement __str__ method and will
     be rendered as result of __str__ call
     """
+    allowed_types = (int, bool, float, str, Target,)
 
     def __init__(self, type_: BuiltInOrTarget, *,
                  name: Optional[str] = None,
@@ -28,9 +29,36 @@ class Argument(object):
         :type type_:  Target, str, bool, int or float
         """
         self.type_ = type_
-        self.value = None
-        self.default = default
+        # Set initial argument value to None, as it is just declared
+        self._value = None
+        # If default is set - set value to default
+        if default is not None:
+            self.value = default
         self.name = name
+
+    @property
+    def type_(self):
+        return self._type
+
+    @type_.setter
+    def type_(self, type_):
+        # Check if type is allowed
+        if type_ not in self.allowed_types:
+            allowed_typenames = tuple(x.__name__ for x in self.allowed_types)
+            raise ValueError(f"Not supported type of argument, "
+                             f"argument type should be one of these types:\n"
+                             f"{allowed_typenames}")
+        self._type = type_
+
+    @property
+    def value(self):
+        if self._value is None:
+            raise ValueError("The value should be set!")
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
 
     def __str__(self):
         """
@@ -39,20 +67,15 @@ class Argument(object):
         :returns: str
         :raises:  ValueError if self.value is not set
         """
-        # Set value to default if not set
-        value = self.value if self.value is not None else self.default
-        if value is None:
-            raise ValueError("The value should be set!")
-
         # Render according to type
         if self.type_ is str:
             # Wrap string argument value in double quotes
-            return f'"{value}"'
+            return f'"{self.value}"'
         if self.type_ is bool:
             # Change 'True' to 'true', since Graphite uses lowercase bool
-            return str(value).lower()
+            return str(self.value).lower()
         else:
-            return str(value)
+            return str(self.value)
 
 
 class Function(Target):
