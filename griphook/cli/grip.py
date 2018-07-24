@@ -27,7 +27,7 @@ SERVICES_GROUPS = data_utils.ServicesChoiceIterator(SESSION)
 def grip(process, mtype, since, until):
     """Simple CLI  utility to show metrics."""
 
-    metrics = sql_utils.make_query(SESSION, process, mtype, since, until)
+    metrics = sql_utils.query_metrics(SESSION, process, mtype, since, until)
     click.echo(tabulate(data_utils.metric_data(metrics), headers="keys", tablefmt="fancy_grid"))
 
 

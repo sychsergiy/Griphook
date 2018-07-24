@@ -17,7 +17,7 @@ def create_session():
     return Session()
 
 
-def make_query(session, process, data_type, since, until=None):
+def query_metrics(session, process, data_type, since, until=None):
     if not until:
         until = datetime.datetime.now()
     query = (
