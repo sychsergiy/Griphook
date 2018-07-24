@@ -11,4 +11,5 @@ RUN apt-get update && \
 RUN mkdir -p /etc/grip
 COPY . /etc/grip
 WORKDIR /etc/grip
-RUN pip install -e .
+ENV PYTHONPATH=/etc/grip
+RUN pip install -r requirements.txt
