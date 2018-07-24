@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from griphook.db.models import (ServicesGroup, Service, MetricType,
                                 Metric, BatchStory)
 from griphook.config.config import Config
-from griphook.db.models import Metric, MetricType, Service, ServicesGroup
 
 
 def create_session():
@@ -23,7 +22,6 @@ def query_metrics(session, process, data_type, since, until=None):
         until = datetime.datetime.now()
     query = (
         session.query(Metric)
-        .join(MetricType, Service, ServicesGroup)
         .filter(
             ServicesGroup.title == process,
             BatchStory.time.between(since, until),
