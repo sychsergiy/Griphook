@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from griphook.db.models import (ServicesGroup, Service, MetricType,
                                 Metric, BatchStory)
 from griphook.config.config import Config
+from griphook.db.models import Metric, MetricType, Service, ServicesGroup
 
 
 def create_session():
