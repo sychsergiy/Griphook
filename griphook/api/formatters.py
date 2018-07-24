@@ -1,55 +1,104 @@
 import json
-from re import compile
-from typing import NamedTuple, Union
+import re
+from typing import (
+    List,
+    Tuple,
+    Optional,
+    NamedTuple
+)
+
+from pydantic import (
+    BaseModel,
+    ValidationError,
+    PydanticValueError,
+    validator
+)
+
+CANTAL_PATTERN = re.compile(r""".*\.
+                                (?P<cluster>[\w]+)\.    
+                                (?P<server>[\w]+)\.cgroups\.lithos\.
+                                (?P<services_group>[\w-]+):
+                                (?P<service>[\w-]+)\.
+                                (?P<instance>[\w-]+)\.
+                                (?P<type>[\w-]+)""", re.X)
 
 
 class Metric(NamedTuple):
     value: float
     type: str
+    cluster: str
     server: str
     services_group: str
     service: str
     instance: str
 
 
-def format_cantal_data(data: str) -> Union[list, None]:
-    """
-    Parses metric target, takes data point value and creates metric object
-    with parameters.
+class DataSeries(BaseModel):
+    target: str
+    datapoints: List[Tuple[float, int]]
 
-    :param data: row data from Grahite API(cantal metric system)
-    :return: list of metric objects
-    """
+    @classmethod
+    def validate(cls, value):
+        if not value['datapoints']:
+            return None
+        try:
+            return super().validate(value)
+        except ValidationError:
+            return None
 
+    @validator("target")
+    def target_validate(cls, value):
+        if "cantal" not in value or "lithos" not in value:
+            raise WrongTargetStructure(wrong_target=value)
+        return value
+
+
+class CantalData(BaseModel):
+    series: List[Optional[DataSeries]]
+
+
+class WrongTargetStructure(PydanticValueError):
+    code = "wrong_target_structure"
+    msg_template = "wrong target structure for cantal system, " \
+                   "got target:'{wrong_target}'"
+
+
+def validate_input_cantal_data(decoded_input_data):
+    """
+    Validates input data according to defined hierarchical data structures.
+
+    :param: decoded data
+    :return: valid DataSeries objects
+    """
+    validated_data = CantalData(series=decoded_input_data)
+    # separate None objects from validated data
+    yield from filter(lambda x: x, validated_data.series)
+
+
+def format_cantal_data(input_data):
+    """
+    Parses metric target, creates metric object with metric value and with
+    information data about service topology.
+
+    :param: row data from Grahite API(cantal metric system)
+    :return: metric objects
+    """
     try:
-        series_data = json.loads(data)
+        decoded_input_data = json.loads(input_data)
     except json.decoder.JSONDecodeError:
         return None
 
-    formatted_metrics = []
-    pattern = compile(".*\."
-                      "(?P<server>[\w]+)\.cgroups\.lithos\."
-                      "(?P<services_group>[\w-]+):"
-                      "(?P<service>[\w-]+)\."
-                      "(?P<instance>[\w-]+)\."
-                      "(?P<type>[\w-]+)"
-                      )
+    valid_data = validate_input_cantal_data(decoded_input_data)
 
-    for serie in series_data:
-        target = pattern.match(serie['target'])
+    for data_series_object in valid_data:
+        # parse metric target according to pattern
+        target = CANTAL_PATTERN.match(data_series_object.target)
 
-        try:
-            datapoint_value = serie['datapoints'][0][0]
-        except IndexError:
-            continue
-
-        if datapoint_value is not None:
-            metric = Metric(value=round(datapoint_value, 5),
-                            type=target.group('type'),
-                            server=target.group('server'),
-                            services_group=target.group('services_group'),
-                            service=target.group('service'),
-                            instance=target.group('instance'),
-                            )
-            formatted_metrics.append(metric)
-    return formatted_metrics
+        yield Metric(value=round(data_series_object.datapoints[0][0], 5),
+                     type=target.group('type'),
+                     cluster=target.group('cluster'),
+                     server=target.group('server'),
+                     services_group=target.group('services_group'),
+                     service=target.group('service'),
+                     instance=target.group('instance'),
+                     )

@@ -9,10 +9,18 @@ from griphook.config.config import BASE_DIR, Config
 
 
 class TestConfig(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        os.environ['TEST_GH_CONFIG_FILE_NAME'] = "test_config.yml"
+        cls.CONFIG_FILE_PATH = os.path.join(BASE_DIR, "test_config.yml")
+
+    @classmethod
+    def tearDownClass(cls):
+        os.environ.pop("TEST_GH_CONFIG_FILE_NAME", None)
+        os.remove(cls.CONFIG_FILE_PATH)
+
     def setUp(self):
         self.PREFIX = "TEST_GH_"
-        self.CONFIG_FILE_PATH = os.path.join(BASE_DIR, "config.yml")
-
         self.test_template = trafaret.Dict({
             "api": trafaret.String(),
             "cli": trafaret.String(),
@@ -32,7 +40,6 @@ class TestConfig(unittest.TestCase):
                 "EXPIRES_TIME": 1,
             },
         }
-
         self.current_config_data = {
             "api": {
                 "GRAPHITE_URL": "url_here"
@@ -41,16 +48,14 @@ class TestConfig(unittest.TestCase):
                 "DATABASE_URL": "url here"
             },
             "tasks": {
-                "DATA_SOURCE_DATA_EXPIRES": 1,
-                "CELERY_BROKER_URL": "test",
-                "TRYING_SETUP_PARSER_INTERVAL": 1,
-                "PARSE_METRIC_EXPIRES": 1,
-                "DATA_GRANULATION": 1,
+                'CELERY_BROKER_URL': "ampq://user:password@localhost/root",
+                'DATA_SOURCE_DATA_EXPIRES': 7776000,
+                'MAX_PARSE_TASKS_IN_QUEUE': 24,
+                'PARSE_METRIC_EXPIRES': 900,
+                'FILLING_TASK_QUEUE_INTERVAL': 15,
+                'CREATING_BATCHES_INTERVAL': 3600,
             },
         }
-
-    def tearDown(self):
-        os.remove(self.CONFIG_FILE_PATH)
 
     def write_yml_config(self, data):
         with open(self.CONFIG_FILE_PATH, "w") as file:

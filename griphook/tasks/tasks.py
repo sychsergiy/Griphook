@@ -1,19 +1,26 @@
-import os
 from datetime import datetime
 
 from celery import Celery, Task
 from celery.decorators import periodic_task
 from celery.utils.log import get_task_logger
 
-from sqlalchemy import create_engine, desc, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from griphook.config.config import Config
 from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
 from griphook.db.models import (
-    Metric, MetricType, Service, 
-    ServicesGroup, TaskFlag, get_or_create
+    Metric,
+    MetricType,
+    Service,
+    ServicesGroup,
+    BatchStory
+)
+from griphook.tasks.utils import (
+    DATA_GRANULATION,
+    BatchStatus,
+    concurrent_get_or_create
 )
 
 
@@ -25,31 +32,6 @@ engine = create_engine(conf['db']['DATABASE_URL'])
 Session = sessionmaker(bind=engine)
 
 
-@periodic_task(
-    run_every=conf['tasks']['TRYING_SETUP_PARSER_INTERVAL'],
-    name='start_parser',
-    ignore_result=True
-)
-def start_parser():
-    """
-    Celery beat task.
-    Start parser according to schedule
-    """
-    session = Session()
-    last_parsing_time = session.query(TaskFlag).get(1)
-    if last_parsing_time is None:
-        logger.info('Watchdog: No last parsing time in db. Starting parsing...')
-        parse_metrics.delay()
-    else:
-        delta = datetime.now() - last_parsing_time.datetime
-        logger.info(
-            'Watchdog: Delta between last parsing and now is %d' % delta.total_seconds()
-        )
-        if delta.total_seconds() > conf['tasks']['PARSE_METRIC_EXPIRES']:
-            logger.info('Watchdog: Start parsing...')
-            parse_metrics.delay()
-
-
 class ParsingTask(Task):
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
@@ -59,81 +41,81 @@ class ParsingTask(Task):
         logger.retry('Retry parse metrics')
 
 
-@app.task(base=ParsingTask)
-def parse_metrics():
+@app.task(base=ParsingTask, time_limit=conf['tasks']['PARSE_METRIC_EXPIRES'])
+def parse_metrics(batch_id: int):
     """
     Parse data from Cantal API and save it to specified in Session db.
     This task should be executed only by one worker at the same time.
     :TODO
         Change task to parse data from different API's
     """
-    refresh_task_flag()
-
     session = Session()
     cantal_source = DataSource(
         parser=parsers.GraphiteAPIParser(base_url=conf['api']['GRAPHITE_URL']),
         data_formatter=formatters.format_cantal_data,
     )
 
-    # Get row with last timestamp in db and calculate time_from and time_until
-    row = session.execute(
-        select([Metric.time_from]).order_by(desc(Metric.time_from)).limit(1)
-    ).first()
-    if row is not None:
-        time_from = int(row.time_from.timestamp()) + conf['tasks']['DATA_GRANULATION']
+    try:
+        batch = session.query(BatchStory).with_for_update().get(batch_id)
+
+        if batch.status != BatchStatus.STORED:
+            time_from = int(batch.time.timestamp())
+            time_until = time_from + DATA_GRANULATION - 1
+
+            if time_until <= datetime.now().timestamp():
+                logger.info(
+                    'Getting data from api (time_from={}; time_until={})'
+                    .format(time_from, time_until)
+                )
+                data = cantal_source.read(time_from=time_from,
+                                          time_until=time_until)
+                if data is not None:
+                    save_metric_to_db(
+                        session=session,
+                        metrics=data,
+                        batch=batch
+                    )
+                    logger.info('Saved {} metrics'.format(len(data)))
+                else:
+                    logger.info('Got no data from api')
+    except Exception as e:
+        session.rollback()
+        raise e
     else:
-        rounded_now = datetime.now().replace(microsecond=0,second=0,minute=0)
-        time_from = int(rounded_now.timestamp()) - conf['tasks']['DATA_SOURCE_DATA_EXPIRES']
-    time_until = time_from + conf['tasks']['DATA_GRANULATION']
-
-    if time_until <= datetime.now().timestamp():
-        logger.info('Getting data from api (time_from={}; time_until={})'.format(time_from, time_until))
-
-        data = cantal_source.read(time_from=time_from, time_until=time_until - 1)
-        if data:
-            save_metric_to_db(metrics=data, time_from=datetime.fromtimestamp(time_from))
-            logger.info('Saved {} metrics'.format(len(data)))
-        else:
-            logger.info('Got no data from api')
-
-        parse_metrics.delay()
+        session.commit()
 
 
-def refresh_task_flag():
+def save_metric_to_db(session: Session, metrics: formatters.Metric,
+                      batch: BatchStory):
     """
-    Set TaskFlag.datetime field to datetime.now(), this function should be
-    called at the beginning of every parsing task.
+    Take parsed metric, save it to database and change batch status to STORED
     """
-    session = Session()
-    flag, _ = get_or_create(session=session, model=TaskFlag, id=1)
-    flag.datetime = datetime.now()
-    session.commit()
-
-
-def save_metric_to_db(metrics: formatters.Metric, time_from: datetime):
-    session = Session()
     for metric_tuple in metrics:
-        type_, _ = get_or_create(session=session, 
-                              model=MetricType, 
-                              title=metric_tuple.type)
-        services_group, _ = get_or_create(session=session, 
-                                       model=ServicesGroup, 
-                                       title=metric_tuple.services_group)
-        service, _ = get_or_create(session=session,
-                                model=Service,
-                                title=metric_tuple.service, 
-                                services_group=services_group, 
-                                instance=metric_tuple.instance, 
-                                server=metric_tuple.server)
+        type_, _ = concurrent_get_or_create(
+            session=session,
+            model=MetricType,
+            title=metric_tuple.type
+        )
+
+        services_group, _ = concurrent_get_or_create(
+            session=session,
+            model=ServicesGroup,
+            title=metric_tuple.services_group
+        )
+
+        service, _ = concurrent_get_or_create(
+            session=session,
+            model=Service,
+            title=metric_tuple.service,
+            services_group=services_group,
+            instance=metric_tuple.instance,
+            server=metric_tuple.server
+        )
+
         session.add(Metric(
+            batch=batch,
             value=metric_tuple.value,
-            time_from=time_from,
             type=type_,
-            service = service
+            service=service
         ))
-    session.commit()
-        
-
-        
-        
-
+    batch.status = BatchStatus.STORED

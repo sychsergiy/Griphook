@@ -2,7 +2,7 @@
 
 Create *.yml file and provide CONFIG_PATH env variable with relative path
 ```
-export GH_DEFAULT_CONFIG_FILE_NAME=/griphook/*/*.yml
+export GH_CONFIG_FILE_NAME=griphook/*/*.yml
 ```
 Or use default value ```config.yml``` (just a root of our project)
 
@@ -50,5 +50,5 @@ tasks:
 ### Also you can overwrite options using environment variables with GH_ prefix
 
 ```
-export GH_CELERY_BROKER_URL=value
+export GH_YOUR_VARIABLE=value
 ```

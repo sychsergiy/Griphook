@@ -3,7 +3,7 @@ from typing import List
 import click
 from tabulate import tabulate
 
-from griphook.cli.utils import sql_utils, data_utils
+from griphook.cli.utils import data_utils, sql_utils
 
 CUSTOM_DATE = data_utils.CustomDateParamType()
 SESSION = sql_utils.create_session()
