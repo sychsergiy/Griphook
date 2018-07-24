@@ -40,7 +40,6 @@ class TestConfig(unittest.TestCase):
                 "EXPIRES_TIME": 1,
             },
         }
-
         self.current_config_data = {
             "api": {
                 "GRAPHITE_URL": "url_here"
@@ -49,11 +48,12 @@ class TestConfig(unittest.TestCase):
                 "DATABASE_URL": "url here"
             },
             "tasks": {
-                "DATA_SOURCE_DATA_EXPIRES": 1,
-                "CELERY_BROKER_URL": "test",
-                "TRYING_SETUP_PARSER_INTERVAL": 1,
-                "PARSE_METRIC_EXPIRES": 1,
-                "DATA_GRANULATION": 1,
+                'CELERY_BROKER_URL': "ampq://user:password@localhost/root",
+                'DATA_SOURCE_DATA_EXPIRES': 7776000,
+                'MAX_PARSE_TASKS_IN_QUEUE': 24,
+                'PARSE_METRIC_EXPIRES': 900,
+                'FILLING_TASK_QUEUE_INTERVAL': 15,
+                'CREATING_BATCHES_INTERVAL': 3600,
             },
         }
 
