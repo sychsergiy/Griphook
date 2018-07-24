@@ -1,7 +1,7 @@
 import click
 from datetime import datetime
 
-from griphook.cli.utils.sql_utils import all_groups
+from griphook.cli.utils.sql_utils import get_all_groups
 
 
 def metric_data(metrics):
@@ -29,7 +29,7 @@ class CustomDateParamType(click.ParamType):
 
 class ServicesChoiceIterator(object):
     def __init__(self, session):
-        self.services = [g.title for g in all_groups(session)]
+        self.services = [g.title for g in get_all_groups(session)]
 
     def __iter__(self):
         return iter(self.services)

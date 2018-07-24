@@ -35,5 +35,5 @@ def query_metrics(session, process, data_type, since, until=None):
     return query
 
 
-def all_groups(session):
-    return session.query(ServicesGroup).distinct(ServicesGroup.title)
+def get_all_groups(session):
+    return session.query(ServicesGroup).all()
