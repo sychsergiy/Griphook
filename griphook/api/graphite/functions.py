@@ -44,6 +44,7 @@ class Argument(object):
     def type_(self, type_):
         # Check if type is allowed
         if type_ not in self.allowed_types:
+            # If not allowed - show types which are allowed in error
             allowed_typenames = tuple(x.__name__ for x in self.allowed_types)
             raise ValueError(f"Not supported type of argument, "
                              f"argument type should be one of these types:\n"
