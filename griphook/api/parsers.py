@@ -1,13 +1,29 @@
-import abc
+from abc import ABCMeta, abstractmethod
+from typing import Dict, Optional, Tuple, Union
 
 import requests
 
+from griphook.api.exceptions import APIConnectionError
 
-class APIParser(metaclass=abc.ABCMeta):
+# Type alias for timeout
+Timeout = Union[float, Tuple[float, float]]
+
+
+class GenericParser(metaclass=ABCMeta):
+    """Generic parser interface"""
+    @abstractmethod
+    def fetch(self, *, time_from: int, time_until: int) -> str:
+        """
+        Get data with time limits
+        Every GenericParser should redefine fetch() method
+        This method should implement those details
+        """
+        pass
+
+
+class APIParser(GenericParser):
     """
-    API parser inteface. Every API parser should redefine
-    fetch() method since the way in order you fetch data from each other API
-    differs. This method should implement those details.
+    API parser interface.
     Every parser is synchronous and uses requests.Session
     """
 
@@ -15,33 +31,33 @@ class APIParser(metaclass=abc.ABCMeta):
         self.base_url = base_url
         self._session = requests.Session()
 
-    @abc.abstractmethod
-    def fetch(self, *, time_from: int, time_until: int) -> str:
+    def request(self,
+                method: str = 'GET',
+                params: Dict[str, str] = None,
+                timeout: Optional[Timeout] = 20.0) -> str:
         """
-        Performs a request and returns plain response data as string
+        Performs request on base url using session and returns
+        text as string.
+
+        :param method: GET, POST, or any that requests module accepts
+        :param params: request parameters as dict
+        :timeout:
+            (float or tuple) – (optional)
+            How long to wait for theserver to send data before giving up,
+            as a float, or a (connect timeout, read timeout) tuple.
+            If set to None - wait until server will respond.
         """
-        pass
+        try:
+            response = self._session.request(url=self.base_url,
+                                             method=method,
+                                             params=params or {},
+                                             timeout=timeout,
+                                             verify=False)
 
+            if response.status_code != 200:
+                raise APIConnectionError(f'Connection error, '
+                                         'status [{response.status_code}]')
 
-class GraphiteAPIParser(APIParser):
-    """
-    Parser with implementation details for Grahite API
-    """
-
-    def fetch(self, *, time_from: int, time_until: int) -> str:
-
-        target = ''\
-            'summarize(cantal.*.*.cgroups.lithos.*.*.{user_cpu_percent,'\
-            'system_cpu_percent,vsize},"1hour","max",true)'
-
-        # Parameters for GET request
-        params = {
-            'format': 'json',
-            'target': target,
-            'from': str(time_from),
-            'until': str(time_until),
-        }
-
-        # Perform GET request via session and return plain data
-        return self._session.get(
-            self.base_url, params=params, verify=False).text
+            return response.text
+        except requests.exceptions.RequestException as e:
+            raise APIConnectionError("Connection error") from e
