@@ -3,9 +3,8 @@ import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from griphook.db.models import (ServicesGroup, Service, MetricType,
-                                Metric)
 from griphook.config.config import Config
+from griphook.db.models import Metric, MetricType, Service, ServicesGroup
 
 
 def make_query(process, data_type, period):

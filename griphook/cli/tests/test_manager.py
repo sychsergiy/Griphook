@@ -1,12 +1,11 @@
 import unittest
 
-from griphook.cli.managers.team import TeamManager
+from griphook.cli.managers.exceptions import (ProjectManagerException,
+                                              TeamManagerException)
 from griphook.cli.managers.project import ProjectManager
-
-from griphook.cli.managers.exceptions import TeamManagerException, ProjectManagerException
-from griphook.db.models import Team, Project, ServicesGroup
-
+from griphook.cli.managers.team import TeamManager
 from griphook.cli.tests.base import BaseWithDBSession
+from griphook.db.models import Project, ServicesGroup, Team
 
 
 class TeamManagerTestCase(BaseWithDBSession):

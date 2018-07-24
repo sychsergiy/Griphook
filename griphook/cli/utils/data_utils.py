@@ -1,6 +1,7 @@
-import click
 from collections import OrderedDict
 from datetime import datetime
+
+import click
 
 
 def metric_data(metrics):
