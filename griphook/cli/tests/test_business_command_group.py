@@ -4,7 +4,7 @@ from click.testing import CliRunner
 
 from griphook.cli.business import cli
 from griphook.cli.tests.base import BaseWithDBSession
-from griphook.db.models import Project, ServicesGroup, Team
+from server.models import Project, ServicesGroup, Team
 
 
 class BusinessCreateCommandsTestCase(BaseWithDBSession):

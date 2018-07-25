@@ -8,6 +8,7 @@ import coverage
 from flask.cli import FlaskGroup
 
 from griphook.server import create_app, db
+from griphook.server import models
 import subprocess
 import sys
 

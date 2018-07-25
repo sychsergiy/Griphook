@@ -8,7 +8,7 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 
 from griphook.config.config import Config
-from griphook.db.models import BatchStory
+from server.models import BatchStory
 from griphook.tasks.utils import (
     BatchStatus,
     DATA_GRANULATION,

@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from celery import Celery, Task
-from celery.decorators import periodic_task
 from celery.utils.log import get_task_logger
 
 from sqlalchemy import create_engine
@@ -10,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from griphook.config.config import Config
 from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
-from griphook.db.models import (
+from server.models import (
     Metric,
     MetricType,
     Service,
