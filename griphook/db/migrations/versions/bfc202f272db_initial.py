@@ -1,8 +1,8 @@
-"""init
+"""initial
 
-Revision ID: 9d5b87973743
+Revision ID: bfc202f272db
 Revises: 
-Create Date: 2018-07-19 12:05:54.379757
+Create Date: 2018-07-25 14:47:21.034778
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9d5b87973743'
+revision = 'bfc202f272db'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,12 +25,6 @@ def upgrade():
     sa.Column('put_into_queue', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('time')
-    )
-    op.create_table('metric_types',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('title')
     )
     op.create_table('projects',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -61,6 +55,7 @@ def upgrade():
     sa.Column('title', sa.String(), nullable=True),
     sa.Column('instance', sa.String(), nullable=True),
     sa.Column('server', sa.String(), nullable=True),
+    sa.Column('cluster', sa.String(), nullable=True),
     sa.Column('services_group_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['services_group_id'], ['services_groups.id'], name='services_group_fk'),
     sa.PrimaryKeyConstraint('id'),
@@ -69,14 +64,19 @@ def upgrade():
     op.create_table('metrics',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('value', sa.Float(), nullable=True),
+    sa.Column('type', sa.Enum('system_cpu_percent', 'user_cpu_percent', 'vsize', name='metrictypes'), nullable=True),
     sa.Column('batch_id', sa.Integer(), nullable=True),
-    sa.Column('type_id', sa.Integer(), nullable=True),
     sa.Column('service_id', sa.Integer(), nullable=True),
+    sa.Column('services_group_id', sa.Integer(), nullable=True),
+    sa.Column('project_id', sa.Integer(), nullable=True),
+    sa.Column('team_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['batch_id'], ['batches_story.id'], name='batch_story_fk'),
+    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], name='projects_fk'),
     sa.ForeignKeyConstraint(['service_id'], ['services.id'], name='service_fk'),
-    sa.ForeignKeyConstraint(['type_id'], ['metric_types.id'], name='metric_type_fk'),
+    sa.ForeignKeyConstraint(['services_group_id'], ['services_groups.id'], name='services_groups_fk'),
+    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], name='teams_fk'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('type_id', 'service_id', 'batch_id', name='ut_1')
+    sa.UniqueConstraint('batch_id', 'type', 'service_id', 'services_group_id', name='ut_1')
     )
     # ### end Alembic commands ###
 
@@ -88,6 +88,5 @@ def downgrade():
     op.drop_table('services_groups')
     op.drop_table('teams')
     op.drop_table('projects')
-    op.drop_table('metric_types')
     op.drop_table('batches_story')
     # ### end Alembic commands ###

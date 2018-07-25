@@ -1,3 +1,4 @@
+from enum import Enum, unique
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -63,6 +64,7 @@ class Service(Base):
     title = sa.Column(sa.String)
     instance = sa.Column(sa.String)
     server = sa.Column(sa.String)
+    cluster = sa.Column(sa.String)
 
     services_group_id = sa.Column(
         sa.Integer,
@@ -74,8 +76,9 @@ class Service(Base):
     services_group = relationship("ServicesGroup", backref="services")
 
     __table_args__ = (
-        sa.UniqueConstraint("title", "instance", "services_group_id", "server",
-                            name='ut_2'),
+        sa.UniqueConstraint(
+            "title", "instance", "services_group_id", "server", name='ut_2'
+        ),
     )
 
 
@@ -85,15 +88,14 @@ class BatchStory(Base):
     id = sa.Column(sa.Integer, primary_key=True)
     time = sa.Column(sa.DateTime, unique=True)
     status = sa.Column(sa.Integer)
-
     put_into_queue = sa.Column(sa.DateTime)
 
 
-class MetricType(Base):
-    __tablename__ = "metric_types"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    title = sa.Column(sa.String, unique=True)
+@unique
+class MetricTypes(Enum):
+    system_cpu_percent = "system_cpu_percent"
+    user_cpu_percent = "user_cpu_percent"
+    vsize = "vsize"
 
 
 class Metric(Base):
@@ -101,6 +103,7 @@ class Metric(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     value = sa.Column(sa.Float)
+    type = sa.Column(sa.Enum(MetricTypes))
 
     batch_id = sa.Column(
         sa.Integer,
@@ -111,15 +114,6 @@ class Metric(Base):
     )
     batch = relationship("BatchStory", backref="metrics")
 
-    type_id = sa.Column(
-        sa.Integer,
-        sa.ForeignKey(
-            column="metric_types.id",
-            name="metric_type_fk"
-        )
-    )
-    type = relationship("MetricType", backref="metrics")
-
     service_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(
@@ -129,9 +123,36 @@ class Metric(Base):
     )
     service = relationship("Service", backref="metrics")
 
+    services_group_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(
+            column="services_groups.id",
+            name="services_groups_fk"
+        )
+    )
+    services_group = relationship("ServicesGroup", backref="metrics")
+
+    project_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(
+            column="projects.id",
+            name="projects_fk"
+        )
+    )
+    project = relationship("Project", backref="metrics")
+
+    team_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(
+            column="teams.id",
+            name="teams_fk"
+        )
+    )
+    team = relationship("Team", backref="metrics")
+
     __table_args__ = (
         sa.UniqueConstraint(
-            "type_id", "service_id", "batch_id", name="ut_1"
+            "batch_id", "type", "service_id", "services_group_id", name="ut_1"
         ),
     )
 
