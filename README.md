@@ -8,6 +8,6 @@ Server monitoring and billing service
 
 ```bash
 git clone <repo_url>
-cd Griphook/
-pip install -e .
+cd Griphook
+pip install -r -requirements/dev.txt
 ```
