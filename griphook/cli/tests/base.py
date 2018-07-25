@@ -1,7 +1,18 @@
 import unittest
 
-from griphook.cli.managers.base import get_session_class
-from server.models import Project, ServicesGroup, Team
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from griphook.config.config import Config
+from griphook.server.models import Project, ServicesGroup, Team
+
+
+def get_session_class():
+    config = Config()
+    db_url = config.options["db"]["DATABASE_TEST_URL"]
+    engine = create_engine(db_url)
+    return sessionmaker(bind=engine)
+
 
 Session = get_session_class()
 
@@ -10,6 +21,7 @@ class BaseWithDBSession(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # db.create_all()
         cls.session = Session()
 
     @classmethod

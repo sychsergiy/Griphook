@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from griphook.config.config import Config
 from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
-from server.models import (
+from griphook.server.models import (
     Metric,
     MetricType,
     Service,

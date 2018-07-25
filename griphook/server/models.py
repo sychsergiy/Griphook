@@ -1,3 +1,4 @@
+from enum import Enum, unique
 from datetime import datetime
 
 from griphook.server import db
@@ -59,6 +60,7 @@ class Service(db.Model):
     title = db.Column(db.String)
     instance = db.Column(db.String)
     server = db.Column(db.String)
+    cluster = db.Column(db.String)
 
     services_group_id = db.Column(
         db.Integer,
@@ -70,8 +72,9 @@ class Service(db.Model):
     services_group = db.relationship("ServicesGroup", backref="services")
 
     __table_args__ = (
-        db.UniqueConstraint("title", "instance", "services_group_id", "server",
-                            name='ut_2'),
+        db.UniqueConstraint(
+            "title", "instance", "services_group_id", "server", name='ut_2'
+        ),
     )
 
 
@@ -81,15 +84,14 @@ class BatchStory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     time = db.Column(db.DateTime, unique=True)
     status = db.Column(db.Integer)
-
     put_into_queue = db.Column(db.DateTime)
 
 
-class MetricType(db.Model):
-    __tablename__ = "metric_types"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, unique=True)
+@unique
+class MetricTypes(Enum):
+    system_cpu_percent = "system_cpu_percent"
+    user_cpu_percent = "user_cpu_percent"
+    vsize = "vsize"
 
 
 class Metric(db.Model):
@@ -97,6 +99,7 @@ class Metric(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.Float)
+    type = db.Column(db.Enum(MetricTypes))
 
     batch_id = db.Column(
         db.Integer,
@@ -107,15 +110,6 @@ class Metric(db.Model):
     )
     batch = db.relationship("BatchStory", backref="metrics")
 
-    type_id = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            column="metric_types.id",
-            name="metric_type_fk"
-        )
-    )
-    type = db.relationship("MetricType", backref="metrics")
-
     service_id = db.Column(
         db.Integer,
         db.ForeignKey(
@@ -125,9 +119,36 @@ class Metric(db.Model):
     )
     service = db.relationship("Service", backref="metrics")
 
+    services_group_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            column="services_groups.id",
+            name="services_groups_fk"
+        )
+    )
+    services_group = db.relationship("ServicesGroup", backref="metrics")
+
+    project_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            column="projects.id",
+            name="projects_fk"
+        )
+    )
+    project = db.relationship("Project", backref="metrics")
+
+    team_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            column="teams.id",
+            name="teams_fk"
+        )
+    )
+    team = db.relationship("Team", backref="metrics")
+
     __table_args__ = (
         db.UniqueConstraint(
-            "type_id", "service_id", "batch_id", name="ut_1"
+            "batch_id", "type", "service_id", "services_group_id", name="ut_1"
         ),
     )
 

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Query
 
-from server.models import Project, ServicesGroup, Team
+from griphook.server.models import Project, ServicesGroup, Team
 
 
 class ServiceGroupFilter(object):

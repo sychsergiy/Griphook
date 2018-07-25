@@ -6,6 +6,7 @@ template = trafaret.Dict({
     }),
     "db": trafaret.Dict({
         "DATABASE_URL": trafaret.String(),
+        "DATABASE_TEST_URL": trafaret.String(),
     }),
     "tasks": trafaret.Dict({
         # How long data in data source is saved.
