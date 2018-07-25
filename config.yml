@@ -2,8 +2,9 @@ api:
   GRAPHITE_URL: https://graphite.olympus.evo/render
 db:
   DATABASE_URL: postgresql://user:password@host/database_name
+  DATABASE_TEST_URL: postgresql://user:password@host/database_name
 tasks:
-  CELERY_BROKER_URL: "ampq://user:password@localhost/root"
+  CELERY_BROKER_URL: ampq://user:password@localhost/root
   DATA_SOURCE_DATA_EXPIRES: 7776000
   MAX_PARSE_TASKS_IN_QUEUE: 24
   PARSE_METRIC_EXPIRES: 900

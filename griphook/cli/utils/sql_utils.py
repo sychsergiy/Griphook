@@ -4,8 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-from griphook.db.models import (ServicesGroup, Service, MetricType,
-                                Metric, BatchStory)
+from griphook.server.models import (ServicesGroup, Service, MetricType,
+                           Metric, BatchStory)
 from griphook.config.config import Config
 
 

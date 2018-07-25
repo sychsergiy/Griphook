@@ -5,7 +5,7 @@ from griphook.cli.managers.exceptions import (ProjectManagerException,
 from griphook.cli.managers.project import ProjectManager
 from griphook.cli.managers.team import TeamManager
 from griphook.cli.tests.base import BaseWithDBSession
-from griphook.db.models import Project, ServicesGroup, Team
+from griphook.server.models import Project, ServicesGroup, Team
 
 
 class TeamManagerTestCase(BaseWithDBSession):

@@ -45,7 +45,8 @@ class TestConfig(unittest.TestCase):
                 "GRAPHITE_URL": "url_here"
             },
             "db": {
-                "DATABASE_URL": "url here"
+                "DATABASE_URL": "url here",
+                "DATABASE_TEST_URL": "url here"
             },
             "tasks": {
                 'CELERY_BROKER_URL': "ampq://user:password@localhost/root",

@@ -1,0 +1,10 @@
+-r common.txt
+
+Flask-DebugToolbar==0.10.1
+Flask-Testing==0.7.1
+coverage==4.5.1
+flake8==3.5.0
+python-dotenv==0.8.2
+pytest-flask==0.10.0
+pytest==3.6.3
+mypy==0.620

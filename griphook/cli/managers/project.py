@@ -2,7 +2,7 @@ from sqlalchemy.sql import exists
 
 from griphook.cli.managers.base import BaseManager
 from griphook.cli.managers.exceptions import ProjectManagerException
-from griphook.db.models import Project, ServicesGroup
+from griphook.server.models import Project, ServicesGroup
 
 
 class ProjectManager(BaseManager):

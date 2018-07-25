@@ -1,35 +1,35 @@
 version: "2.1"
 services:
-    celery_beat:
-        restart: always
-        build: .
-        depends_on:
-            rabbit:
-                condition: service_healthy
-            postgres:
-                condition: service_healthy
-        depends_on:
-            celery_worker:
-                condition: service_healthy
-        environment:
-            - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
-            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
-        command: celery -A griphook.tasks.tasks beat
-
-    celery_worker:
-        restart: always
-        build: .
-        depends_on:
-            rabbit:
-                condition: service_healthy
-            postgres:
-                condition: service_healthy
-        environment:
-            - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
-            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
-        healthcheck:
-                test: "exit 0"
-        command: bash -c "alembic upgrade head && celery -A griphook.tasks.tasks worker -l INFO"
+#    celery_beat:
+#        restart: always
+#        build: .
+#        depends_on:
+#            rabbit:
+#                condition: service_healthy
+#            postgres:
+#                condition: service_healthy
+#        depends_on:
+#            celery_worker:
+#                condition: service_healthy
+#        environment:
+#            - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
+#            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
+#        command: celery -A griphook.tasks.tasks beat
+#
+#    celery_worker:
+#        restart: always
+#        build: .
+#        depends_on:
+#            rabbit:
+#                condition: service_healthy
+#            postgres:
+#                condition: service_healthy
+#        environment:
+#            - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
+#            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
+#        healthcheck:
+#                test: "exit 0"
+#        command: bash -c "alembic upgrade head && celery -A griphook.tasks.tasks worker -l INFO"
 
     rabbit:
         restart: always
@@ -46,3 +46,20 @@ services:
             - POSTGRES_DB=database_name
         healthcheck:
             test: "exit 0"
+
+    web:
+      image: web
+      build: .
+      ports:
+        - 5002:5000
+      environment:
+        - APP_NAME=griphook
+        - FLASK_DEBUG=1
+        - PYTHONUNBUFFERED=0
+        - APP_SETTINGS=griphook.server.config.DevelopmentConfig
+        - DATABASE_URL=postgres://postgres:postgres@web-db:5432/users_dev
+        - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/users_test
+        - SECRET_KEY=change_me_in_prod
+      depends_on:
+        - postgres
+      command: bash entrypoint.sh
