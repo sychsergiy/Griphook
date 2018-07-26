@@ -22,11 +22,7 @@
             <a class="navbar-brand" href="#">
                 <span>Griphook</span>
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
-                aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-sm-collapse ml-auto" id="navbarNavDropdown">
+            <div class="ml-auto mr-5" >
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a href="#" class="nav-link">Админка</a>
@@ -41,7 +37,7 @@
                 <!-- Filters -->
                 <div class="col-xl-2 col-lg-3 col-md-3 col-6 container-fluid filters text-center">
                     {# {% block filters %} {% endblock %} #}
-                    <div class="card my-4 ml-2  ">
+                    <!-- <div class="card my-4 ml-2  ">
                         <div class="card-body text-center">
                             <h5 class="card-title">Cluster:</h5>
                             <select class="filter-select custom-select" id="inputGroupSelect01">
@@ -50,37 +46,39 @@
                                 <option>spark</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="card my-4 ml-2  ">
+                    </div> -->
+                    <div class="card my-4 ml-2">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Server</h5>
+                                <select class="filter-select custom-select" id="inputGroupSelect01">
+                                    <option selected>server0</option>
+                                    <option>server1</option>
+                                    <option>server2</option>
+                                </select>
+                            </div>
+                        </div>
+                    
+                    <div class="card my-4 ml-2">
                         <div class="card-body text-center">
-                            <h5 class="card-title">Cluster:</h5>
+                            <h5 class="card-title">Group</h5>
                             <select class="filter-select custom-select" id="inputGroupSelect01">
-                                <option selected>dev</option>
-                                <option>kalm</option>
-                                <option>spark</option>
+                                <option selected>group0</option>
+                                <option>group1</option>
+                                <option>group2</option>
                             </select>
                         </div>
                     </div>
-                    <div class="card my-4 ml-2  ">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Cluster:</h5>
-                            <select class="filter-select custom-select" id="inputGroupSelect01">
-                                <option selected>dev</option>
-                                <option>kalm</option>
-                                <option>spark</option>
-                            </select>
+
+                    <div class="card my-4 ml-2">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Instance</h5>
+                                <select class="filter-select custom-select" id="inputGroupSelect01">
+                                    <option selected>instance0</option>
+                                    <option>instance1</option>
+                                    <option>instance2</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card my-4 ml-2 ">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Cluster:</h5>
-                            <select class="filter-select custom-select" id="inputGroupSelect01">
-                                <option selected>dev</option>
-                                <option>kalm</option>
-                                <option>spark</option>
-                            </select>
-                        </div>
-                    </div>
                     <button class="btn btn-primary my-2">Submit</button>
                 </div>
 
@@ -89,15 +87,12 @@
                     <nav class="navbar-light" aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="#">dev</a>
+                                <a href="#">server0</a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="#">maggie</a>
+                                <a href="#">group0</a>
                             </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">besida</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">besida-staging</li>
+                            <li class="breadcrumb-item active" aria-current="page">instance0</li>
                         </ol>
                     </nav>
 
