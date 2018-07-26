@@ -140,5 +140,6 @@ class Function(Target):
 # Built-in functions
 summarize = Function('summarize',
                      Argument(Target, name='seriesList'),
-                     Argument(str, name='func', default='sum',),
+                     Argument(str, name='interval', default='1hour',),
+                     Argument(str, name='func', default='max',),
                      Argument(bool, name='AlignToFrom', default=False))
