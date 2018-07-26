@@ -15,10 +15,6 @@ migrate = Migrate()
 
 
 def create_app(script_info=None):
-    """
-
-    :rtype:
-    """
     # instantiate the app
     app = Flask(
         __name__,
@@ -37,9 +33,22 @@ def create_app(script_info=None):
     migrate.init_app(app, db)
 
     # register blueprints
-    from griphook.server.main.views import main_blueprint
+    from griphook.server.main import main_blueprint
     app.register_blueprint(main_blueprint)
 
+    from griphook.server.billing import billing_blueprint
+    app.register_blueprint(billing_blueprint, url_prefix='/billing')
+
+    from griphook.server.admin import admin_blueprint
+    app.register_blueprint(admin_blueprint, url_prefix='/admin')
+
+    from griphook.server.filters import filters_blueprint
+    app.register_blueprint(filters_blueprint, url_prefix='/filters')
+
+    from griphook.server.peaks import peaks_blueprint
+    app.register_blueprint(peaks_blueprint, url_prefix='/peaks')
+
+    # set up error handlers
     @app.errorhandler(404)
     def page_not_found(error):
         return render_template('errors/404.html'), 404
