@@ -50,11 +50,11 @@ def create_data():
 
 @cli.command()
 @click.option(
-    '--celery_commands',
+    '--celery_args',
     type=str,
     help='Additional parameters for celery, --app and worker already provided.'
 )
-def run_fetcher(celery_commands):
+def run_fetcher(celery_args):
     """
     Start both celery worker and task scheduler
     """
@@ -64,7 +64,7 @@ def run_fetcher(celery_commands):
         '-A',
         'griphook.tasks.tasks',
         'worker',
-        *shlex.split(celery_commands)
+        *shlex.split(celery_args)
     ])
 
     task_scheduler.main()
