@@ -9,11 +9,9 @@ services:
                 condition: service_healthy
         environment:
             - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
-            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
-            - GH_DATABASE_TEST_URL=postgresql://user:password@postgres/database_name
         healthcheck:
                 test: "exit 0"
-        command: bash -c "sleep 2 && python manage.py db upgrade && pytest"
+        command: bash -c "python manage.py db upgrade && pytest"
 
     rabbit:
         image: rabbitmq
