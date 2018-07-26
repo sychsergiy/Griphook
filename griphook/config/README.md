@@ -15,7 +15,7 @@ export GH_CONFIG_FILE_NAME=local.yml
 
 Import Config, class create instance and use options property:
 ```python
-from griphook.config.config import Config
+from griphook.config import Config
 
 config = Config()
 settings = config.options

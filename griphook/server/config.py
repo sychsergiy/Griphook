@@ -2,7 +2,7 @@
 
 import os
 
-from griphook.config.config import Config
+from griphook.config import Config
 
 options = Config().options
 

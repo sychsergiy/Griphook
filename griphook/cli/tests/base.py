@@ -3,7 +3,7 @@ import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from griphook.config.config import Config
+from griphook.config import Config
 from griphook.server.models import Project, ServicesGroup, Team
 
 
