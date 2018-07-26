@@ -6,7 +6,7 @@ from celery.utils.log import get_task_logger
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from griphook.config.config import Config
+from griphook.config import Config
 from griphook.api.data_source import DataSource
 from griphook.api import parsers, formatters
 from griphook.server.models import (

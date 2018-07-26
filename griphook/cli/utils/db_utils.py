@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from griphook.config.config import Config
+from griphook.config import Config
 
 
 def get_session_class():
