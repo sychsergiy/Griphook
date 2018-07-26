@@ -1,22 +1,58 @@
 /* custom css */
 
+body,
+html {
+    height: 100%;
+}
+
 body {
-    /* padding-top: 4.5rem; */
-    min-height: 100rem;
+    /* padding-top: 56px; */
 }
 
 .filters {
     /* padding: 2rem; */
-}
-
-.filter-group {
-    padding: 2rem 0;
+    height: 100%;
 }
 
 .filter-select {
     max-width: 80%;
 }
 
+.breadcrumb {
+    /* background: #dbf3ff; */
+}
+
 .metric-controls {
-    background: #dbf3ff;
+    /* background: #e9ecef; */
+    padding: 1rem;
+}
+
+.progress {
+    background: rgb(237, 122, 119)
+}
+
+.progress-bar {
+    background: rgb(0, 158, 74)
+}
+.flex-fill {
+    flex: 1 1 auto;
+}
+
+.min-100 {
+    min-height: 100vh;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+}
+
+.content {
+    padding: 0 1rem;
+}
+
+.plot {
+    text-align: center;
+    padding: 15rem 0;
+    background: #e9ecef;
+    margin-bottom: 3rem;
 }
