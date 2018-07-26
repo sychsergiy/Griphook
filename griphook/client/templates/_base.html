@@ -1,14 +1,117 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <title>Griphook</title>
 </head>
+
 <body>
-{% block content %}
-{% endblock content %}
+    <!-- Header -->
+    <nav class="navbar navbar-dark sticky-top bg-dark">
+        <a class="navbar-brand" href="#">
+            <span>Griphook</span>
+        </a>
+    </nav>
+
+    <main role="main" class="container-fluid justify-content-center">
+        <div class="row">
+
+            <!-- Filters -->
+            <div class="col-xl-2 col-lg-3 col-md-3 col-6 container-fluid filters text-center">
+                {# {% block filters %} {% endblock %} #}
+                <div class="card my-2 ml-2  ">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Cluster:</h5>
+                        <select class="filter-select custom-select" id="inputGroupSelect01">
+                            <option selected>dev</option>
+                            <option>kalm</option>
+                            <option>spark</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card my-2 ml-2  ">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Cluster:</h5>
+                        <select class="filter-select custom-select" id="inputGroupSelect01">
+                            <option selected>dev</option>
+                            <option>kalm</option>
+                            <option>spark</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card my-2 ml-2  ">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Cluster:</h5>
+                        <select class="filter-select custom-select" id="inputGroupSelect01">
+                            <option selected>dev</option>
+                            <option>kalm</option>
+                            <option>spark</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card my-2 ml-2 ">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Cluster:</h5>
+                        <select class="filter-select custom-select" id="inputGroupSelect01">
+                            <option selected>dev</option>
+                            <option>kalm</option>
+                            <option>spark</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary my-2">Submit</button>
+            </div>
+
+
+            <!-- Main content -->
+            <div class="col-xl-10 col-lg-9 col-md-9 container-fluid content">
+
+                <nav class="metric-controls navbar navbar-light">
+                    <div class="ml-auto mr-4">
+                        <select class="custom-select">
+                            <option value="1">user_cpu_percent</option>
+                            <option value="2">system_cpu_percent</option>
+                            <option value="3">vsize</option>
+                        </select>
+                    </div>
+                </nav>
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">dev</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="#">maggie</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="#">besida</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">besida-staging</li>
+                    </ol>
+                </nav>
+                {# {% block content %} {% endblock %} #}
+            </div>
+        </div>
+    </main>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>

@@ -1,0 +1,22 @@
+/* custom css */
+
+body {
+    /* padding-top: 4.5rem; */
+    min-height: 100rem;
+}
+
+.filters {
+    /* padding: 2rem; */
+}
+
+.filter-group {
+    padding: 2rem 0;
+}
+
+.filter-select {
+    max-width: 80%;
+}
+
+.metric-controls {
+    background: #dbf3ff;
+}
