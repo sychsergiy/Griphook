@@ -1,20 +1,29 @@
 # Configure app using .yml file
 
-Create *.yml file and provide CONFIG_PATH env variable with relative path
+Create *.yml file and provide GH_CONFIG_FILE_NAME env variable with relative path
+```bash
+export GH_CONFIG_FILE_NAME=griphook/**/*.yml
 ```
-export GH_CONFIG_FILE_NAME=griphook/*/*.yml
+Or use default value ```config.yml``` (just a root of our project).
+
+Recommended to use local.yml file for local development. Create `local.yml` file.
+Provide your local settings there and set env variable to use it:
+
+```bash
+export GH_CONFIG_FILE_NAME=local.yml
 ```
-Or use default value ```config.yml``` (just a root of our project)
 
 Import Config, class create instance and use options property:
-```
+```python
+from griphook.config.config import Config
+
 config = Config()
-config.options
+settings = config.options
 ```
 
 
 ### Current template have next structure:
-```
+```json
 {
     "api": {
         "GRAPHITE_URL": "url_here"
@@ -33,7 +42,7 @@ config.options
 ```
 
 ### Example of config.yml file:
-```
+```yaml
 api:
   GRAPHITE_URL: url_here
 db:
@@ -49,6 +58,6 @@ tasks:
 
 ### Also you can overwrite options using environment variables with GH_ prefix
 
-```
+```bash
 export GH_YOUR_VARIABLE=value
 ```

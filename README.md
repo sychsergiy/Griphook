@@ -7,7 +7,9 @@ Server monitoring and billing service
 ## Installation
 
 ```bash
-git clone <repo_url>
+git clone http://git.interns.evo/EVO2018-Vlad-team/Griphook
 cd Griphook
-pip install -r -requirements/dev.txt
 ```
+
+1. [setup-with-docker.md](setup-with-docker.md)
+1. [setup-without-docker.md](setup-without-docker.md)
