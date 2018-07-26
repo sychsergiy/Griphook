@@ -8,7 +8,7 @@ def servers_api_view():
         Service.query.with_entities(Service.server)
             .distinct().order_by('server').all()
     )
-    response = jsonify(list(field_set[0] for field_set in servers_field_set))
+    response = jsonify([field_set[0] for field_set in servers_field_set])
     response.status_code = 200
     return response
 
@@ -26,7 +26,7 @@ def services_groups_api_view():
             .order_by(ServicesGroup.title)
     ).all()
 
-    response = jsonify(list(field_set[0] for field_set in services_groups_field_set))
+    response = jsonify([field_set[0] for field_set in services_groups_field_set])
     response.status_code = 200
     return response
 
@@ -42,6 +42,6 @@ def services_api_view():
             .filter(ServicesGroup.title == services_group_title)
     ).all()
 
-    response = jsonify(list(field_set[0] for field_set in service_field_set))
+    response = jsonify([field_set[0] for field_set in service_field_set])
     response.status_code = 200
     return response
