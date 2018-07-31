@@ -10,9 +10,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <!-- Custom Css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/_base.css') }}">
     <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-    <title>Griphook</title>
+    {% block extra_head %}{% endblock %}
+
+    <title>
+        {% block title %}
+            Griphook
+        {% endblock %}
+    </title>
 </head>
 
 <body>
@@ -31,130 +38,11 @@
             </div>
         </nav>
 
-        <main role="main" class="flex-fill container-fluid justify-content-center">
-            <div class="row">
+        {% include 'peaks/includes/filters.html' %}
+        <div id="page-content">
+            {% block content %}{% endblock %}
+        </div>
 
-                <!-- Filters -->
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 container-fluid filters text-center">
-                        <div class="card my-4 ml-2">
-                            <div class="text-center filter-group">
-                                <h5 class="filter-title">Server</h5>
-                                <input type="text" class="form-control search-input" placeholder="Search" id="server-control">
-                                <ul class="search-list list-group">
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="card my-4 ml-2">
-                            <div class="text-center filter-group">
-                                <h5 class="filter-title">Server</h5>
-                                <input type="text" class="form-control search-input" placeholder="Search" id="server-control">
-                                <ul class="search-list list-group">
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="card my-4 ml-2">
-                            <div class="text-center filter-group">
-                                <h5 class="filter-title">Server</h5>
-                                <input type="text" class="form-control search-input" placeholder="Search" id="server-control">
-                                <ul class="search-list list-group">
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                </ul>
-                            </div>
-                        </div>
-                            <div class="card my-4 ml-2">
-                                <div class="text-center filter-group">
-                                    <h5 class="filter-title">Server</h5>
-                                    <input type="text" class="form-control search-input" placeholder="Search" id="server-control">
-                                    <ul class="search-list list-group">
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                        <li class="list-group-item search-list-item"><input type="checkbox"><span>loltext</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        
-                    <button class="btn btn-primary my-2">Submit</button>
-                </div>
-
-
-                <div class="col-xl-9 col-lg-8 col-md-8 container-fluid">
-                    <nav class="navbar-light" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="#">server0</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">group0</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">instance0</li>
-                        </ol>
-                    </nav>
-
-                    <nav class="metric-controls navbar navbar-light">
-                        <div class="ml-auto mr-4">
-                            <select class="custom-select">
-                                <option value="1">user_cpu_percent</option>
-                                <option value="2">system_cpu_percent</option>
-                                <option value="3">vsize</option>
-                            </select>
-                        </div>
-                    </nav>
-                    <div class="content">
-                        <div class="plot">
-                            <div class="col-md-8 offset-md-2">
-                                <canvas id="peak_chart" class="chartjs-render-monitor" </canvas>
-                            </div>
-                        </div>
-
-
-                        <!-- Average load bar -->
-                        <h3 class="text-center">Средняя нагруженность</h3>
-                        <div class="progress" style="height: 2rem;">
-                            <div class="progress-bar" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">70%</div>
-                        </div>
-                    </div>
-                    {# {% block content %} {% endblock %} #}
-                </div>
-            </div>
-        </main>
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -163,9 +51,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <script src="{{ url_for('static', filename='js/peak_charts.es6') }}"></script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 
 </html>
