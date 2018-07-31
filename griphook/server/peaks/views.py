@@ -49,7 +49,6 @@ def get_peacks():
             query = query.filter(ServicesGroup.title==service_group)
             if service:
                 query = query.filter(Service.title)
-    print(query)
 
     formatter = lambda x : (
                 x[0],
