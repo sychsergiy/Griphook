@@ -70,9 +70,8 @@ def complex_target_generator(service_group, services_titles: Iterable[str], metr
 
 def construct_response_for_server_api_view(parent_json: tuple, children_json: dict, service_group: str,
                                            children_title_order: Tuple[str],
-                                           metric_type: str, server: str = None):
+                                           metric_type: str, server: str = '*'):
     # todo: use target prefix
-    server = server or '*'
     service_group_target = f'cantal.*.{server}.cgroups.lithos.{service_group}:*'
     service_group_target_value = parent_json[0]['datapoints'][0][0]
 
