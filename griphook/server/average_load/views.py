@@ -34,20 +34,10 @@ class ServicesGroupAverageLoadView(AbstractAverageLoadAPIView):
     get_required_parameters = ('services_group',)
 
     def get(self):
-        target_services = [':'.join(target) for target in self.services_query(self.parameters['services_group'])]
         response_data = get_average_services_group_load_chart_data(
-            self.parameters['services_group'], target_services,
-            self.parameters['time_from'], self.parameters['time_until']
-        )
+            self.parameters['services_group'], self.parameters['time_from'],
+            self.parameters['time_until'], self.parameters['metric_type'])
         return jsonify(response_data)
-
-    def services_query(self, service_group_title: str) -> list:
-        return (
-            ServicesGroup.query
-                .filter(ServicesGroup.title == service_group_title)
-                .join(Service)
-                .with_entities(Service.server, ServicesGroup.title, Service.title, Service.instance)
-        ).all()
 
 
 class ServiceAverageLoadView(AbstractAverageLoadAPIView):
