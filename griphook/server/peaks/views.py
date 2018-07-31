@@ -1,3 +1,5 @@
-from flask import Blueprint
+from flask import render_template
 
-peaks_blueprint = Blueprint('peaks', __name__, )
+
+def index():
+    return render_template('peaks/index.html')
