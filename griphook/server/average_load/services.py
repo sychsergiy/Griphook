@@ -7,7 +7,7 @@ from typing import Iterable, Tuple
 from griphook.api.graphite.target import MultipleValues, DotPath
 from griphook.server.models import Service
 
-from griphook.server.average_load.graphite import average, summarize
+from griphook.server.average_load.graphite import average, summarize, send_graphite_request
 
 
 def get_average_services_load_chart_data(service: str, time_from: int, time_until: int,
@@ -68,12 +68,6 @@ def complex_target_generator(service, instances: Iterable[str], metric_type: str
         path_with_metric = str(path_to_instances + metric_type)
 
         yield average(summarize(path_with_metric, "3month", 'avg'))
-
-
-def send_graphite_request(params: dict = None) -> str:
-    base_url = 'https://graphite.olympus.evo/render'
-    response = requests.get(url=base_url, params=params or {}, verify=False)
-    return response.text
 
 
 def construct_response_for_server_api_view(parent_json: tuple, children_json: dict, service: str,

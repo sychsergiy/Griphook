@@ -4,8 +4,7 @@ from typing import Iterable, Tuple
 from griphook.api.graphite.target import MultipleValues, DotPath
 from griphook.server.models import ServicesGroup, Service
 
-from griphook.server.average_load.graphite import average, summarize
-from griphook.server.average_load.servers import send_graphite_request
+from griphook.server.average_load.graphite import average, summarize, send_graphite_request
 
 
 def get_average_services_group_load_chart_data(service_group: str, time_from: int, time_until: int,

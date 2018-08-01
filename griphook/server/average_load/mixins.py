@@ -74,5 +74,3 @@ class QueryParametersForMethodMixin(QueryParametersMixin):
         self.save_parameters(required_params, optional_params)
 
         return super(QueryParametersForMethodMixin, self).dispatch_request(*args, **kwargs)
-
-# todo: or add mixin for validation query params with trafaret

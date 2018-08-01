@@ -1,13 +1,9 @@
 from flask import url_for
 
-from griphook.tests.common.base import BaseTestCase
+from griphook.tests.base import BaseTestCase
 
 
 class ServerAverageLoadViewTestCase(BaseTestCase):
-
-    def setUp(self):  # not drop database for no
-        pass
-
     def test_view_return_400_status_code_if_server_title_argument_not_given(self):
         response = self.client.get(url_for('average_load.server'))
         self.assert400(response)
@@ -32,8 +28,6 @@ class ServerAverageLoadViewTestCase(BaseTestCase):
 
 
 class ServicesGroupAverageViewTestCase(BaseTestCase):
-    def setUp(self):
-        pass
 
     def test_view_return_400_status_code_if_wrong_arguments_given(self):
         response = self.client.get(url_for('average_load.services_group'))
@@ -59,10 +53,7 @@ class ServicesGroupAverageViewTestCase(BaseTestCase):
 
 
 class ServiceAverageViewTestCase(BaseTestCase):
-    def setUp(self):
-        pass
-
-    def test_view_return_400_status_code_if_wront_arguemnts_give(self):
+    def test_view_return_400_status_code_if_wrong_arguments_give(self):
         response = self.client.get(url_for('average_load.service'))
         self.assert400(response)
         response = self.client.get(url_for('average_load.service', time_from=1524873600))

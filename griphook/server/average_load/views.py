@@ -49,5 +49,3 @@ class ServiceAverageLoadView(AbstractAverageLoadAPIView):
             self.parameters['metric_type'],
         )
         return jsonify(response_data)
-
-# todo: change arguments (server_title, service_group_title, ...) to (server, services_group, ...) in filters blueprint

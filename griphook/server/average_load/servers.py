@@ -1,11 +1,10 @@
-import requests
 import json
 
 from typing import Iterable
 
 from griphook.api.graphite.target import MultipleValues, DotPath
 
-from griphook.server.average_load.graphite import average, summarize
+from griphook.server.average_load.graphite import average, summarize, send_graphite_request
 from griphook.server.models import Service, ServicesGroup
 
 
@@ -66,12 +65,6 @@ def complex_target_generator(server: str, services_groups_titles: Iterable[str],
     for sv_title in services_groups_titles:
         path = DotPath('cantal', '*', f'{server}', 'cgroups', 'lithos', f'{sv_title}:*', '*')
         yield average(summarize(str(path + metric_type), "3month", 'avg'))
-
-
-def send_graphite_request(params: dict = None) -> str:
-    base_url = 'https://graphite.olympus.evo/render'
-    response = requests.get(url=base_url, params=params or {}, verify=False)
-    return response.text
 
 
 def construct_response_for_server_api_view(parent_json: tuple, children_json: dict, server: str,
