@@ -4,6 +4,35 @@ from datetime import datetime
 from griphook.server import db
 
 
+class Cluster(db.Model):
+    __tablename__ = "clusters"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, unique=True)
+
+    cpu_worth = db.Column(db.Float)
+    memory_worth = db.Column(db.Float)
+
+
+class Server(db.Model):
+    __tablename__ = "servers"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, unique=True)
+
+    cpu_worth = db.Column(db.Float)
+    memory_worth = db.Column(db.Float)
+
+    cluster_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            column="clusters.id",
+            name="clusters_fk"
+        )
+    )
+    cluster = db.relationship("Cluster", backref="servers")
+
+
 class Team(db.Model):
     __tablename__ = "teams"
 
@@ -59,8 +88,15 @@ class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     instance = db.Column(db.String)
-    server = db.Column(db.String)
-    cluster = db.Column(db.String)
+
+    server_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            column="servers.id",
+            name="servers_fk"
+        )
+    )
+    server = db.relationship("Server", backref="service")
 
     services_group_id = db.Column(
         db.Integer,
@@ -73,7 +109,7 @@ class Service(db.Model):
 
     __table_args__ = (
         db.UniqueConstraint(
-            "title", "instance", "services_group_id", "server", name='ut_2'
+            "title", "instance", "services_group_id", "server_id", name='ut_2'
         ),
     )
 
