@@ -1,7 +1,6 @@
 import requests
-
-from griphook.api.graphite.target import Target
 from griphook.api.graphite.functions import Function, Argument
+from griphook.api.graphite.target import Target
 
 average = Function('avg', Argument(Target, name='seriesLists'))
 
