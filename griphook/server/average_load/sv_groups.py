@@ -4,8 +4,8 @@ from griphook.api.graphite.target import MultipleValues, DotPath
 from griphook.server.models import ServicesGroup, Service
 
 from griphook.server.average_load.graphite import average, summarize, send_graphite_request
-from griphook.server.average_load.response import construct_response_for_services_groups_api_view, \
-    complex_sg_groups_target_generator
+from griphook.server.average_load.helper import construct_response_for_services_groups_api_view, \
+    complex_target_generator
 
 
 def get_average_services_group_load_chart_data(services_group: str, time_from: int, time_until: int,
@@ -18,10 +18,10 @@ def get_average_services_group_load_chart_data(services_group: str, time_from: i
     ).all()
 
     # convert to simple structure
-    services_titles = tuple(title for (title,) in services)
+    services = tuple(title for (title,) in services)
 
     # create service_groups part of graphite target: '({service_group_title1:*, service_group_title2:*, ...})'
-    target_instances = MultipleValues(*[f'{services_group}:{sv_title}' for sv_title in services_titles])
+    target_instances = MultipleValues(*[f'{services_group}:{services}' for services in services])
     # todo: do I really need to insert services here or just take all from services_groups
 
     # create_path
@@ -39,7 +39,7 @@ def get_average_services_group_load_chart_data(services_group: str, time_from: i
     sv_group_average_response = send_graphite_request(params)  # get average value for server
 
     # construct query with multiple targets -------------------------------------------
-    complex_target = list(complex_sg_groups_target_generator(services_group, services_titles, metric_type))
+    complex_target = list(complex_target_generator('services_group', metric_type, services_group, services, ))
     params = {
         'format': 'json',
         'target': complex_target,
@@ -55,6 +55,5 @@ def get_average_services_group_load_chart_data(services_group: str, time_from: i
     target = f'cantal.*.*.cgroups.lithos.{services_group}:*'
     response_data = construct_response_for_services_groups_api_view(
         target, sv_group_average_response_json, services_average_response_json,
-        services_titles, metric_type, services_group=services_group)
+        services, metric_type, services_group=services_group)
     return response_data
-

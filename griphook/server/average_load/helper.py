@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from griphook.api.graphite.target import DotPath
 from griphook.server.average_load.graphite import average, summarize
 
@@ -85,21 +83,19 @@ def construct_response_for_server_api_view(target: str, parent_json: tuple, chil
     return result
 
 
-def complex_sg_groups_target_generator(services_group, services: Iterable[str], metric_type: str,
-                                       server: str = '*'):
-    for service in services:
-        target = construct_target(metric_type, server, services_group, service, )
-        yield average(summarize(target, "3month", 'avg'))
+def complex_target_generator(target_type: str, metric_type: str, parent: str, children: tuple):
+    assert target_type in ('server', 'services_group', 'service'), 'Wrong target_type'
+    if target_type == 'server':
+        for item in children:
+            target = construct_target(metric_type, server=parent, services_group=item)
+            yield average(summarize(target, "3month", 'avg'))
 
+    elif target_type == 'services_group':
+        for item in children:
+            target = construct_target(metric_type, services_group=parent, service=item)
+            yield average(summarize(target, "3month", 'avg'))
 
-def complex_services_target_generator(service, instances: Iterable[str], metric_type: str,
-                                      server: str = '*', services_group: str = '*'):
-    for instance in instances:
-        target = construct_target(metric_type, server, services_group, service, instance)
-        yield average(summarize(target, "3month", 'avg'))
-
-
-def complex_server_target_generator(server: str, services_groups: Iterable[str], metric_type: str):
-    for services_group in services_groups:
-        target = construct_target(metric_type, server, services_group)
-        yield average(summarize(str(target), "3month", 'avg'))
+    elif target_type == 'service':
+        for item in children:
+            target = construct_target(metric_type, service=parent, instance=item)
+            yield average(summarize(target, "3month", 'avg'))

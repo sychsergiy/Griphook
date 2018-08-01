@@ -1,13 +1,11 @@
 import json
 
-from typing import Iterable
-
 from griphook.api.graphite.target import MultipleValues, DotPath
 from griphook.server.models import Service
 
 from griphook.server.average_load.graphite import average, summarize, send_graphite_request
-from griphook.server.average_load.response import construct_response_for_services_api_view, \
-    complex_services_target_generator
+from griphook.server.average_load.helper import construct_response_for_services_api_view, \
+    complex_target_generator
 
 
 def get_average_services_load_chart_data(service: str, time_from: int, time_until: int,
@@ -41,7 +39,7 @@ def get_average_services_load_chart_data(service: str, time_from: int, time_unti
     service_average_response = send_graphite_request(params)  # get average value for server
 
     # ------------------------------
-    complex_target = list(complex_services_target_generator(service, instances, metric_type))
+    complex_target = list(complex_target_generator('service', metric_type, parent=service, children=instances))
     params = {
         'format': 'json',
         'target': complex_target,
@@ -58,4 +56,5 @@ def get_average_services_load_chart_data(service: str, time_from: int, time_unti
         target, service_average_response_json, instances_average_response_json,
         instances, metric_type, service=service
     )
+
     return response_data

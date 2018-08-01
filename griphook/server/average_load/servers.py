@@ -4,8 +4,7 @@ from griphook.api.graphite.target import MultipleValues, DotPath
 
 from griphook.server.average_load.graphite import average, summarize, send_graphite_request
 from griphook.server.models import Service, ServicesGroup
-from griphook.server.average_load.response import construct_response_for_server_api_view, \
-    complex_server_target_generator
+from griphook.server.average_load.helper import construct_response_for_server_api_view, complex_target_generator
 
 
 def get_server_load_chart_data(server: str, time_from: int, time_until: int, metric_type: str):
@@ -39,7 +38,7 @@ def get_server_load_chart_data(server: str, time_from: int, time_until: int, met
     server_average_response = send_graphite_request(params)  # get average value for server
 
     # construct query with multiple targets
-    complex_target = list(complex_server_target_generator(server, services_groups, metric_type))
+    complex_target = list(complex_target_generator('server', metric_type, server, services_groups))
 
     params = {
         'format': 'json',
