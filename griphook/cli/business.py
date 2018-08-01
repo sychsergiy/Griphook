@@ -1,13 +1,11 @@
 import click
 
 from griphook.cli.managers.base import print_exception_message
-from griphook.cli.managers.exceptions import (ProjectManagerException,
-                                              TeamManagerException)
+from griphook.cli.managers.exceptions import ProjectManagerException, TeamManagerException
 from griphook.cli.managers.project import ProjectManager
 from griphook.cli.managers.team import TeamManager
-from griphook.cli.utils.db_utils import get_session_class
 
-Session = get_session_class()
+from griphook.server import db
 
 
 @click.group()
@@ -15,7 +13,7 @@ Session = get_session_class()
 def cli(ctx):
     if ctx.obj is None:
         ctx.obj = {}
-    session = Session()
+    session = db.session
     ctx.obj['team_manager'] = TeamManager(session)
     ctx.obj['project_manager'] = ProjectManager(session)
 

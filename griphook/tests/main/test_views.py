@@ -1,4 +1,4 @@
-from griphook.tests.common.base import BaseTestCase
+from griphook.tests.base import BaseTestCase
 
 
 class HomeViewTestCase(BaseTestCase):
