@@ -1,6 +1,5 @@
-import json
-
 from datetime import datetime, timedelta
+import json
 
 from flask import url_for
 
@@ -89,6 +88,8 @@ class BaseWithDBSession(BaseTestCase):
         response = self.client.get(url, query_string=data, follow_redirects=True)
         resp_data = json.loads(response.data.decode('utf-8'))['data']
         self.assertEqual(len(resp_data), 2)
+        self.assertEqual(resp_data[0][1], self.time1.strftime('%Y-%m-%d %H:%M:%S'))
+        self.assertEqual(resp_data[1][1], self.time2.strftime('%Y-%m-%d %H:%M:%S'))
         self.assertEqual(resp_data[0][0], 4)
         self.assertEqual(resp_data[1][0], 3)
 
@@ -96,6 +97,8 @@ class BaseWithDBSession(BaseTestCase):
         response = self.client.get(url, query_string=data, follow_redirects=True)
         resp_data = json.loads(response.data.decode('utf-8'))['data']
         self.assertEqual(len(resp_data), 2)
+        self.assertEqual(resp_data[0][1], self.time1.strftime('%Y-%m-%d %H:%M:%S'))
+        self.assertEqual(resp_data[1][1], self.time2.strftime('%Y-%m-%d %H:%M:%S'))
         self.assertEqual(resp_data[0][0], 2)
         self.assertEqual(resp_data[1][0], 2)
 
@@ -103,6 +106,8 @@ class BaseWithDBSession(BaseTestCase):
         response = self.client.get(url, query_string=data, follow_redirects=True)
         resp_data = json.loads(response.data.decode('utf-8'))['data']
         self.assertEqual(len(resp_data), 1)
+        self.assertEqual(resp_data[0][1], self.time1.strftime('%Y-%m-%d %H:%M:%S'))
+
 
     @staticmethod
     def request_without_ruquied_field(client, url, data, field):
