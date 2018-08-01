@@ -7,7 +7,7 @@ import schedule
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 
-from griphook.config.config import Config
+from griphook.config import Config
 from griphook.server.models import BatchStory
 from griphook.tasks.utils import (
     BatchStatus,

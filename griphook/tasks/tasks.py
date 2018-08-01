@@ -4,14 +4,15 @@ from celery import Celery, Task
 from celery.utils.log import get_task_logger
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
-from griphook.config.config import Config
+from griphook.config import Config
 from griphook.api.data_source import DataSource
-from griphook.api import parsers, formatters
+
+from griphook.api.graphite import parser, formatters
 from griphook.server.models import (
     Metric,
-    MetricType,
+    MetricTypes,
     Service,
     ServicesGroup,
     BatchStory
@@ -28,7 +29,8 @@ app = Celery(broker=conf['tasks']['CELERY_BROKER_URL'])
 logger = get_task_logger(__name__)
 
 engine = create_engine(conf['db']['DATABASE_URL'])
-Session = sessionmaker(bind=engine)
+SessionFactory = sessionmaker(bind=engine)
+Session = scoped_session(SessionFactory)
 
 
 class ParsingTask(Task):
@@ -50,7 +52,7 @@ def parse_metrics(batch_id: int):
     """
     session = Session()
     cantal_source = DataSource(
-        parser=parsers.GraphiteAPIParser(base_url=conf['api']['GRAPHITE_URL']),
+        parser=parser.GraphiteAPIParser(base_url=conf['api']['GRAPHITE_URL']),
         data_formatter=formatters.format_cantal_data,
     )
 
@@ -68,15 +70,12 @@ def parse_metrics(batch_id: int):
                 )
                 data = cantal_source.read(time_from=time_from,
                                           time_until=time_until)
-                if data is not None:
-                    save_metric_to_db(
-                        session=session,
-                        metrics=data,
-                        batch=batch
-                    )
-                    logger.info('Saved {} metrics'.format(len(data)))
-                else:
-                    logger.info('Got no data from api')
+                data_count = save_metric_to_db(
+                    session=session,
+                    metrics=data,
+                    batch=batch
+                )
+                logger.info('Saved {} metrics'.format(data_count))
     except Exception as e:
         session.rollback()
         raise e
@@ -85,36 +84,38 @@ def parse_metrics(batch_id: int):
 
 
 def save_metric_to_db(session: Session, metrics: formatters.Metric,
-                      batch: BatchStory):
+                      batch: BatchStory) -> int:
     """
     Take parsed metric, save it to database and change batch status to STORED
     """
+    rel_data_session = Session()
+    counter = 0
     for metric_tuple in metrics:
-        type_, _ = concurrent_get_or_create(
-            session=session,
-            model=MetricType,
-            title=metric_tuple.type
-        )
+        counter += 1
+        type_ = MetricTypes(metric_tuple.type)
 
         services_group, _ = concurrent_get_or_create(
-            session=session,
+            session=rel_data_session,
             model=ServicesGroup,
             title=metric_tuple.services_group
         )
 
         service, _ = concurrent_get_or_create(
-            session=session,
+            session=rel_data_session,
             model=Service,
             title=metric_tuple.service,
             services_group=services_group,
             instance=metric_tuple.instance,
-            server=metric_tuple.server
+            server=metric_tuple.server,
+            cluster=metric_tuple.cluster
         )
 
         session.add(Metric(
             batch=batch,
             value=metric_tuple.value,
             type=type_,
-            service=service
+            service=service,
+            services_group=services_group
         ))
     batch.status = BatchStatus.STORED
+    return counter

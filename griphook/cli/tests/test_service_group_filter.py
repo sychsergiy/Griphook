@@ -7,8 +7,11 @@ from griphook.server.models import Project, ServicesGroup, Team
 
 class ServiceGroupFilterTestCase(BaseWithDBSession):
     def setUp(self):
+        super(ServiceGroupFilterTestCase, self).setUp()
         self.sv_filter = ServiceGroupFilter(self.session)
-        self.clean_up_db()
+
+    def tearDown(self):
+        super(ServiceGroupFilterTestCase, self).tearDown()
 
     def test_filter_by_title(self):
         self.session.add_all([ServicesGroup(title='test1'), ServicesGroup(title='test2'),

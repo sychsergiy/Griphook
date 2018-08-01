@@ -13,7 +13,7 @@ cd Griphook
 
 To run data fetcher:
 ```bash
-?
+python manage.py run_fetcher --celery_args='-l INFO'
 ``` 
 
 
