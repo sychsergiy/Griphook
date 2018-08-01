@@ -9,13 +9,12 @@ from griphook.server.models import Project, ServicesGroup, Team
 
 class BusinessCreateCommandsTestCase(BaseWithDBSession):
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.runner = CliRunner()
-
     def setUp(self):
-        self.clean_up_db()
+        super(BusinessCreateCommandsTestCase, self).setUp()
+        self.runner = CliRunner()
+
+    def tearDown(self):
+        super(BusinessCreateCommandsTestCase, self).tearDown()
 
     def test_create_team_command(self):
         result = self.runner.invoke(cli, ['create_team', 'test'])
@@ -44,13 +43,12 @@ class BusinessCreateCommandsTestCase(BaseWithDBSession):
 
 class BusinessAttachProcessToProjectCommandTestCase(BaseWithDBSession):
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.runner = CliRunner()
-
     def setUp(self):
-        self.clean_up_db()
+        super(BusinessAttachProcessToProjectCommandTestCase, self).setUp()
+        self.runner = CliRunner()
+
+    def tearDown(self):
+        super(BusinessAttachProcessToProjectCommandTestCase, self).tearDown()
 
     def test_attach_process_to_project_command(self):
         self.session.add_all([ServicesGroup(title='test'), Project(title='test')])
@@ -79,13 +77,12 @@ class BusinessAttachProcessToProjectCommandTestCase(BaseWithDBSession):
 
 class BusinessAttachProcessToTeamCommandTestCase(BaseWithDBSession):
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.runner = CliRunner()
-
     def setUp(self):
-        self.clean_up_db()
+        super(BusinessAttachProcessToTeamCommandTestCase, self).setUp()
+        self.runner = CliRunner()
+
+    def tearDown(self):
+        super(BusinessAttachProcessToTeamCommandTestCase, self).tearDown()
 
     def test_attach_process_to_team_command(self):
         self.session.add_all([ServicesGroup(title='test'), Team(title='test')])
@@ -111,5 +108,6 @@ class BusinessAttachProcessToTeamCommandTestCase(BaseWithDBSession):
         self.assertEqual(result.exit_code, 0)
 
 
+#
 if __name__ == "__main__":
     unittest.main()

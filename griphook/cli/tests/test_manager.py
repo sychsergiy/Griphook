@@ -9,9 +9,13 @@ from griphook.server.models import Project, ServicesGroup, Team
 
 
 class TeamManagerTestCase(BaseWithDBSession):
+
     def setUp(self):
+        super(TeamManagerTestCase, self).setUp()
         self.manager = TeamManager(self.session)
-        self.clean_up_db()
+
+    def tearDown(self):
+        super(TeamManagerTestCase, self).tearDown()
 
     def test_create_team_method(self):
         title = 'test'
@@ -60,9 +64,12 @@ class TeamManagerTestCase(BaseWithDBSession):
 
 class ProjectManagerTestCase(BaseWithDBSession):
     def setUp(self):
+        super(ProjectManagerTestCase, self).setUp()
         self.manager = ProjectManager(self.session)
-        self.clean_up_db()
-
+    
+    def tearDown(self):
+        super(ProjectManagerTestCase, self).tearDown()
+    
     def test_create_project_method(self):
         title = 'test'
         self.manager.create(title=title)
