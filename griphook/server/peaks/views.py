@@ -3,7 +3,7 @@ import datetime
 import json
 import pytz
 
-from flask import current_app, request, abor, render_template
+from flask import current_app, request, abort, render_template
 from sqlalchemy import func
 
 from griphook.server.models import Metric, BatchStory, Service, ServicesGroup
