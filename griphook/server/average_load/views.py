@@ -1,11 +1,12 @@
 from flask import jsonify
 from flask.views import MethodView
 
-from griphook.server.average_load.servers import get_server_load_chart_data
-from griphook.server.average_load.sv_groups import get_average_services_group_load_chart_data
-from griphook.server.average_load.services import get_average_services_load_chart_data
-
 from griphook.server.average_load.mixins import QueryParametersForMethodMixin
+from griphook.server.average_load.helper import (
+    ServerChartDataHelper,
+    ServicesChartDataHelper,
+    ServicesGroupChartDataHelper,
+)
 
 
 class AbstractAverageLoadAPIView(QueryParametersForMethodMixin, MethodView):
@@ -24,9 +25,8 @@ class ServerAverageLoadView(AbstractAverageLoadAPIView):
     get_required_parameters = ('server',)
 
     def get(self):
-        response_data = get_server_load_chart_data(
-            self.parameters['server'], self.parameters['time_from'],
-            self.parameters['time_until'], self.parameters['metric_type'])
+        server_chart_data_helper = ServerChartDataHelper(self.parameters['server'], self.parameters['metric_type'])
+        response_data = server_chart_data_helper.get_data(self.parameters['time_from'], self.parameters['time_until'])
         return jsonify(response_data)
 
 
@@ -34,9 +34,11 @@ class ServicesGroupAverageLoadView(AbstractAverageLoadAPIView):
     get_required_parameters = ('services_group',)
 
     def get(self):
-        response_data = get_average_services_group_load_chart_data(
-            self.parameters['services_group'], self.parameters['time_from'],
-            self.parameters['time_until'], self.parameters['metric_type'])
+        sv_group_helper = ServicesGroupChartDataHelper(
+            self.parameters['services_group'], self.parameters['metric_type']
+        )
+        response_data = sv_group_helper.get_data(
+            self.parameters['time_from'], self.parameters['time_until'])
         return jsonify(response_data)
 
 
@@ -44,8 +46,6 @@ class ServiceAverageLoadView(AbstractAverageLoadAPIView):
     get_required_parameters = ('service',)
 
     def get(self):
-        response_data = get_average_services_load_chart_data(
-            self.parameters['service'], self.parameters['time_from'], self.parameters['time_until'],
-            self.parameters['metric_type'],
-        )
+        services_helper = ServicesChartDataHelper(self.parameters['service'], self.parameters['metric_type'])
+        response_data = services_helper.get_data(self.parameters['time_from'], self.parameters['time_until'])
         return jsonify(response_data)
