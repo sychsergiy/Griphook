@@ -8,3 +8,4 @@ python-dotenv==0.8.2
 pytest-flask==0.10.0
 pytest==3.6.3
 mypy==0.620
+httmock=1.2.6
