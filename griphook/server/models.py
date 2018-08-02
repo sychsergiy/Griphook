@@ -114,8 +114,17 @@ class Service(db.Model):
     )
 
 
-class BatchStory(db.Model):
-    __tablename__ = "batches_story"
+class BatchStoryPeaks(db.Model):
+    __tablename__ = "batches_story_peaks"
+
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.DateTime, unique=True)
+    status = db.Column(db.Integer)
+    put_into_queue = db.Column(db.DateTime)
+
+
+class BatchStoryBilling(db.Model):
+    __tablename__ = "batches_story_billing"
 
     id = db.Column(db.Integer, primary_key=True)
     time = db.Column(db.DateTime, unique=True)
@@ -140,11 +149,11 @@ class Metric(db.Model):
     batch_id = db.Column(
         db.Integer,
         db.ForeignKey(
-            column="batches_story.id",
+            column="batches_story_peaks.id",
             name="batch_story_fk"
         )
     )
-    batch = db.relationship("BatchStory", backref="metrics")
+    batch = db.relationship("BatchStoryPeaks", backref="metrics")
 
     service_id = db.Column(
         db.Integer,
@@ -185,6 +194,38 @@ class Metric(db.Model):
     __table_args__ = (
         db.UniqueConstraint(
             "batch_id", "type", "service_id", "services_group_id", name="ut_1"
+        ),
+    )
+
+
+class Billing(db.Model):
+    __tablename__ = "billing"
+
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Float)
+    type = db.Column(db.Enum(MetricTypes))
+
+    batch_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            column="batches_story_billing.id",
+            name="batch_story_fk"
+        )
+    )
+    batch = db.relationship("BatchStoryBilling", backref="billing")
+
+    service_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            column="services.id",
+            name="service_fk"
+        )
+    )
+    service = db.relationship("Service", backref="billing")
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "batch_id", "type", "service_id", name="ut_1"
         ),
     )
 
