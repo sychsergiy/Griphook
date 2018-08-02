@@ -21,6 +21,7 @@ class AbstractAverageLoadAPIView(QueryParametersForMethodMixin, MethodView):
         raise NotImplementedError
 
 
+# todo: optional argument: 'cluster'
 class ServerAverageLoadView(AbstractAverageLoadAPIView):
     get_required_parameters = ('server',)
 
@@ -30,6 +31,7 @@ class ServerAverageLoadView(AbstractAverageLoadAPIView):
         return jsonify(response_data)
 
 
+# todo: optional arguments: 'cluster', 'server',
 class ServicesGroupAverageLoadView(AbstractAverageLoadAPIView):
     get_required_parameters = ('services_group',)
 
@@ -42,6 +44,7 @@ class ServicesGroupAverageLoadView(AbstractAverageLoadAPIView):
         return jsonify(response_data)
 
 
+# todo: optional arguments: 'cluster', 'server', 'service_group'
 class ServiceAverageLoadView(AbstractAverageLoadAPIView):
     get_required_parameters = ('service',)
 
