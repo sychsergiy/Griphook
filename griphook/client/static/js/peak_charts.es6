@@ -32,85 +32,164 @@ var doc = document,
     ],
     METRICS_URL = '/peaks/peaks';
 
+var samples = [
+    {claster: "olympus", server: "temp3", services_group: "prom-furiosa", service: "furiosa-celery-highpriority-2"},
+    {claster: "olympus", server: "temp3", services_group: "prom-furiosa", service: "furiosa-celery-lowpriority-2"},
+    {claster: "olympus", server: "hermes", services_group: "han_solo-trunk", service: "han_solo-app-2"},
+    {claster: "olympus", server: "hermes", services_group: "han_solo-trunk", service: "han_solo-sche-2"},
+    {claster: "olympus", server: "hephaestus", services_group: "qa-slack-bot", service: "qa-slack-bot-qa-2"},
+    {claster: "kalm", server: "enyo", services_group: "pyup-bot--bot", service: "web"},
+    {claster: "olympus", server: "hephaestus", services_group: "qa-slack-bot", service: "qa-slack-bot-qa-1"},
+    {claster: "kalm", server: "aphrodite", services_group: "tofu--tofu-trunk", service: "celery"},
+    {claster: "kalm", server: "enyo", services_group: "pyup-bot--bot", service: "redis"},
+    {claster: "kalm", server: "enyo", services_group: "tofu--tofu-trunk", service: "celerybeat"},
+    {claster: "olympus", server: "stheno", services_group: "walle", service: "walle-sexy-group-walle-by-2"},
+    {claster: "olympus", server: "stheno", services_group: "walle", service: "walle-sexy-group-walle-kz-2"}
+]
 
-class PeakBarChart extends Chart {
 
-    constructor (...args) {
-        args[1].type = 'bar';
-        super(...args);
+function initTestServiceFilter() {
+    let filterListBlock = doc.querySelector('.services-filter ul'),
+        filterRow,
+        s;
+    
+    for (let i in samples) {
+        s = samples[i];
+        filterRow = doc.createElement('li');
+        filterRow.setAttribute('class', 'list-group-item search-list-item');
+        filterRow.innerHTML = `<input type="radio" 
+                                      name="full_service_name" 
+                                      value="${i}"
+                                      id="full_service_name${i}">
+                               <label for="full_service_name${i}">
+                               ${s.services_group}.${s.service}
+                               </label>`
+
+        filterListBlock.appendChild(filterRow);
+    };
+};
+
+
+function validateTimeInputs() {
+    // Checks `div#peak_chart_time_from > input`, `div#peak_chart_time_until > input`
+    // values.
+    // Returns values if both valid
+    let INVALID_CLASS = 'is-invalid';
+
+    let since_input = doc.querySelector('div#peak_chart_time_from > input'),
+        until_input = doc.querySelector('div#peak_chart_time_until > input'),
+        since_date = new Date(since_input.value),
+        until_date = new Date(until_input.value);
+
+    // Check since_date
+    if (since_date.toString() === 'Invalid Date') {
+        since_input.classList.add(INVALID_CLASS)
+        return;
     }
+    since_input.classList.remove(INVALID_CLASS)
 
-    update (data_label, labels, data) {
-        let chart_data = this.config.data;
-
-        chart_data.datasets[0].label = data_label;
-        chart_data.labels = labels;
-        chart_data.datasets[0].data = data;
-
-        super.update();
+    // Check until date
+    if (until_date.toString() === 'Invalid Date') {
+        until_input.classList.add(INVALID_CLASS)
+        return;
     }
+    until_input.classList.remove(INVALID_CLASS)
 
+    // Return valid data
+    return {since: since_input.value, until: until_input.value}
 }
 
 
 function getPeakChartFilteredData() {
     // Getting metric for bar chart here.
-    let samples = [
-        {claster: "olympus", server: "temp3", services_group: "prom-furiosa", service: "furiosa-celery-highpriority-2", instance: "0"},
-        {claster: "olympus", server: "temp3", services_group: "prom-furiosa", service: "furiosa-celery-lowpriority-2", instance: "0"},
-        {claster: "olympus", server: "hermes", services_group: "han_solo-trunk", service: "han_solo-app-2", instance: "0"},
-        {claster: "olympus", server: "hermes", services_group: "han_solo-trunk", service: "han_solo-sche-2", instance: "0"},
-        {claster: "olympus", server: "hephaestus", services_group: "qa-slack-bot", service: "qa-slack-bot-qa-2", instance: "0"},
-        {claster: "kalm", server: "enyo", services_group: "pyup-bot--bot", service: "web", instance: "0"},
-        {claster: "olympus", server: "hephaestus", services_group: "qa-slack-bot", service: "qa-slack-bot-qa-1", instance: "0"},
-        {claster: "kalm", server: "aphrodite", services_group: "tofu--tofu-trunk", service: "celery", instance: "0"},
-        {claster: "kalm", server: "aphrodite", services_group: "tofu--tofu-trunk", service: "celery", instance: "1"},
-        {claster: "kalm", server: "enyo", services_group: "pyup-bot--bot", service: "redis", instance: "0"},
-        {claster: "kalm", server: "enyo", services_group: "tofu--tofu-trunk", service: "celerybeat", instance: "0"},
-        {claster: "olympus", server: "stheno", services_group: "walle", service: "walle-sexy-group-walle-by-2", instance: "0"},
-        {claster: "olympus", server: "stheno", services_group: "walle", service: "walle-sexy-group-walle-kz-2", instance: "0"}
-    ]
-    let randomSample = samples[Math.floor(Math.random() * samples.length)];
-    randomSample['since'] = '2018-05-01';
-    randomSample['until'] = '2018-05-30';
-    randomSample['step'] = INTERVALS[3].value;
-    randomSample['metric_type'] = 'user_cpu_percent';
+    let service_input = doc.querySelector('input[type=radio][name=full_service_name]:checked'),
+        sample,
+        validated_dates;
 
+    if (service_input) {
+        sample = samples[service_input.value],
+        validated_dates = validateTimeInputs();
+    }
+
+    if (validated_dates !== undefined) {
+        sample['since'] = validated_dates.since,
+        sample['until'] = validated_dates.until;
+    }
+    else {
+        return;
+    }
+    
+    sample['step'] = INTERVALS[doc.querySelector('input#step-value').value].value;
+    sample['metric_type'] = 'user_cpu_percent';
 
     return fetch(
-        METRICS_URL + '?' + Object.keys(randomSample)
-                            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(randomSample[k])}`)
+        METRICS_URL + '?' + Object.keys(sample)
+                            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(sample[k])}`)
                             .join('&'), 
         {
             method: 'get'
         }
-    )   ;
+    );
+};
+
+
+function drawPeakChart(peak_chart) {
+    // Get metric for peak chart and draw chart in `peak_chart`
+    let chart_data_promise = getPeakChartFilteredData()
+    if (chart_data_promise === undefined) return;
+
+    chart_data_promise.then((response) => {
+        return response.json();
+    })
+    .then((json) => {
+        let data_label = 'user_cpu_percent',
+            labels = [],
+            values = [];
+
+        for (let metric of json.data) {
+            labels.push(metric[1]);
+            values.push(metric[0]);
+        }
+        labels.push('-');
+        values.push(0);
+
+        let chart_data = peak_chart.config.data;
+        chart_data.datasets[0].label = data_label;
+        chart_data.labels = labels;
+        chart_data.datasets[0].data = values;
+
+        peak_chart.update();
+    });
 };
 
 
 window.onload = () => {
     // Init datetime widgets
-	$('#peak_chart_time_from').datetimepicker({
+	let sinceDatePeaker = $('#peak_chart_time_from').datetimepicker({
         locale: 'ru',
         format: 'YYYY-MM-DD'
-    });
-    $('#peak_chart_time_until').datetimepicker({
+    }),
+        untilDatePeaker = $('#peak_chart_time_until').datetimepicker({
         locale: 'ru',
         format: 'YYYY-MM-DD'
     });
 
+    // Init service peak test filter
+    initTestServiceFilter();
+
     // Init step representation;
     let step_val_input = doc.getElementById('step-value')
     step_val_input.addEventListener('input', function() {
-        for (let verb_block of doc.getElementsByClassName('step-value-verbose')) {
+        for (let verb_block of doc.querySelectorAll('.step-value-verbose')) {
             verb_block.textContent = INTERVALS[this.value].verbose
         }
     });
     step_val_input.dispatchEvent(new Event('input'));
 
-    let peak_chart = new PeakBarChart(
-        doc.getElementById('peak_chart'), 
+    var peak_chart = new Chart(
+        doc.querySelector('#peak_chart'), 
         {
+            type: 'bar',
             data: {
                 labels: [],
                 datasets: [
@@ -125,20 +204,25 @@ window.onload = () => {
                 layout: {
                     padding: {
                         left: 50,
-                        right: 20,
-                        top: 20,
-                        bottom: 20
                     }
                 },
                 scales: {
                     xAxes: [{
                         gridLines: {
                             offsetGridLines: false,
-                            paddingLeft: 0
                         },
                     }],
                 },
             }
         }
     );
+
+    // Redraw peak chart if radio button was clicked
+    for (let filter of doc.querySelectorAll('input[name=full_service_name]')) {
+        filter.addEventListener('click', () => drawPeakChart(peak_chart));
+    }
+
+    sinceDatePeaker.on('dp.change', () => {drawPeakChart(peak_chart)});
+    untilDatePeaker.on('dp.change', () => {drawPeakChart(peak_chart)});
+    doc.querySelector('input#step-value').addEventListener('change', () => {drawPeakChart(peak_chart)});
 };
