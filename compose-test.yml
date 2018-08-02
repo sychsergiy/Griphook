@@ -9,9 +9,10 @@ services:
                 condition: service_healthy
         environment:
             - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
+            - GH_DATABASE_TEST_URL=postgres://user:password@postgres:5432/dbname
         healthcheck:
                 test: "exit 0"
-        command: bash -c "./entrypoint.sh upgrade && pytest"
+        command: bash -c "pytest"
 
     rabbit:
         image: rabbitmq
@@ -23,6 +24,6 @@ services:
         environment:
             - POSTGRES_PASSWORD=password
             - POSTGRES_USER=user
-            - POSTGRES_DB=database_name
+            - POSTGRES_DB=dbname
         healthcheck:
             test: "exit 0"
