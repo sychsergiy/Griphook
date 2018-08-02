@@ -38,7 +38,6 @@ class GraphiteAPIParser(APIParser):
             'from': str(time_from),
             'until': str(time_until),
         }
-        print(params)
         # Perform GET request via session and return plain data
         return self.request(params=params)
 
