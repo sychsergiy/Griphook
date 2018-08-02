@@ -1,6 +1,8 @@
-from griphook.api.parsers import APIParser
+from typing import Optional
+
 from griphook.api.graphite.functions import summarize
 from griphook.api.graphite.target import DotPath, MultipleValues
+from griphook.api.parsers import APIParser
 
 
 class GraphiteAPIParser(APIParser):
@@ -12,7 +14,10 @@ class GraphiteAPIParser(APIParser):
                                'system_cpu_percent',
                                'vsize')
 
-    def fetch(self, *, time_from: int, time_until: int) -> str:
+    def fetch(self, *,
+              time_from: int,
+              time_until: int,
+              target: Optional[str] = None) -> str:
         """
         Fetch all metric data for CPU and RAM from Graphite API
 
@@ -25,7 +30,7 @@ class GraphiteAPIParser(APIParser):
         """
 
         # Parameters for GET request
-        target = self.__construct_target()
+        target = target or self.__construct_default_target()
 
         params = {
             'format': 'json',
@@ -33,14 +38,14 @@ class GraphiteAPIParser(APIParser):
             'from': str(time_from),
             'until': str(time_until),
         }
-
+        print(params)
         # Perform GET request via session and return plain data
         return self.request(params=params)
 
-    def __construct_target(self):
+    def __construct_default_target(self) -> str:
 
         # path to all cpu and memory metrics
-        path = self.__path + self.__metrics
+        path = self.__path + str(self.__metrics)
 
         target = summarize(path, "1hour", "max", True)
         return str(target)
