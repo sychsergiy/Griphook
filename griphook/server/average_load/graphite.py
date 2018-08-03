@@ -22,7 +22,8 @@ def construct_target(metric_type, server='*', services_group='*', service='*', i
 def send_request(target: Union[str, tuple], time_from: int, time_until: int) -> dict:
     """
     Helper function for sending requests to Graphite APi
-    :param target: Graphite API `target` argument
+    :param target: Graphite API `target` argument,
+        str for one target, tuple for multiple
     :param time_from: timestamp
     :param time_until: timestamp
     :return: already parsed to json response

@@ -2,7 +2,7 @@ from griphook.server.average_load.graphite import average, summarize, send_reque
 from griphook.server.models import ServicesGroup, Service
 
 
-# todo: find better name for this class
+# todo: better name for this class
 class ChartDataHelper(object):
     """
     Helper class for average services load endpoints.
@@ -100,6 +100,7 @@ class ChartDataHelper(object):
             'root': root_data,
             'children': children_data
         }
+        # todo: refactor this method
         return result
 
 
@@ -124,6 +125,7 @@ class ServerChartDataHelper(ChartDataHelper):
 
 
 class ServicesGroupChartDataHelper(ChartDataHelper):
+    # todo: separate query and result normalization
     def retrieve_children(self) -> tuple:
         services = (
             ServicesGroup.query
@@ -149,17 +151,16 @@ class ServicesChartDataHelper(ChartDataHelper):
             Service.query
                 .filter(Service.title == self.root).distinct()
                 .join(ServicesGroup)
-                .with_entities(Service.server, ServicesGroup.title, Service.title, Service.instance, )
+                .with_entities(ServicesGroup.title, Service.title, Service.instance, )
         ).all()
         # necessary to use full path for services
         # because services may have the same name, but relate to different servers
         return services
 
-    def children_target_constructor(self, children_item) -> str:
+    def children_target_constructor(self, children_item: tuple) -> str:
         # use format in accordance to `retrieve_children` method returns
-        server, group, service, instance = children_item
-        return construct_target(self.metric_type, server=server, services_group=group, service=service,
-                                instance=instance)
+        group, service, instance = children_item
+        return construct_target(self.metric_type, services_group=group, service=service, instance=instance)
 
     def root_target_constructor(self) -> str:
         return construct_target(self.metric_type, service=self.root)
