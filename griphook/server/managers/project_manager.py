@@ -1,13 +1,13 @@
 from sqlalchemy.sql import exists
 
 from griphook.server.models import Metric, Project, ServicesGroup
-from griphook.server.managers.base_manager import BaseManager
 from griphook.server.managers.exceptions import ProjectManagerException
-
-
-EXC_PROJECT_ALREADY_EXISTS = 'Project with title {} already exists'
-EXC_PROJECT_DOESNT_EXISTS = 'Project with id={} doesn\'t exists'
-EXC_SERVICES_GROUP_DOESNT_EXISTS = 'ServicesGroup with id={} doesn\'t exists'
+from griphook.server.managers.base_manager import BaseManager
+from griphook.server.managers.constants import (
+    EXC_SERVICES_GROUP_DOESNT_EXISTS,
+    EXC_PROJECT_ALREADY_EXISTS,
+    EXC_PROJECT_DOESNT_EXISTS
+)
 
 
 class ProjectManager(BaseManager):
@@ -28,11 +28,11 @@ class ProjectManager(BaseManager):
         self.session.commit()
 
     def delete(self, project_id):
-        project = self.session.query(Project).filter_by(id=project_id)
+        project = self.session.query(Project).filter_by(id=project_id).scalar()
         if not project:
             raise ProjectManagerException(EXC_PROJECT_DOESNT_EXISTS.format(project_id))
 
-        project.delete()
+        self.session.delete(project)
         self.session.commit()
 
     def attach_to_services_group(self, project_id, services_group_id):
