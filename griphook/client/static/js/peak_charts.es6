@@ -163,6 +163,70 @@ function drawPeakChart(peak_chart) {
 };
 
 
+function getAvarageLoadChartData() {
+
+}
+
+
+function drawAwarageLoadChart(avarage_chart) {
+    let ROOT_BAR_COLOR = '#1b665c',
+        CHILD_BAR_COLOR = '#38c9b6';
+    // Data sample
+    let data = {
+        root: {
+            target: "cantal.*.bart.cgroups.lithos.*",
+            value: 1674026836.7863247
+        },
+        children: [
+            {
+                target: "cantal.*.bart.cgroups.lithos.uaprom-stable:*.*.vsize",
+                value: 1736756650.5207977
+            },
+            {
+                target: "cantal.*.bart.cgroups.lithos.uaprom-trunk:*.*.vsize",
+                value: 1904918650.3354225
+            },
+            {
+                target: "cantal.*.bart.cgroups.lithos.bigl-rabbit-stable:*.*.vsize",
+                value: 1192347648.0
+            },
+            {
+                target: "cantal.*.bart.cgroups.lithos.bigl-rabbit-default:*.*.vsize",
+                value: 1022598144.0
+            }
+        ]
+    },
+    chart_data = avarage_chart.config.data,
+    labels = [],
+    values = [],
+    backgroundColors = [],
+    borderWidths = [];
+      
+    // Set root source bar (first non '*' from the end in root.target splitted by '.')
+    labels.push(data.root.target);
+    values.push(data.root.value);
+    backgroundColors.push(ROOT_BAR_COLOR);
+    borderWidths.push(2);
+
+    // Set root's children sources bars
+    for (let child of data.children) {
+        labels.push(child.target);
+        values.push(child.value);
+        backgroundColors.push(CHILD_BAR_COLOR);
+        borderWidths.push(0);
+    }
+
+    // Form metric type here
+    chart_data.datasets[0].label = 'user_cpu_percent';
+    chart_data.labels = labels;
+    chart_data.datasets[0].data = values;
+    chart_data.datasets[0].backgroundColor = backgroundColors;
+    chart_data.datasets[0].borderWidth = borderWidths;
+    
+    avarage_chart.update();
+}
+
+
 window.onload = () => {
     // Init datetime widgets
 	let sinceDatePeaker = $('#peak_chart_time_from').datetimepicker({
@@ -211,6 +275,31 @@ window.onload = () => {
                         gridLines: {
                             offsetGridLines: false,
                         },
+                    }],
+                },
+            }
+        }
+    );
+
+    window.avarage_load_chart = new Chart(
+        doc.querySelector('#avarage-load-chart'),
+        {
+            type: 'horizontalBar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: ['Main'],
+                        backgroundColor: [],
+                        data: [],
+                        borderColor: '#071c19'
+                    }
+                ],
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        barPercentage: 0.65,
                     }],
                 },
             }
