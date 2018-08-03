@@ -19,6 +19,10 @@ def construct_target(metric_type, server='*', services_group='*', service='*', i
     return str(path + metric_type)
 
 
+class GraphiteAPIError(Exception):
+    pass
+
+
 def send_request(target: Union[str, tuple], time_from: int, time_until: int) -> dict:
     """
     Helper function for sending requests to Graphite APi
@@ -37,4 +41,7 @@ def send_request(target: Union[str, tuple], time_from: int, time_until: int) -> 
     }
     # todo: handle connection exception
     response = requests.get(url=base_url, params=params or {}, verify=False)
-    return json.loads(response.text)
+    if response.status_code == 200:
+        return json.loads(response.text)
+    else:
+        raise GraphiteAPIError('500 status code from Graphite API')

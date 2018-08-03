@@ -1,4 +1,5 @@
-from griphook.server.average_load.graphite import average, summarize, send_request
+from griphook.server.average_load.graphite import average, summarize, send_request, GraphiteAPIError
+from flask import abort
 
 
 # todo: better name for this class
@@ -77,23 +78,37 @@ class ChartDataHelper(object):
         # more user friendly format for showing on hover in chart
         root_target_to_visualize = self.root_target_constructor()
 
+        empty_response = {'root': {}, 'children': []}
+
         # send request to Graphite API with root target
-        parent_response = send_request(root_target, time_from, time_until)
+        try:
+            parent_response = send_request(root_target, time_from, time_until)
+        except GraphiteAPIError:
+            return empty_response
 
         # parse json
-        root_response_value = parent_response[0]['datapoints'][0][0]
+        try:
+            root_response_value = parent_response[0]['datapoints'][0][0]
+        except (KeyError, ValueError):
+            return empty_response
 
         root_data = {'target': root_target_to_visualize, 'value': root_response_value}
 
         # tuple of targets(item is target for each children_item) for sending multiple target argument
         children_target = tuple(self.children_target())
         # send request to Graphite API with root target
-        children_response = send_request(children_target, time_from, time_until)
+        try:
+            children_response = send_request(children_target, time_from, time_until)
+        except GraphiteAPIError:
+            return empty_response
         # convert response to convenient form
-        children_data = [{
-            'target': self.children_target_constructor(self.children[index]),
-            'value': value['datapoints'][0][0],  # todo: check IndexError
-        } for index, value in enumerate(children_response)]
+        try:
+            children_data = [{
+                'target': self.children_target_constructor(self.children[index]),
+                'value': value['datapoints'][0][0],  # todo: check IndexError
+            } for index, value in enumerate(children_response)]
+        except (KeyError, ValueError):
+            return empty_response
 
         result = {
             'root': root_data,
