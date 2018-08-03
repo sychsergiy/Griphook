@@ -9,21 +9,24 @@ from griphook.server.average_load.helper import (
 )
 
 
-class AbstractAverageLoadAPIView(QueryParametersForMethodMixin, MethodView):
-    _default_get_parameters: tuple = ('time_from', 'time_until', 'metric_type')
-    get_required_parameters: tuple = tuple()
-
-    def __init__(self, *args, **kwargs):
-        self.get_required_parameters = self.get_required_parameters + self._default_get_parameters
-        super(AbstractAverageLoadAPIView, self).__init__(*args, **kwargs)
-
-    def get(self):
-        raise NotImplementedError
-
-
 # todo: optional argument: 'cluster'
-class ServerAverageLoadView(AbstractAverageLoadAPIView):
-    get_required_parameters = ('server',)
+class ServerAverageLoadView(QueryParametersForMethodMixin, MethodView):
+    """
+    Endpoint with data for server average load chart
+    returns average load for server and for every service_group inside current server
+    in following format:
+    {
+        "root": {
+            "target": "values"
+            "value": "value"
+            }
+        "children": [
+            {"target": "value", "value": "value"},
+            ...
+        ]
+    }
+    """
+    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'server',)
 
     def get(self):
         server_chart_data_helper = ServerChartDataHelper(self.parameters['server'], self.parameters['metric_type'])
@@ -32,8 +35,23 @@ class ServerAverageLoadView(AbstractAverageLoadAPIView):
 
 
 # todo: optional arguments: 'cluster', 'server',
-class ServicesGroupAverageLoadView(AbstractAverageLoadAPIView):
-    get_required_parameters = ('services_group',)
+class ServicesGroupAverageLoadView(QueryParametersForMethodMixin, MethodView):
+    """
+    Endpoint with data for service_group average load chart
+    returns average load for server and for every service inside current service_group
+    in following format:
+    {
+        "root": {
+            "target": "values"
+            "value": "value"
+            }
+        "children": [
+            {"target": "value", "value": "value"},
+            ...
+        ]
+    }
+    """
+    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'services_group')
 
     def get(self):
         sv_group_helper = ServicesGroupChartDataHelper(
@@ -45,10 +63,27 @@ class ServicesGroupAverageLoadView(AbstractAverageLoadAPIView):
 
 
 # todo: optional arguments: 'cluster', 'server', 'service_group'
-class ServiceAverageLoadView(AbstractAverageLoadAPIView):
-    get_required_parameters = ('service',)
+class ServiceAverageLoadView(QueryParametersForMethodMixin, MethodView):
+    """
+    Endpoint with data for service average load chart
+    returns average load for server and for every instance inside current service
+    in following format:
+    {
+        "root": {
+            "target": "values"
+            "value": "value"
+            }
+        "children": [
+            {"target": "value", "value": "value"},
+            ...
+        ]
+    }
+    """
+    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'service',)
 
     def get(self):
         services_helper = ServicesChartDataHelper(self.parameters['service'], self.parameters['metric_type'])
         response_data = services_helper.get_data(self.parameters['time_from'], self.parameters['time_until'])
         return jsonify(response_data)
+
+# todo: maybe separate endpoints for getting average_load data for root and children

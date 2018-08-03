@@ -1,6 +1,9 @@
+import json
+from typing import Union
+
 import requests
 from griphook.api.graphite.functions import Function, Argument
-from griphook.api.graphite.target import Target
+from griphook.api.graphite.target import Target, DotPath
 
 average = Function('avg', Argument(Target, name='seriesLists'))
 
@@ -11,7 +14,26 @@ summarize = Function('summarize',
                      Argument(bool, name='AlignToFrom', default=False))
 
 
-def send_graphite_request(params: dict = None) -> str:
+def construct_target(metric_type, server='*', services_group='*', service='*', instance='*'):
+    path = DotPath('cantal', '*', f'{server}', 'cgroups', 'lithos', f'{services_group}:{service}', f'{instance}')
+    return str(path + metric_type)
+
+
+def send_request(target: Union[str, tuple], time_from: int, time_until: int) -> dict:
+    """
+    Helper function for sending requests to Graphite APi
+    :param target: Graphite API `target` argument
+    :param time_from: timestamp
+    :param time_until: timestamp
+    :return: already parsed to json response
+    """
     base_url = 'https://graphite.olympus.evo/render'
+    params = {
+        'format': 'json',
+        'target': target,
+        'from': str(time_from),
+        'until': str(time_until),
+    }
+    # todo: handle connection exception
     response = requests.get(url=base_url, params=params or {}, verify=False)
-    return response.text
+    return json.loads(response.text)

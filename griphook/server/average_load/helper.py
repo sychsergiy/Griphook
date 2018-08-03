@@ -1,36 +1,5 @@
-import json
-import requests
-
-from typing import Union
-
-from griphook.api.graphite.target import DotPath
-from griphook.server.average_load.graphite import average, summarize
+from griphook.server.average_load.graphite import average, summarize, send_request, construct_target
 from griphook.server.models import ServicesGroup, Service
-
-
-def construct_target(metric_type, server='*', services_group='*', service='*', instance='*'):
-    path = DotPath('cantal', '*', f'{server}', 'cgroups', 'lithos', f'{services_group}:{service}', f'{instance}')
-    return str(path + metric_type)
-
-
-def send_request(target: Union[str, tuple], time_from: int, time_until: int) -> dict:
-    """
-    Helper function for sending requests to Graphite APi
-    :param target: Graphite API `target` argument
-    :param time_from: timestamp
-    :param time_until: timestamp
-    :return: already parsed to json response
-    """
-    base_url = 'https://graphite.olympus.evo/render'
-    params = {
-        'format': 'json',
-        'target': target,
-        'from': str(time_from),
-        'until': str(time_until),
-    }
-    # todo: handle connection exception
-    response = requests.get(url=base_url, params=params or {}, verify=False)
-    return json.loads(response.text)
 
 
 # todo: find better name for this class
@@ -124,7 +93,7 @@ class ChartDataHelper(object):
         # convert response to convenient form
         children_data = [{
             'target': self.children_target_constructor(self.children[index]),
-            'values': value['datapoints'][0][0],  # todo: check IndexError
+            'value': value['datapoints'][0][0],  # todo: check IndexError
         } for index, value in enumerate(children_response)]
 
         result = {
