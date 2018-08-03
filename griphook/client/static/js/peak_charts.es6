@@ -30,7 +30,8 @@ var doc = document,
             verbose: 'Квартал'
         }
     ],
-    METRICS_URL = '/peaks/peaks';
+    METRICS_URL = '/peaks/peaks',
+    AVARAGE_SERVICE_LOAD_URL = '/average_load/service';
 
 var samples = [
     {claster: "olympus", server: "temp3", services_group: "prom-furiosa", service: "furiosa-celery-highpriority-2"},
@@ -164,66 +165,87 @@ function drawPeakChart(peak_chart) {
 
 
 function getAvarageLoadChartData() {
+    // Getting metric for bar chart here.
+    let service_input = doc.querySelector('input[type=radio][name=full_service_name]:checked'),
+        sample,
+        validated_dates;
 
+    if (service_input) {
+        sample = samples[service_input.value],
+        validated_dates = validateTimeInputs();
+    }
+
+    if (validated_dates !== undefined) {
+        // sample['time_from'] = 1524873600;
+        // sample['time_until'] = 1524897199;
+        sample['time_from'] = new Date(validated_dates.since).valueOf() / 1000;
+        sample['time_until'] = new Date(validated_dates.until).valueOf() / 1000;
+    }
+    else {
+        return;
+    }
+    
+    // Only user_cpu_percent and only service load for now
+    sample['metric_type'] = 'vsize';
+    return fetch(
+        AVARAGE_SERVICE_LOAD_URL + '?' + Object.keys(sample)
+                            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(sample[k])}`)
+                            .join('&'), 
+        {
+            method: 'get'
+        }
+    );
 }
 
 
 function drawAwarageLoadChart(avarage_chart) {
     let ROOT_BAR_COLOR = '#1b665c',
         CHILD_BAR_COLOR = '#38c9b6';
-    // Data sample
-    let data = {
-        root: {
-            target: "cantal.*.bart.cgroups.lithos.*",
-            value: 1674026836.7863247
-        },
-        children: [
-            {
-                target: "cantal.*.bart.cgroups.lithos.uaprom-stable:*.*.vsize",
-                value: 1736756650.5207977
-            },
-            {
-                target: "cantal.*.bart.cgroups.lithos.uaprom-trunk:*.*.vsize",
-                value: 1904918650.3354225
-            },
-            {
-                target: "cantal.*.bart.cgroups.lithos.bigl-rabbit-stable:*.*.vsize",
-                value: 1192347648.0
-            },
-            {
-                target: "cantal.*.bart.cgroups.lithos.bigl-rabbit-default:*.*.vsize",
-                value: 1022598144.0
-            }
-        ]
-    },
-    chart_data = avarage_chart.config.data,
-    labels = [],
-    values = [],
-    backgroundColors = [],
-    borderWidths = [];
-      
-    // Set root source bar (first non '*' from the end in root.target splitted by '.')
-    labels.push(data.root.target);
-    values.push(data.root.value);
-    backgroundColors.push(ROOT_BAR_COLOR);
-    borderWidths.push(2);
 
-    // Set root's children sources bars
-    for (let child of data.children) {
-        labels.push(child.target);
-        values.push(child.value);
-        backgroundColors.push(CHILD_BAR_COLOR);
-        borderWidths.push(0);
-    }
+    let chart_data_promise = getAvarageLoadChartData();
 
-    // Form metric type here
-    chart_data.datasets[0].label = 'user_cpu_percent';
-    chart_data.labels = labels;
-    chart_data.datasets[0].data = values;
-    chart_data.datasets[0].backgroundColor = backgroundColors;
-    chart_data.datasets[0].borderWidth = borderWidths;
-    
-    avarage_chart.update();
+    if (chart_data_promise === undefined) return;
+
+    chart_data_promise.then((response) => {
+        return response.json();
+    })
+    .then((json) => {
+
+        let chart_data = avarage_chart.config.data,
+            labels = [],
+            values = [],
+            backgroundColors = [],
+            borderWidths = [];
+
+        // Set root source bar (first non '*' from the end in root.target splitted by '.')
+        if (json.root.hasOwnProperty('target')) {
+            labels.push(json.root.target);
+            values.push(json.root.value);
+        }
+        else {
+            labels.push('No data');
+            values.push(0);
+        }
+        backgroundColors.push(ROOT_BAR_COLOR);
+        borderWidths.push(2);
+
+        // Set root's children sources bars
+        for (let child of json.children) {
+            labels.push(child.target);
+            values.push(child.value);
+            backgroundColors.push(CHILD_BAR_COLOR);
+            borderWidths.push(0);
+        }
+
+        // Form metric type here
+        chart_data.datasets[0].label = 'user_cpu_percent';
+        chart_data.labels = labels;
+        chart_data.datasets[0].data = values;
+        chart_data.datasets[0].backgroundColor = backgroundColors;
+        chart_data.datasets[0].borderWidth = borderWidths;
+        
+        avarage_chart.update();
+    })
 }
 
 
@@ -308,10 +330,10 @@ window.onload = () => {
 
     // Redraw peak chart if radio button was clicked
     for (let filter of doc.querySelectorAll('input[name=full_service_name]')) {
-        filter.addEventListener('click', () => drawPeakChart(peak_chart));
+        filter.addEventListener('click', () => {drawPeakChart(peak_chart); drawAwarageLoadChart(avarage_load_chart);});
     }
 
-    sinceDatePeaker.on('dp.change', () => {drawPeakChart(peak_chart)});
-    untilDatePeaker.on('dp.change', () => {drawPeakChart(peak_chart)});
-    doc.querySelector('input#step-value').addEventListener('change', () => {drawPeakChart(peak_chart)});
+    sinceDatePeaker.on('dp.change', () => {drawPeakChart(peak_chart); drawAwarageLoadChart(avarage_load_chart);});
+    untilDatePeaker.on('dp.change', () => {drawPeakChart(peak_chart); drawAwarageLoadChart(avarage_load_chart);});
+    doc.querySelector('input#step-value').addEventListener('change', () => {drawPeakChart(peak_chart); drawAwarageLoadChart(avarage_load_chart);});
 };
