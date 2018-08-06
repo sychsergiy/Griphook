@@ -16,7 +16,7 @@ def get_peacks():
         until = datetime.datetime.strptime(request.args.get('until'), '%Y-%m-%d')
         service_group = request.args.get('services_group')
         service = request.args.get('service')
-    except ValueError:
+    except (TypeError, ValueError):
         abort(400)
 
     metric_type = request.args.get('metric_type')
@@ -48,7 +48,7 @@ def get_peacks():
         if service_group:
             query = query.filter(ServicesGroup.title==service_group)
             if service:
-                query = query.filter(Service.title)
+                query = query.filter(Service.title==service)
 
     formatter = lambda x : (
                 x[0],

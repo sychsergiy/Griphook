@@ -1,3 +1,3 @@
-from .views import main_blueprint
+from .route import main_blueprint
 
 __all__ = ['main_blueprint', ]
