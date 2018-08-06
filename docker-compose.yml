@@ -16,36 +16,53 @@ services:
 #            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
 #        command: celery -A griphook.tasks.tasks beat
 #
-#    celery_worker:
-#        restart: always
-#        build: .
-#        depends_on:
-#            rabbit:
-#                condition: service_healthy
-#            postgres:
-#                condition: service_healthy
-#        environment:
-#            - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
-#            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
-#        healthcheck:
-#                test: "exit 0"
-#        command: bash -c "alembic upgrade head && celery -A griphook.tasks.tasks worker -l INFO"
+    celery_worker:
+      restart: always
+      build: .
+      depends_on:
+        rabbit:
+          condition: service_healthy
+        postgres:
+          condition: service_healthy
+      environment:
+          - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
+          - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
+      healthcheck:
+        test: "exit 0"
+      command: bash -c "sleep 3 && python manage.py db upgrade && celery -A griphook.tasks.tasks worker -l INFO"
+
+    task_scheduler:
+      restart: always
+      build: .
+      depends_on:
+        rabbit:
+          condition: service_healthy
+        postgres:
+          condition: service_healthy
+        celery_worker: 
+          condition: service_healthy  
+      environment:
+          - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
+          - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
+      healthcheck:
+        test: "exit 0"
+      command: bash -c "sleep 3 && python griphook/tasks/task_scheduler.py"
 
     rabbit:
-        restart: always
-        image: rabbitmq
-        healthcheck:
-            test: "exit 0"
+      restart: always
+      image: rabbitmq
+      healthcheck:
+        test: "exit 0"
 
     postgres:
-        restart: always
-        image: postgres
-        environment:
-            - POSTGRES_PASSWORD=password
-            - POSTGRES_USER=user
-            - POSTGRES_DB=database_name
-        healthcheck:
-            test: "exit 0"
+      restart: always
+      image: postgres
+      environment:
+          - POSTGRES_PASSWORD=password
+          - POSTGRES_USER=user
+          - POSTGRES_DB=database_name
+      healthcheck:
+          test: "exit 0"
 
     web:
       image: web
@@ -60,4 +77,4 @@ services:
         - SECRET_KEY=change_me_in_prod
       depends_on:
         - postgres
-      command: bash -c "entrypoint.sh && python manage.py run -h 0.0.0.0"
+      command: bash -c "python manage.py run -h 0.0.0.0"

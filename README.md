@@ -9,6 +9,8 @@ Server monitoring and billing service
 ```bash
 git clone http://git.interns.evo/EVO2018-Vlad-team/Griphook
 cd Griphook
+export PYTHONPATH=$PWD
+
 ```
 
 To run data fetcher:

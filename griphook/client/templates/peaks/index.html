@@ -1,0 +1,95 @@
+{% extends '_base.html' %}
+
+{% block extra_head %}
+    <!-- For datetime widget -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datetime-picker.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 filters text-center">
+                <!-- {% include 'peaks/includes/filters.html' %} -->
+                <div class="card my-4 ml-2">
+                    <div class="text-center filter-group services-filter">
+                        <h5 class="filter-title">Services</h5>
+                        <input type="text" class="form-control search-input" placeholder="Search" id="services-control">
+                        <ul class="search-list list-group"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-9 col-lg-8 col-sm-12">
+                <div class="plot mb-4">
+                    <div class="col-md-8 offset-md-2">
+                        <canvas id="peak_chart" 
+                                class="chartjs-render-monitor">
+                        </canvas>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <form id="charts-time-info">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class='input-group date datetimepicker' id='peak_chart_time_from'>
+                                        <input type='text' class="form-control" placeholder="Начало диапазона"/>
+                                        <div class="input-group-append">
+                                            <span class="input-group-addon input-group-text">
+                                                <span class="fa fa-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                    <input type="range" class="form-control" id="step-value" name="volume"
+                                    min="0" max="6" />
+                                    <div class="d-flex justify-content-center">
+                                        <span class="step-value-verbose"></span>
+                                    </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class='input-group date datetimepicker' id='peak_chart_time_until'>
+                                        <input type='text' class="form-control" placeholder="Конец диапазона"/>
+                                        <div class="input-group-append">
+                                            <span class="input-group-addon input-group-text">
+                                                <span class="fa fa-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+
+                <!-- Average load bar -->
+                <h3 class="text-center mt-5 mb-4">Средняя нагруженность</h3>
+                <div class="plot mb-4">
+                    <div class="col-md-10 offset-md-1">
+                        <canvas id="avarage-load-chart" 
+                                class="chartjs-render-monitor">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment-with-locales.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-datetime-picker.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.4/fetch.min.js"></script>
+    <script type="text/babel" src="{{ url_for('static', filename='js/peak_charts.es6') }}"></script>
+{% endblock %}
