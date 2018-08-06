@@ -11,11 +11,13 @@ from griphook.api.data_source import DataSource
 
 from griphook.api.graphite import parser, formatters
 from griphook.server.models import (
-    Metric,
+    BatchStoryPeaks,
     MetricTypes,
     Service,
     ServicesGroup,
-    BatchStory
+    MetricPeak,
+    Cluster,
+    Server
 )
 from griphook.tasks.utils import (
     DATA_GRANULATION,
@@ -57,7 +59,7 @@ def parse_metrics(batch_id: int):
     )
 
     try:
-        batch = session.query(BatchStory).with_for_update().get(batch_id)
+        batch = session.query(BatchStoryPeaks).with_for_update().get(batch_id)
 
         if batch.status != BatchStatus.STORED:
             time_from = int(batch.time.timestamp())
@@ -84,7 +86,7 @@ def parse_metrics(batch_id: int):
 
 
 def save_metric_to_db(session: Session, metrics: formatters.Metric,
-                      batch: BatchStory) -> int:
+                      batch: BatchStoryPeaks) -> int:
     """
     Take parsed metric, save it to database and change batch status to STORED
     """
@@ -100,22 +102,34 @@ def save_metric_to_db(session: Session, metrics: formatters.Metric,
             title=metric_tuple.services_group
         )
 
+        cluster, _ = concurrent_get_or_create(
+            session=rel_data_session,
+            model=Cluster,
+            title=metric_tuple.cluster
+        )
+
+        server, _ = concurrent_get_or_create(
+            session=rel_data_session,
+            model=Server,
+            title=metric_tuple.server,
+            cluster_id=cluster.id
+        )
+
         service, _ = concurrent_get_or_create(
             session=rel_data_session,
             model=Service,
             title=metric_tuple.service,
-            services_group=services_group,
+            services_group_id=services_group.id,
             instance=metric_tuple.instance,
-            server=metric_tuple.server,
-            cluster=metric_tuple.cluster
+            server_id=server.id
         )
 
-        session.add(Metric(
-            batch=batch,
+        session.add(MetricPeak(
+            batch_id=batch.id,
             value=metric_tuple.value,
             type=type_,
-            service=service,
-            services_group=services_group
+            service_id=service.id,
+            services_group_id=services_group.id
         ))
     batch.status = BatchStatus.STORED
     return counter

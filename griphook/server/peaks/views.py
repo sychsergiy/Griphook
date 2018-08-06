@@ -6,7 +6,7 @@ import pytz
 from flask import current_app, request, abort, render_template
 from sqlalchemy import func
 
-from griphook.server.models import Metric, BatchStory, Service, ServicesGroup
+from griphook.server.models import MetricPeak, BatchStoryPeaks, Service, ServicesGroup
 from griphook.server.peaks.utils import round_time
 
 
@@ -32,21 +32,21 @@ def get_peacks():
     until = round_time(since, until, step=step)
     since_timestamp = since.replace(tzinfo=datetime.timezone.utc).timestamp()
     remainder = (since_timestamp % step)
-    group_time = (func.floor((func.extract('epoch', BatchStory.time) - remainder) / step)) * step
+    group_time = (func.floor((func.extract('epoch', BatchStoryPeaks.time) - remainder) / step)) * step
     query = (
-        Metric.query
+        MetricPeak.query
             .with_entities(
-                func.max(Metric.value).label("peaks"),
-                func.min(func.extract('epoch', BatchStory.time)),
+                func.max(MetricPeak.value).label("peaks"),
+                func.min(func.extract('epoch', BatchStoryPeaks.time)),
                 group_time.label('step')
         )
             .group_by('step')
             .order_by('step')
-            .join(BatchStory)
+            .join(BatchStoryPeaks)
             .join(Service)
             .join(ServicesGroup)
-            .filter(BatchStory.time.between(since, until))
-            .filter(Metric.type==metric_type)
+            .filter(BatchStoryPeaks.time.between(since, until))
+            .filter(MetricPeak.type==metric_type)
         )
     if server:
         query = query.filter(Service.server==server)
