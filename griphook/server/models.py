@@ -10,8 +10,8 @@ class Cluster(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, unique=True, nullable=False)
 
-    cpu_worth = db.Column(db.Float)
-    memory_worth = db.Column(db.Float)
+    cpu_price = db.Column(db.Float)
+    memory_price = db.Column(db.Float)
 
 
 class Server(db.Model):
@@ -20,8 +20,8 @@ class Server(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, unique=True, nullable=False)
 
-    cpu_worth = db.Column(db.Float)
-    memory_worth = db.Column(db.Float)
+    cpu_price = db.Column(db.Float)
+    memory_price = db.Column(db.Float)
 
     cluster_id = db.Column(
         db.Integer,
@@ -30,7 +30,6 @@ class Server(db.Model):
             name="clusters_fk"
         )
     )
-    cluster = db.relationship("Cluster", backref="servers")
 
 
 class Team(db.Model):
@@ -70,7 +69,6 @@ class ServicesGroup(db.Model):
             name="project_fk"
         )
     )
-    project = db.relationship("Project", backref="services_groups")
 
     team_id = db.Column(
         db.Integer,
@@ -79,7 +77,6 @@ class ServicesGroup(db.Model):
             name="team_fk"
         )
     )
-    team = db.relationship("Team", backref="services_groups")
 
 
 class Service(db.Model):
@@ -96,7 +93,6 @@ class Service(db.Model):
             name="servers_fk"
         )
     )
-    server = db.relationship("Server", backref="service")
 
     services_group_id = db.Column(
         db.Integer,
@@ -105,7 +101,6 @@ class Service(db.Model):
             name="services_group_fk"
         )
     )
-    services_group = db.relationship("ServicesGroup", backref="services")
 
     __table_args__ = (
         db.UniqueConstraint(
@@ -143,7 +138,7 @@ class MetricPeak(db.Model):
     __tablename__ = "metrics_peaks"
 
     id = db.Column(db.Integer, primary_key=True)
-    value = db.Column(db.Float)
+    value = db.Column(db.Float, nullable=False)
     type = db.Column(db.Enum(MetricTypes, name='peaks_metric_types'))
 
     batch_id = db.Column(
@@ -153,7 +148,6 @@ class MetricPeak(db.Model):
             name="batch_story_peaks_fk"
         )
     )
-    batch = db.relationship("BatchStory", backref="metrics_peaks")
 
     service_id = db.Column(
         db.Integer,
@@ -162,7 +156,6 @@ class MetricPeak(db.Model):
             name="service_fk"
         )
     )
-    service = db.relationship("Service", backref="metrics_peaks")
 
     services_group_id = db.Column(
         db.Integer,
@@ -171,7 +164,6 @@ class MetricPeak(db.Model):
             name="services_groups_fk"
         )
     )
-    services_group = db.relationship("ServicesGroup", backref="metrics_peaks")
 
     project_id = db.Column(
         db.Integer,
@@ -180,7 +172,6 @@ class MetricPeak(db.Model):
             name="projects_fk"
         )
     )
-    project = db.relationship("Project", backref="metrics_peaks")
 
     team_id = db.Column(
         db.Integer,
@@ -189,7 +180,6 @@ class MetricPeak(db.Model):
             name="teams_fk"
         )
     )
-    team = db.relationship("Team", backref="metrics_peaks")
 
     __table_args__ = (
         db.UniqueConstraint(
@@ -203,7 +193,7 @@ class MetricBilling(db.Model):
     __tablename__ = "metrics_billing"
 
     id = db.Column(db.Integer, primary_key=True)
-    value = db.Column(db.Float)
+    value = db.Column(db.Float, nullable=False)
     type = db.Column(db.Enum(MetricTypes, name='billing_metric_types'))
 
     batch_id = db.Column(
@@ -213,7 +203,6 @@ class MetricBilling(db.Model):
             name="batch_story_billing_fk"
         )
     )
-    batch = db.relationship("BatchStoryBilling", backref="metrics_billing")
 
     service_id = db.Column(
         db.Integer,
@@ -222,7 +211,6 @@ class MetricBilling(db.Model):
             name="service_fk"
         )
     )
-    service = db.relationship("Service", backref="metrics_billing")
 
     services_group_id = db.Column(
         db.Integer,
@@ -231,7 +219,6 @@ class MetricBilling(db.Model):
             name="services_groups_fk"
         )
     )
-    services_group = db.relationship("ServicesGroup", backref="metrics_billing")
 
     project_id = db.Column(
         db.Integer,
@@ -240,7 +227,6 @@ class MetricBilling(db.Model):
             name="projects_fk"
         )
     )
-    project = db.relationship("Project", backref="metrics_billing")
 
     team_id = db.Column(
         db.Integer,
@@ -249,7 +235,6 @@ class MetricBilling(db.Model):
             name="teams_fk"
         )
     )
-    team = db.relationship("Team", backref="metrics_billing")
 
     __table_args__ = (
         db.UniqueConstraint(
