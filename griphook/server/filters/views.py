@@ -1,54 +1,61 @@
-from flask import jsonify, request, abort
+from flask import jsonify
 
-from griphook.server.models import Service, ServicesGroup
-
-
-def clusters_api_view():
-    clusters_field_set = \
-        Service.query.with_entities(Service.cluster).distinct().all()
-    clusters = list(field_set[0] for field_set in clusters_field_set)
-    return jsonify(clusters)
+from griphook.server.filters.helper import (
+    get_clusters_with_ids,
+    get_servers_with_ids,
+    get_services_groups_with_ids,
+    get_services_with_ids
+)
 
 
-def servers_api_view():
-    servers_field_set = (
-        Service.query.with_entities(Service.server)
-            .distinct().order_by('server').all()
-    )
-    response = jsonify([field_set[0] for field_set in servers_field_set])
-    response.status_code = 200
-    return response
+def filters_hierarchy_api_view():
+    """
+    Endpoint to get full hierarchy of ...
+    in following format:
+    {
+      "clusters": [
+        {
+          "id": "id",
+          "title": "title"
+        }
+      ],
+      "servers": [
+        {
+          "id": "id",
+          "title": "title",
+          "cluster_id": "cluster_id"
+        }
+      ],
+      "services_groups": [
+        {
+          "id": "id",
+          "title": "title",
+          "server_ids": [],
+          "clusters_ids": []
+        }
+      ]
 
+      "services": [
+        {
+          "id": "id",
+          "title": "title",
+          "group": "services_group_id",
+          "server_id": "server_id",
+          "cluster_id": "cluster_id"
+        }
+      ]
+    }
+    :return:
+    """
+    clusters = get_clusters_with_ids()
+    servers = get_servers_with_ids()
+    services_groups = get_services_groups_with_ids()
+    services = get_services_with_ids()
 
-def services_groups_api_view():
-    server_title = request.args.get('server_title')
-    if not server_title:
-        abort(400)
-
-    services_groups_field_set = (
-        Service.query
-            .filter(Service.server == server_title)
-            .distinct().join(ServicesGroup)
-            .with_entities(ServicesGroup.title)
-            .order_by(ServicesGroup.title)
-    ).all()
-
-    response = jsonify([field_set[0] for field_set in services_groups_field_set])
-    response.status_code = 200
-    return response
-
-
-def services_api_view():
-    services_group_title = request.args.get('services_group_title')
-    if not services_group_title:
-        abort(400)
-
-    service_field_set = (
-        Service.query
-            .with_entities(Service.title).join(ServicesGroup)
-            .filter(ServicesGroup.title == services_group_title)
-    ).all()
-
-    response = jsonify([field_set[0] for field_set in service_field_set])
-    response.status_code = 200
-    return response
+    response_data = {
+        'clusters': clusters,
+        'servers': servers,
+        'services_groups': services_groups,
+        'services': services,
+    }
+    return jsonify(response_data)
