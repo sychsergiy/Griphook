@@ -6,7 +6,7 @@ import pytz
 from flask import current_app, request, abort, render_template
 from sqlalchemy import func
 
-from griphook.server.models import Metric, BatchStory, Service, ServicesGroup
+from griphook.server.models import MetricPeak, BatchStoryPeaks, Service, ServicesGroup
 from griphook.server.peaks.utils import round_time
 
 

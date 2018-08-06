@@ -1,10 +1,10 @@
 from flask import jsonify
 
 from griphook.server.filters.helper import (
-    get_clusters_with_ids,
-    get_servers_with_ids,
-    get_services_groups_with_ids,
-    get_services_with_ids
+    get_clusters_hierarchy_part,
+    get_servers_hierarchy_part,
+    get_services_groups_hierarchy_part,
+    get_services_hierarchy_part
 )
 
 
@@ -47,10 +47,10 @@ def filters_hierarchy_api_view():
     }
     :return:
     """
-    clusters = get_clusters_with_ids()
-    servers = get_servers_with_ids()
-    services_groups = get_services_groups_with_ids()
-    services = get_services_with_ids()
+    clusters = get_clusters_hierarchy_part()
+    servers = get_servers_hierarchy_part()
+    services_groups = get_services_groups_hierarchy_part()
+    services = get_services_hierarchy_part()
 
     response_data = {
         'clusters': clusters,
