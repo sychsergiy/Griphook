@@ -1,5 +1,7 @@
 from griphook.server.models import Service, ServicesGroup
 
+from sqlalchemy.sql.functions import array_agg, rank, OrderedSetAgg, mode
+
 
 def get_clusters_with_ids():
     clusters_query = (
@@ -29,12 +31,18 @@ def get_servers_with_ids():
 
 def get_services_groups_with_ids():
     services_groups_query = (
-        ServicesGroup.query
-            .with_entities(ServicesGroup.id, ServicesGroup.title)
+        Service.query
+            .join(ServicesGroup)
+            .group_by(ServicesGroup.title, ServicesGroup.id)
+            .with_entities(
+            ServicesGroup.id, ServicesGroup.title,
+            array_agg(Service.server).label('servers'),
+            array_agg(Service.cluster).label('clusters')  # todo: later here must be set instead of array
+        )
     )
-
     services_groups = tuple(
-        {"id": id_, "title": title} for (id_, title) in services_groups_query
+        {"id": id_, "title": title, "servers_ids": list(set(servers_ids)), "clusters_ids": list(set(clusters_ids))} for
+        (id_, title, servers_ids, clusters_ids) in services_groups_query
     )
     return services_groups
 
