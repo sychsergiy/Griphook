@@ -142,7 +142,6 @@ function drawPeakChart(peak_chart) {
     chart_data_promise.then((response) => {
         return response.json();
     })
-    .catch(())
     .then((json) => {
         let data_label = 'user_cpu_percent',
             labels = [],
