@@ -60,7 +60,7 @@ class BaseWithDBSession(BaseTestCase):
         self.week = 604800
 
     def test_server_peak_data_validation(self):
-        url = url_for('peaks.peaks')
+        url = url_for('peaks.peaks-api')
         data = {
             'server': 'test1',
             'metric_type': "user_cpu_percent",
@@ -77,7 +77,7 @@ class BaseWithDBSession(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_peaks_query(self):
-        url = url_for('peaks.peaks')
+        url = url_for('peaks.peaks-api')
         data = {
             'server': 'test2',
             'metric_type': "user_cpu_percent",
