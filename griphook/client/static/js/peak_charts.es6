@@ -142,6 +142,7 @@ function drawPeakChart(peak_chart) {
     chart_data_promise.then((response) => {
         return response.json();
     })
+    .catch(())
     .then((json) => {
         let data_label = 'user_cpu_percent',
             labels = [],
@@ -170,14 +171,13 @@ function getAvarageLoadChartData() {
         sample,
         validated_dates;
 
+    // Getting validated dates or undefined
     if (service_input) {
         sample = samples[service_input.value],
         validated_dates = validateTimeInputs();
     }
 
     if (validated_dates !== undefined) {
-        // sample['time_from'] = 1524873600;
-        // sample['time_until'] = 1524897199;
         sample['time_from'] = new Date(validated_dates.since).valueOf() / 1000;
         sample['time_until'] = new Date(validated_dates.until).valueOf() / 1000;
     }
@@ -186,7 +186,7 @@ function getAvarageLoadChartData() {
     }
     
     // Only user_cpu_percent and only service load for now
-    sample['metric_type'] = 'vsize';
+    sample['metric_type'] = 'user_cpu_percent';
     return fetch(
         AVARAGE_SERVICE_LOAD_URL + '?' + Object.keys(sample)
                             .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(sample[k])}`)
@@ -217,7 +217,6 @@ function drawAwarageLoadChart(avarage_chart) {
             backgroundColors = [],
             borderWidths = [];
 
-        // Set root source bar (first non '*' from the end in root.target splitted by '.')
         if (json.root.hasOwnProperty('target')) {
             labels.push(json.root.target);
             values.push(json.root.value);
