@@ -51,6 +51,9 @@ def create_app(script_info=None):
     from griphook.server.peaks import peaks_blueprint
     app.register_blueprint(peaks_blueprint, url_prefix='/peaks')
 
+    from griphook.server.average_load import average_load_blueprint
+    app.register_blueprint(average_load_blueprint, url_prefix='/average_load')
+
     # set up error handlers
     @app.errorhandler(404)
     def page_not_found(error):

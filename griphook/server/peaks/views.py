@@ -1,12 +1,17 @@
+
 import datetime
 import json
 import pytz
 
-from flask import current_app, request, abort
+from flask import current_app, request, abort, render_template
 from sqlalchemy import func
 
 from griphook.server.models import Metric, BatchStory, Service, ServicesGroup
 from griphook.server.peaks.utils import round_time
+
+
+def index():
+    return render_template('peaks/index.html')
 
 
 def get_peacks():
@@ -16,7 +21,7 @@ def get_peacks():
         until = datetime.datetime.strptime(request.args.get('until'), '%Y-%m-%d')
         service_group = request.args.get('services_group')
         service = request.args.get('service')
-    except ValueError:
+    except (TypeError, ValueError):
         abort(400)
 
     metric_type = request.args.get('metric_type')
@@ -48,7 +53,7 @@ def get_peacks():
         if service_group:
             query = query.filter(ServicesGroup.title==service_group)
             if service:
-                query = query.filter(Service.title)
+                query = query.filter(Service.title==service)
 
     formatter = lambda x : (
                 x[0],

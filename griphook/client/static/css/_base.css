@@ -1,0 +1,83 @@
+/* custom css */
+
+body,
+html {
+    height: 100vh;
+}
+
+.metric-controls {
+    /* background: #e9ecef; */
+    padding: 1rem;
+}
+
+.progress {
+    background: rgb(237, 122, 119)
+}
+
+.progress-bar {
+    background: rgb(0, 158, 74)
+}
+
+.flex-fill {
+    flex: 1 1 auto;
+}
+
+.min-100 {
+    min-height: 100vh;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+}
+
+.filters {
+    padding: 0 2rem;
+    font-size: 14px;
+    /* display: flex; */
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    overflow-x: visible;
+}
+
+@media (min-width: 992px) {
+    .filters {
+        height: 94vh;
+    }
+}
+
+.filter-group {
+    /* flex: 1; */
+    padding: .5rem;
+    background: #e9ecef;
+    /* max-height: 20vw; */
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group>* {
+    flex: 1;
+    margin: .25rem auto;
+}
+
+.search-list {
+    overflow-y: scroll;
+    max-height: 20vw;
+}
+
+.search-list,
+.search-input {
+    width: 90%;
+}
+
+.filter-search-item {
+    text-align: left;
+}
+
+.search-list .search-list-item {
+    text-align: left;
+}
+
+.search-list .search-list-item input[type="checkbox"] {
+    margin-right: 1em;
+}
