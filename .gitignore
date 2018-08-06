@@ -91,3 +91,5 @@ griphook.db
 local.yml
 dev/
 bin
+node_modules/
+bundles/
