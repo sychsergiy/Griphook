@@ -2,7 +2,7 @@ from griphook.server.models import Server
 from griphook.server.managers.exceptions import ServerManagerException
 from griphook.server.managers.base_manager import BaseManager
 from griphook.server.managers.constants import (
-    EXC_OBJECT_DOESNT_EXISTS
+    EXC_SERVER_DOESNT_EXISTS
 )
 
 
@@ -16,7 +16,7 @@ class ServerManager(BaseManager):
     def _set_value(self, server_id, new_value, attribute_name):
         server = self.session.query(Server).filter_by(id=server_id).scalar()
         if not server:
-            raise ServerManagerException(EXC_OBJECT_DOESNT_EXISTS.format('Server', server_id))
+            raise ServerManagerException(EXC_SERVER_DOESNT_EXISTS.format(server_id))
 
         if 'cpu' in attribute_name:
             server.cpu_price = new_value

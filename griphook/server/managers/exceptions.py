@@ -8,3 +8,7 @@ class ProjectManagerException(ManagerException):
 
 class TeamManagerException(ManagerException):
     pass
+
+
+class ServerManagerException(ManagerException):
+    pass
