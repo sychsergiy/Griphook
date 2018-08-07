@@ -1,6 +1,11 @@
-from typing import Optional
+from typing import Optional, Union
 
-from griphook.api.graphite.functions import summarize
+from griphook.api.graphite.functions import (
+    summarize, 
+    Function, 
+    BuiltInOrTarget,
+    Argument
+)
 from griphook.api.graphite.target import DotPath, MultipleValues
 from griphook.api.parsers import APIParser
 
@@ -13,6 +18,7 @@ class GraphiteAPIParser(APIParser):
     __metrics = MultipleValues('user_cpu_percent',
                                'system_cpu_percent',
                                'vsize')
+    __default_function = summarize
 
     def fetch(self, *,
               time_from: int,
@@ -30,7 +36,7 @@ class GraphiteAPIParser(APIParser):
         """
 
         # Parameters for GET request
-        target = target or self.__construct_default_target()
+        target = target or GraphiteAPIParser.construct_target()
 
         params = {
             'format': 'json',
@@ -41,10 +47,17 @@ class GraphiteAPIParser(APIParser):
         # Perform GET request via session and return plain data
         return self.request(params=params)
 
-    def __construct_default_target(self) -> str:
+    @classmethod
+    def construct_target(cls, 
+                         path: Optional[DotPath] = None, 
+                         metrics: Optional[str] = None, 
+                         function: Optional[Function] = None,
+                         *func_args: Union[BuiltInOrTarget, Argument]) -> str:
+       path = path or cls.__path
+       metrics = metrics or str(cls.__metrics)
+       function = function or cls.__default_function
+       args = func_args or ("1hour", "max", True)
 
-        # path to all cpu and memory metrics
-        path = self.__path + str(self.__metrics)
+       target = function(path + metrics, *args)
+       return str(target)
 
-        target = summarize(path, "1hour", "max", True)
-        return str(target)
