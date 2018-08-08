@@ -28,102 +28,111 @@ CREATING_BATCHES_INTERVAL = conf['tasks']['CREATING_BATCHES_INTERVAL']
 FILLING_TASK_QUEUE_INTERVAL = conf['tasks']['FILLING_TASK_QUEUE_INTERVAL']
 
 
-def create_batches_until_now():
-    """
-    Insert batches to db from last batch time or
-    from `datetime.now() - conf['tasks']['DATA_SOURCE_DATA_EXPIRES']` if no
-    batches in db to `datetime.now()`.
-    """
-    session = Session()
+class TaskScheduler(object):
+    _session = Session()
 
-    now = datetime.now().replace(microsecond=0, second=0, minute=0)
-    last_batch = (
-        session.query(BatchStoryPeaks)
-        .order_by(desc(BatchStoryPeaks.time))
-        .limit(1)
-        .first()
-    )
-    step = timedelta(seconds=DATA_GRANULATION)
+    def __init__(self, batch_model, task):
+        self._batch_model = batch_model
+        self._task = task
 
-    if last_batch is None:
-        time_from = now - \
-            timedelta(seconds=DATA_SOURCE_DATA_EXPIRES)
-    else:
-        time_from = last_batch.time + step
-
-    session.add_all([
-        BatchStoryPeaks(time=batch_time, status=BatchStatus.EMPTY)
-        for batch_time in itertools.takewhile(
-            lambda t: t < now,
-            datetime_range(time_from, now, step)
+    def create_batches_until_now(self):
+        """
+        Insert batches to db from last batch time or
+        from `datetime.now() - conf['tasks']['DATA_SOURCE_DATA_EXPIRES']` if no
+        batches in db to `datetime.now()`.
+        """
+        now = datetime.now().replace(microsecond=0, second=0, minute=0)
+        last_batch = (
+            self._session.query(self._batch_model)
+            .order_by(desc(self._batch_model.time))
+            .limit(1)
+            .first()
         )
-    ])
-    session.commit()
+        step = timedelta(seconds=DATA_GRANULATION)
 
+        if last_batch is None:
+            time_from = now - \
+                timedelta(seconds=DATA_SOURCE_DATA_EXPIRES)
+        else:
+            time_from = last_batch.time + step
 
-def requeue_expired_batches():
-    """Put expired batches to the tasks queue again"""
-    session = Session()
-    expired_batches = (
-        session.query(BatchStoryPeaks)
-        .filter(BatchStoryPeaks.put_into_queue < datetime.now() -
-                timedelta(seconds=PARSE_METRIC_EXPIRES))
-        .all()
-    )
-
-    push_batches_into_queue(expired_batches)
-
-
-def push_batches_into_queue(batches: Sequence[BatchStoryPeaks]):
-    """Push batches into queue and set their status to BatchStatus.QUEUED."""
-    for batch in batches:
-        tasks.parse_metrics.delay(batch_id=batch.id)
-
-        batch.put_into_queue = datetime.now()
-        batch.status = BatchStatus.QUEUED
-
-
-def fill_task_queue():
-    """
-    Add tasks to queue if batches with status `QUEUED` less than MAX_TASKS
-    and there are batches with `EMPTY` status in db.
-    """
-    session = Session()
-
-    queued_tasks_count = (
-        session.query(BatchStoryPeaks)
-        .filter(BatchStoryPeaks.status == BatchStatus.QUEUED)
-        .count()
-    )
-
-    if queued_tasks_count < MAX_TASKS:
-        lack_of_tasks = MAX_TASKS - queued_tasks_count
-        batches = (
-            session.query(BatchStoryPeaks)
-            .filter(BatchStoryPeaks.status == BatchStatus.EMPTY)
-            .limit(lack_of_tasks)
+        self._session.add_all([
+            self._batch_model(time=batch_time, status=BatchStatus.EMPTY)
+            for batch_time in itertools.takewhile(
+                lambda t: t < now,
+                datetime_range(time_from, now, step)
+            )
+        ])
+        self._session.commit()
+    
+    def requeue_expired_batches(self):
+        """Put expired batches to the tasks queue again"""
+        expired_batches = (
+            self._session.query(self._batch_model)
+            .filter(self._batch_model.put_into_queue < datetime.now() -
+                    timedelta(seconds=PARSE_METRIC_EXPIRES))
+            .all()
         )
 
-        push_batches_into_queue(batches)
-    session.commit()
+        self._push_batches_into_queue(expired_batches)
+
+    def _push_batches_into_queue(self, batches: Sequence[BatchStoryPeaks]):
+        """Push batches into queue and set their status to BatchStatus.QUEUED."""
+        for batch in batches:
+            batch.put_into_queue = datetime.now()
+            batch.status = BatchStatus.QUEUED
+            
+            self._task.delay(batch_id=batch.id)
+            self._session.commit()
+
+    def fill_task_queue(self):
+        """
+        Add tasks to queue if batches with status `QUEUED` less than MAX_TASKS
+        and there are batches with `EMPTY` status in db.
+        """
+        queued_tasks_count = (
+            self._session.query(self._batch_model)
+            .filter(BatchStoryPeaks.status == BatchStatus.QUEUED)
+            .count()
+        )
+
+        if queued_tasks_count < MAX_TASKS:
+            lack_of_tasks = MAX_TASKS - queued_tasks_count
+            batches = (
+                self._session.query(self._batch_model)
+                .filter(BatchStoryPeaks.status == BatchStatus.EMPTY)
+                .limit(lack_of_tasks)
+            )
+
+            self._push_batches_into_queue(batches)
+        self._session.commit()
+
+    def fill_schedule(self, schedule: schedule, start_now=True):
+        if start_now:
+            self.requeue_expired_batches()
+            self.create_batches_until_now()
+            self.fill_task_queue()
+        
+        schedule.every(
+            DATA_GRANULATION
+        ).seconds.do(self.requeue_expired_batches)
+
+        schedule.every(
+            CREATING_BATCHES_INTERVAL
+        ).seconds.do(self.create_batches_until_now)
+
+        schedule.every(
+            FILLING_TASK_QUEUE_INTERVAL
+        ).seconds.do(self.fill_task_queue)
 
 
 def main():
-    requeue_expired_batches()
-    create_batches_until_now()
-    fill_task_queue()
+    peaks_parsing_scheduler = TaskScheduler(
+        batch_model=BatchStoryPeaks,
+        task=tasks.parse_metrics
+    )
+    peaks_parsing_scheduler.fill_schedule(schedule)
 
-    schedule.every(
-        DATA_GRANULATION
-    ).seconds.do(requeue_expired_batches)
-
-    schedule.every(
-        CREATING_BATCHES_INTERVAL
-    ).seconds.do(create_batches_until_now)
-
-    schedule.every(
-        FILLING_TASK_QUEUE_INTERVAL
-    ).seconds.do(fill_task_queue)
 
     while True:
         schedule.run_pending()
