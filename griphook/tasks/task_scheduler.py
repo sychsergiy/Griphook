@@ -81,10 +81,11 @@ class TaskScheduler(object):
         for batch in batches:
             batch.put_into_queue = datetime.now()
             batch.status = BatchStatus.QUEUED
-            
-            self._task.delay(batch_id=batch.id)
-            self._session.commit()
+        self._session.commit()
 
+        for batch in batches:
+            self._task.delay(batch_id=batch.id)
+   
     def fill_task_queue(self):
         """
         Add tasks to queue if batches with status `QUEUED` less than MAX_TASKS
