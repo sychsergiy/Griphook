@@ -5,7 +5,7 @@ from flask import url_for
 
 from griphook.server import db
 from griphook.tests.base import BaseTestCase
-from griphook.server.models import Metric, BatchStory, Service, ServicesGroup
+from griphook.server.models import MetricPeak, BatchStoryPeaks, Service, ServicesGroup
 
 
 class BaseWithDBSession(BaseTestCase):
@@ -25,31 +25,31 @@ class BaseWithDBSession(BaseTestCase):
         self.session.add_all([service1, service2, service3])
         self.time1 = datetime.now() - timedelta(days=8)
         self.time2 = datetime.now()
-        batches_story1 = BatchStory(time=self.time1)
-        batches_story2 = BatchStory(time=self.time2)
+        batches_story1 = BatchStoryPeaks(time=self.time1)
+        batches_story2 = BatchStoryPeaks(time=self.time2)
         self.session.add_all([batches_story1, batches_story2])
-        metric1 = Metric(
+        metric1 = MetricPeak(
             value=2,
             batch=batches_story1,
             service=service1,
             services_group=service_group1,
             type='user_cpu_percent'
         )
-        metric2 = Metric(
+        metric2 = MetricPeak(
             value=2,
             batch=batches_story2,
             service=service2,
             services_group=service_group2,
             type='user_cpu_percent'
         )
-        metric3 = Metric(
+        metric3 = MetricPeak(
             value=3,
             batch=batches_story2,
             service=service3,
             services_group=service_group2,
             type='user_cpu_percent'
         )
-        metric4 = Metric(
+        metric4 = MetricPeak(
             value=4,
             batch=batches_story1,
             service=service3,

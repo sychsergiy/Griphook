@@ -1,4 +1,3 @@
-
 import datetime
 import json
 import pytz
@@ -14,7 +13,7 @@ def index():
     return render_template('peaks/index.html')
 
 
-def get_peacks():
+def get_peaks():
     try:
         step = int(request.args.get('step'))
         since = datetime.datetime.strptime(request.args.get('since'), '%Y-%m-%d')
@@ -33,29 +32,30 @@ def get_peacks():
     since_timestamp = since.replace(tzinfo=datetime.timezone.utc).timestamp()
     remainder = (since_timestamp % step)
     group_time = (func.floor((func.extract('epoch', BatchStoryPeaks.time) - remainder) / step)) * step
+
     query = (
         MetricPeak.query
-            .with_entities(
-                func.max(MetricPeak.value).label("peaks"),
-                func.min(func.extract('epoch', BatchStoryPeaks.time)),
-                group_time.label('step')
+        .with_entities(
+            func.max(MetricPeak.value).label("peaks"),
+            func.min(func.extract('epoch', BatchStoryPeaks.time)),
+            group_time.label('step')
         )
-            .group_by('step')
-            .order_by('step')
-            .join(BatchStoryPeaks)
-            .join(Service)
-            .join(ServicesGroup)
-            .filter(BatchStoryPeaks.time.between(since, until))
-            .filter(MetricPeak.type==metric_type)
+        .group_by('step')
+        .order_by('step')
+        .join(BatchStoryPeaks)
+        .join(Service)
+        .join(ServicesGroup)
+        .filter(BatchStoryPeaks.time.between(since, until))
+        .filter(MetricPeak.type == metric_type)
         )
     if server:
-        query = query.filter(Service.server==server)
+        query = query.filter(Service.server == server)
         if service_group:
-            query = query.filter(ServicesGroup.title==service_group)
+            query = query.filter(ServicesGroup.title == service_group)
             if service:
-                query = query.filter(Service.title==service)
+                query = query.filter(Service.title == service)
 
-    formatter = lambda x : (
+    formatter = lambda x: (
                 x[0],
                 datetime.datetime.fromtimestamp(
                     x[1],
