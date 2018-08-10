@@ -34,26 +34,111 @@ var doc = document,
     AVARAGE_SERVICE_LOAD_URL = '/average_load/service';
 
 var samples = [
-    {claster: "olympus", server: "temp3", services_group: "prom-furiosa", service: "furiosa-celery-highpriority-2"},
-    {claster: "olympus", server: "temp3", services_group: "prom-furiosa", service: "furiosa-celery-lowpriority-2"},
-    {claster: "olympus", server: "hermes", services_group: "han_solo-trunk", service: "han_solo-app-2"},
-    {claster: "olympus", server: "hermes", services_group: "han_solo-trunk", service: "han_solo-sche-2"},
-    {claster: "olympus", server: "hephaestus", services_group: "qa-slack-bot", service: "qa-slack-bot-qa-2"},
-    {claster: "kalm", server: "enyo", services_group: "pyup-bot--bot", service: "web"},
-    {claster: "olympus", server: "hephaestus", services_group: "qa-slack-bot", service: "qa-slack-bot-qa-1"},
-    {claster: "kalm", server: "aphrodite", services_group: "tofu--tofu-trunk", service: "celery"},
-    {claster: "kalm", server: "enyo", services_group: "pyup-bot--bot", service: "redis"},
-    {claster: "kalm", server: "enyo", services_group: "tofu--tofu-trunk", service: "celerybeat"},
-    {claster: "olympus", server: "stheno", services_group: "walle", service: "walle-sexy-group-walle-by-2"},
-    {claster: "olympus", server: "stheno", services_group: "walle", service: "walle-sexy-group-walle-kz-2"}
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'adv',
+        'service': 'adv-kz',
+        'services_group': 'adv-stable'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'adv',
+        'service': 'adv-ru',
+        'services_group': 'adv-stable'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'adv',
+        'service': 'adv-ua',
+        'services_group': 'adv-stable'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'adv',
+        'service': 'adv-by',
+        'services_group': 'adv-trunk'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'adv',
+        'service': 'adv-kz',
+        'services_group': 'adv-trunk'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'adv',
+        'service': 'adv-ru',
+        'services_group': 'adv-trunk'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'adv',
+        'service': 'adv-ua',
+        'services_group': 'adv-trunk'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'bart',
+        'service': 'celery-bigl',
+        'services_group': 'bigl-rabbit-default'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'bart',
+        'service': 'site-bigl',
+        'services_group': 'bigl-rabbit-default'
+    },
+    {
+        'claster': 'dev',
+        'instance': '1',
+        'server': 'bart',
+        'service': 'site-bigl',
+        'services_group': 'bigl-rabbit-default'
+    },
+    {
+        'claster': 'dev',
+        'instance': '2',
+        'server': 'bart',
+        'service': 'site-bigl',
+        'services_group': 'bigl-rabbit-default'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'bart',
+        'service': 'celery-bigl',
+        'services_group': 'bigl-rabbit-stable'
+    },
+    {
+        'claster': 'dev',
+        'instance': '0',
+        'server': 'bart',
+        'service': 'site-bigl',
+        'services_group': 'bigl-rabbit-stable'
+    },
+    {
+        'claster': 'dev',
+        'instance': '1',
+        'server': 'bart',
+        'service': 'site-bigl',
+        'services_group': 'bigl-rabbit-stable'
+    }
 ]
-
 
 function initTestServiceFilter() {
     let filterListBlock = doc.querySelector('.services-filter ul'),
         filterRow,
         s;
-    
+
     for (let i in samples) {
         s = samples[i];
         filterRow = doc.createElement('li');
@@ -67,7 +152,8 @@ function initTestServiceFilter() {
                                </label>`
 
         filterListBlock.appendChild(filterRow);
-    };
+    }
+    ;
 };
 
 
@@ -109,24 +195,24 @@ function getPeakChartFilteredData() {
 
     if (service_input) {
         sample = samples[service_input.value],
-        validated_dates = validateTimeInputs();
+            validated_dates = validateTimeInputs();
     }
 
     if (validated_dates !== undefined) {
         sample['since'] = validated_dates.since,
-        sample['until'] = validated_dates.until;
+            sample['until'] = validated_dates.until;
     }
     else {
         return;
     }
-    
+
     sample['step'] = INTERVALS[doc.querySelector('input#step-value').value].value;
     sample['metric_type'] = 'user_cpu_percent';
 
     return fetch(
         METRICS_URL + '?' + Object.keys(sample)
-                            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(sample[k])}`)
-                            .join('&'), 
+            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(sample[k])}`)
+            .join('&'),
         {
             method: 'get'
         }
@@ -142,25 +228,25 @@ function drawPeakChart(peak_chart) {
     chart_data_promise.then((response) => {
         return response.json();
     })
-    .then((json) => {
-        let data_label = 'user_cpu_percent',
-            labels = [],
-            values = [];
+        .then((json) => {
+            let data_label = 'user_cpu_percent',
+                labels = [],
+                values = [];
 
-        for (let metric of json.data) {
-            labels.push(metric[1]);
-            values.push(metric[0]);
-        }
-        labels.push('-');
-        values.push(0);
+            for (let metric of json.data) {
+                labels.push(metric[1]);
+                values.push(metric[0]);
+            }
+            labels.push('-');
+            values.push(0);
 
-        let chart_data = peak_chart.config.data;
-        chart_data.datasets[0].label = data_label;
-        chart_data.labels = labels;
-        chart_data.datasets[0].data = values;
+            let chart_data = peak_chart.config.data;
+            chart_data.datasets[0].label = data_label;
+            chart_data.labels = labels;
+            chart_data.datasets[0].data = values;
 
-        peak_chart.update();
-    });
+            peak_chart.update();
+        });
 };
 
 
@@ -173,7 +259,7 @@ function getAvarageLoadChartData() {
     // Getting validated dates or undefined
     if (service_input) {
         sample = samples[service_input.value],
-        validated_dates = validateTimeInputs();
+            validated_dates = validateTimeInputs();
     }
 
     if (validated_dates !== undefined) {
@@ -183,13 +269,13 @@ function getAvarageLoadChartData() {
     else {
         return;
     }
-    
+
     // Only user_cpu_percent and only service load for now
     sample['metric_type'] = 'user_cpu_percent';
     return fetch(
         AVARAGE_SERVICE_LOAD_URL + '?' + Object.keys(sample)
-                            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(sample[k])}`)
-                            .join('&'), 
+            .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(sample[k])}`)
+            .join('&'),
         {
             method: 'get'
         }
@@ -208,62 +294,62 @@ function drawAwarageLoadChart(avarage_chart) {
     chart_data_promise.then((response) => {
         return response.json();
     })
-    .then((json) => {
+        .then((json) => {
 
-        let chart_data = avarage_chart.config.data,
-            labels = [],
-            values = [],
-            backgroundColors = [],
-            borderWidths = [];
+            let chart_data = avarage_chart.config.data,
+                labels = [],
+                values = [],
+                backgroundColors = [],
+                borderWidths = [];
 
-        if (json.root.hasOwnProperty('target')) {
-            labels.push(json.root.target);
-            values.push(json.root.value);
-        }
-        else {
-            labels.push('No data');
-            values.push(0);
-        }
-        backgroundColors.push(ROOT_BAR_COLOR);
-        borderWidths.push(2);
+            if (json.root.hasOwnProperty('target')) {
+                labels.push(json.root.target);
+                values.push(json.root.value);
+            }
+            else {
+                labels.push('No data');
+                values.push(0);
+            }
+            backgroundColors.push(ROOT_BAR_COLOR);
+            borderWidths.push(2);
 
-        // Set root's children sources bars
-        for (let child of json.children) {
-            labels.push(child.target);
-            values.push(child.value);
-            backgroundColors.push(CHILD_BAR_COLOR);
-            borderWidths.push(0);
-        }
+            // Set root's children sources bars
+            for (let child of json.children) {
+                labels.push(child.target);
+                values.push(child.value);
+                backgroundColors.push(CHILD_BAR_COLOR);
+                borderWidths.push(0);
+            }
 
-        // Form metric type here
-        chart_data.datasets[0].label = 'user_cpu_percent';
-        chart_data.labels = labels;
-        chart_data.datasets[0].data = values;
-        chart_data.datasets[0].backgroundColor = backgroundColors;
-        chart_data.datasets[0].borderWidth = borderWidths;
-        
-        avarage_chart.update();
-    })
+            // Form metric type here
+            chart_data.datasets[0].label = 'user_cpu_percent';
+            chart_data.labels = labels;
+            chart_data.datasets[0].data = values;
+            chart_data.datasets[0].backgroundColor = backgroundColors;
+            chart_data.datasets[0].borderWidth = borderWidths;
+
+            avarage_chart.update();
+        })
 }
 
 
 window.onload = () => {
     // Init datetime widgets
-	let sinceDatePeaker = $('#peak_chart_time_from').datetimepicker({
-        locale: 'ru',
-        format: 'YYYY-MM-DD'
-    }),
+    let sinceDatePeaker = $('#peak_chart_time_from').datetimepicker({
+            locale: 'ru',
+            format: 'YYYY-MM-DD'
+        }),
         untilDatePeaker = $('#peak_chart_time_until').datetimepicker({
-        locale: 'ru',
-        format: 'YYYY-MM-DD'
-    });
+            locale: 'ru',
+            format: 'YYYY-MM-DD'
+        });
 
     // Init service peak test filter
     initTestServiceFilter();
 
     // Init step representation;
     let step_val_input = doc.getElementById('step-value')
-    step_val_input.addEventListener('input', function() {
+    step_val_input.addEventListener('input', function () {
         for (let verb_block of doc.querySelectorAll('.step-value-verbose')) {
             verb_block.textContent = INTERVALS[this.value].verbose
         }
@@ -271,7 +357,7 @@ window.onload = () => {
     step_val_input.dispatchEvent(new Event('input'));
 
     var peak_chart = new Chart(
-        doc.querySelector('#peak_chart'), 
+        doc.querySelector('#peak_chart'),
         {
             type: 'bar',
             data: {
@@ -328,10 +414,22 @@ window.onload = () => {
 
     // Redraw peak chart if radio button was clicked
     for (let filter of doc.querySelectorAll('input[name=full_service_name]')) {
-        filter.addEventListener('click', () => {drawPeakChart(peak_chart); drawAwarageLoadChart(avarage_load_chart);});
+        filter.addEventListener('click', () => {
+            drawPeakChart(peak_chart);
+            drawAwarageLoadChart(avarage_load_chart);
+        });
     }
 
-    sinceDatePeaker.on('dp.change', () => {drawPeakChart(peak_chart); drawAwarageLoadChart(avarage_load_chart);});
-    untilDatePeaker.on('dp.change', () => {drawPeakChart(peak_chart); drawAwarageLoadChart(avarage_load_chart);});
-    doc.querySelector('input#step-value').addEventListener('change', () => {drawPeakChart(peak_chart); drawAwarageLoadChart(avarage_load_chart);});
+    sinceDatePeaker.on('dp.change', () => {
+        drawPeakChart(peak_chart);
+        drawAwarageLoadChart(avarage_load_chart);
+    });
+    untilDatePeaker.on('dp.change', () => {
+        drawPeakChart(peak_chart);
+        drawAwarageLoadChart(avarage_load_chart);
+    });
+    doc.querySelector('input#step-value').addEventListener('change', () => {
+        drawPeakChart(peak_chart);
+        drawAwarageLoadChart(avarage_load_chart);
+    });
 };
