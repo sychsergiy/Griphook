@@ -16,8 +16,8 @@ def get_peaks():
         "server": string, | required
         "services_group": string,
         "service": string,
-        "since": string, | required
-        "until": string, | required
+        "time_from": string, | required
+        "time_until": string, | required
         "metric_type": string, | required
         "step": string| required
     }

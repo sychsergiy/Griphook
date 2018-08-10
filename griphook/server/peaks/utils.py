@@ -95,12 +95,14 @@ def get_shift(since, step):
 
 def peaks_query(query_data):
     server = query_data.get('server')
-    since = query_data.get('since')
-    until = query_data.get('until')
+    since = query_data.get('time_from')
+    until = query_data.get('time_until')
     step = query_data.get('step')
     metric_type = query_data.get('metric_type')
     service = query_data.get('service')
     service_group = query_data.get('service_group')
+    # todo: move to function params
+
     until = round_time(since, until, step=step)
     shift = get_shift(since, step)
     group_time = (func.floor((func.extract('epoch', BatchStoryPeaks.time) - shift) / step)) * step
@@ -146,12 +148,12 @@ def validate_peaks_query(args):
     except ValueError:
         error_data = {'Error': "Error step format. Expected int"}
     try:
-        data['since'] = datetime.datetime.strptime(args.get('since'), date_time_format)
-        data['until'] = datetime.datetime.strptime(args.get('until'), date_time_format)
+        data['time_from'] = datetime.datetime.strptime(args.get('time_from'), date_time_format)
+        data['time_until'] = datetime.datetime.strptime(args.get('time_until'), date_time_format)
     except TypeError:
         error_data = {'Error': "since and until are required fields"}
     except ValueError:
-        error_data = {'Error': "Error datetime (since or until) format. Expected {0}".format(date_time_format)}
+        error_data = {'Error': "Error datetime (time_from or time_until) format. Expected {0}".format(date_time_format)}
     data['service_group'] = args.get('services_group')
     data['service'] = args.get('service')
     data['metric_type'] = args.get('metric_type')

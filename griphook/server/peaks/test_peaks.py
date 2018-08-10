@@ -72,8 +72,8 @@ class BaseWithDBSession(BaseTestCase):
             'server': 'test1',
             'metric_type': "user_cpu_percent",
             'step': self.week,
-            "since": self.time1.strftime(self.data_time_format),
-            "until": self.time2.strftime(self.data_time_format)
+            "time_from": self.time1.strftime(self.data_time_format),
+            "time_until": self.time2.strftime(self.data_time_format)
         }
 
         for key in data:
@@ -89,8 +89,8 @@ class BaseWithDBSession(BaseTestCase):
             'server': 'test2',
             'metric_type': "user_cpu_percent",
             'step': self.week,
-            "since": self.time1.strftime(self.data_time_format),
-            "until": self.time2.strftime(self.data_time_format)
+            "time_from": self.time1.strftime(self.data_time_format),
+            "time_until": self.time2.strftime(self.data_time_format)
         }
         response = self.client.post(url, data=json.dumps(data), follow_redirects=True, content_type='application/json')
         resp_data = json.loads(response.data.decode('utf-8'))['data']
