@@ -10,7 +10,7 @@ from flask.cli import FlaskGroup
 
 from griphook.server import create_app, db
 from griphook.server import models
-from griphook.tasks import task_scheduler
+# from griphook.tasks import task_scheduler
 
 
 app = create_app()
@@ -48,27 +48,27 @@ def create_data():
     pass
 
 
-@cli.command()
-@click.option(
-    '--celery_args',
-    type=str,
-    help='Additional parameters for celery, --app and worker already provided.'
-)
-def run_fetcher(celery_args):
-    """
-    Start both celery worker and task scheduler
-    """
-    celery_proc = subprocess.Popen([
-        'celery',
-        '--workdir=%s' % os.getcwd(),
-        '-A',
-        'griphook.tasks.tasks',
-        'worker',
-        *shlex.split(celery_args)
-    ])
-
-    task_scheduler.main()
-    celery_proc.wait()
+# @cli.command()
+# @click.option(
+#     '--celery_args',
+#     type=str,
+#     help='Additional parameters for celery, --app and worker already provided.'
+# )
+# def run_fetcher(celery_args):
+#     """
+#     Start both celery worker and task scheduler
+#     """
+#     celery_proc = subprocess.Popen([
+#         'celery',
+#         '--workdir=%s' % os.getcwd(),
+#         '-A',
+#         'griphook.tasks.tasks',
+#         'worker',
+#         *shlex.split(celery_args)
+#     ])
+#
+#     task_scheduler.main()
+#     celery_proc.wait()
 
 
 @cli.command()

@@ -8,7 +8,7 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 
 from griphook.config import Config
-from griphook.server.models import BatchStory
+from griphook.server.models import BatchStoryPeaks
 from griphook.tasks.utils import (
     BatchStatus,
     DATA_GRANULATION,
@@ -38,8 +38,8 @@ def create_batches_until_now():
 
     now = datetime.now().replace(microsecond=0, second=0, minute=0)
     last_batch = (
-        session.query(BatchStory)
-        .order_by(desc(BatchStory.time))
+        session.query(BatchStoryPeaks)
+        .order_by(desc(BatchStoryPeaks.time))
         .limit(1)
         .first()
     )
@@ -52,7 +52,7 @@ def create_batches_until_now():
         time_from = last_batch.time + step
 
     session.add_all([
-        BatchStory(time=batch_time, status=BatchStatus.EMPTY)
+        BatchStoryPeaks(time=batch_time, status=BatchStatus.EMPTY)
         for batch_time in itertools.takewhile(
             lambda t: t < now,
             datetime_range(time_from, now, step)
@@ -65,8 +65,8 @@ def requeue_expired_batches():
     """Put expired batches to the tasks queue again"""
     session = Session()
     expired_batches = (
-        session.query(BatchStory)
-        .filter(BatchStory.put_into_queue < datetime.now() -
+        session.query(BatchStoryPeaks)
+        .filter(BatchStoryPeaks.put_into_queue < datetime.now() -
                 timedelta(seconds=PARSE_METRIC_EXPIRES))
         .all()
     )
@@ -74,7 +74,7 @@ def requeue_expired_batches():
     push_batches_into_queue(expired_batches)
 
 
-def push_batches_into_queue(batches: Sequence[BatchStory]):
+def push_batches_into_queue(batches: Sequence[BatchStoryPeaks]):
     """Push batches into queue and set their status to BatchStatus.QUEUED."""
     for batch in batches:
         tasks.parse_metrics.delay(batch_id=batch.id)
@@ -91,16 +91,16 @@ def fill_task_queue():
     session = Session()
 
     queued_tasks_count = (
-        session.query(BatchStory)
-        .filter(BatchStory.status == BatchStatus.QUEUED)
+        session.query(BatchStoryPeaks)
+        .filter(BatchStoryPeaks.status == BatchStatus.QUEUED)
         .count()
     )
 
     if queued_tasks_count < MAX_TASKS:
         lack_of_tasks = MAX_TASKS - queued_tasks_count
         batches = (
-            session.query(BatchStory)
-            .filter(BatchStory.status == BatchStatus.EMPTY)
+            session.query(BatchStoryPeaks)
+            .filter(BatchStoryPeaks.status == BatchStatus.EMPTY)
             .limit(lack_of_tasks)
         )
 
