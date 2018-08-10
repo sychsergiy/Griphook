@@ -1,72 +1,46 @@
-
-import datetime
 import json
-import pytz
 
-from flask import current_app, request, abort, render_template
-from sqlalchemy import func
+from flask import current_app, request, render_template, jsonify
 
-from griphook.server.models import MetricPeak, BatchStoryPeaks, Service, ServicesGroup
-from griphook.server.peaks.utils import round_time
+from griphook.server.peaks.utils import validate_peaks_query, peaks_query, peak_formatter
 
 
 def index():
     return render_template('peaks/index.html')
 
 
-def get_peacks():
-    try:
-        step = int(request.args.get('step'))
-        since = datetime.datetime.strptime(request.args.get('since'), '%Y-%m-%d')
-        until = datetime.datetime.strptime(request.args.get('until'), '%Y-%m-%d')
-        service_group = request.args.get('services_group')
-        service = request.args.get('service')
-    except (TypeError, ValueError):
-        abort(400)
+def get_peaks():
+    """
+    input:
+    {
+        "server": string, | required
+        "services_group": string,
+        "service": string,
+        "time_from": string, | required
+        "time_until": string, | required
+        "metric_type": string, | required
+        "step": string| required
+    }
 
-    metric_type = request.args.get('metric_type')
-    server = request.args.get('server')
-    if not metric_type or not server:
-        abort(400)
+    result:
+    {
+        "timeline": [string],
+        "value": [int],
+        "metric_type": string
+    }
+    """
+    data = request.get_json()
+    validated_data, error_data = validate_peaks_query(data)
+    if error_data:
+        response = jsonify(error_data)
+        response.status_code = 400
+    else:
+        query = peaks_query(validated_data)
+        query_result = query.all()
+        timeline = [peak_formatter(element) for element in query_result]
+        values = [element.peaks for element in query_result]
+        data = {"timeline": timeline, "values": values, 'metric_type': query_result[0].type.value}
+        response_data = {'data': data}
+        response = jsonify(response_data)
 
-    until = round_time(since, until, step=step)
-    since_timestamp = since.replace(tzinfo=datetime.timezone.utc).timestamp()
-    remainder = (since_timestamp % step)
-    group_time = (func.floor((func.extract('epoch', BatchStoryPeaks.time) - remainder) / step)) * step
-    query = (
-        MetricPeak.query
-            .with_entities(
-                func.max(MetricPeak.value).label("peaks"),
-                func.min(func.extract('epoch', BatchStoryPeaks.time)),
-                group_time.label('step')
-        )
-            .group_by('step')
-            .order_by('step')
-            .join(BatchStoryPeaks)
-            .join(Service)
-            .join(ServicesGroup)
-            .filter(BatchStoryPeaks.time.between(since, until))
-            .filter(MetricPeak.type==metric_type)
-        )
-    if server:
-        query = query.filter(Service.server==server)
-        if service_group:
-            query = query.filter(ServicesGroup.title==service_group)
-            if service:
-                query = query.filter(Service.title==service)
-
-    formatter = lambda x : (
-                x[0],
-                datetime.datetime.fromtimestamp(
-                    x[1],
-                    tz=pytz.utc
-                ).strftime('%Y-%m-%d %H:%M:%S')
-    )
-    data = [formatter(element) for element in query.all()]
-    response_data = {'data': data}
-    response = current_app.response_class(
-        response=json.dumps(response_data),
-        status=200,
-        mimetype='application/json'
-    )
     return response
