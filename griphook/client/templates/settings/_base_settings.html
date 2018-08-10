@@ -1,0 +1,28 @@
+{% extends '_base.html' %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 filters text-center menu-block">
+
+                <div class="btn-group-vertical btn-group-sm btn-block text-left" role="group" aria-label="Settings menu">
+                    <a class="btn btn-light text-left active" href="/settings/general" role="button">General</a>
+                    <a class="btn btn-light text-left" href="#" role="button">Roles</a>
+                    <a class="btn btn-light text-left" href="#" role="button">ServicesGroups</a>
+                </div>
+            </div>
+
+            <div class="col-xl-9 col-lg-8 col-md-8 col-sm-12 filters text-center content-block">
+                {% block content2 %}{% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+
+{% endblock %}
