@@ -1,6 +1,6 @@
 import json
 
-from flask import current_app, request, render_template
+from flask import current_app, request, render_template, jsonify
 
 from griphook.server.peaks.utils import validate_peaks_query, peaks_query, peak_formatter
 
@@ -10,14 +10,30 @@ def index():
 
 
 def get_peaks():
+    """
+    input:
+    {
+        "server": string, | required
+        "services_group": string,
+        "service": string,
+        "since": string, | required
+        "until": string, | required
+        "metric_type": string, | required
+        "step": string| required
+    }
+
+    result:
+    {
+        "timeline": [string],
+        "value": [int],
+        "metric_type": string
+    }
+    """
     data = request.get_json()
     validated_data, error_data = validate_peaks_query(data)
     if error_data:
-        response = current_app.response_class(
-            response=json.dumps(error_data),
-            status=400,
-            mimetype='application/json'
-        )
+        response = jsonify(error_data)
+        response.status_code = 400
     else:
         query = peaks_query(validated_data)
         query_result = query.all()
@@ -25,9 +41,6 @@ def get_peaks():
         values = [element.peaks for element in query_result]
         data = {"timeline": timeline, "values": values, 'metric_type': query_result[0].type.value}
         response_data = {'data': data}
-        response = current_app.response_class(
-            response=json.dumps(response_data),
-            status=200,
-            mimetype='application/json'
-        )
+        response = jsonify(response_data)
+
     return response
