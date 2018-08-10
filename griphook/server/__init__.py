@@ -39,8 +39,8 @@ def create_app(script_info=None):
     from griphook.server.billing import billing_blueprint
     app.register_blueprint(billing_blueprint, url_prefix='/billing')
 
-    from griphook.server.admin import admin_blueprint
-    app.register_blueprint(admin_blueprint, url_prefix='/admin')
+    from griphook.server.settings import settings_blueprint
+    app.register_blueprint(settings_blueprint, url_prefix='/settings')
 
     from griphook.server.filters import filters_blueprint
     app.register_blueprint(filters_blueprint, url_prefix='/filters')
