@@ -101,6 +101,7 @@ class Service(db.Model):
             name="services_group_fk"
         )
     )
+    services_group = db.relationship("ServicesGroup", backref="services")
 
     __table_args__ = (
         db.UniqueConstraint(
