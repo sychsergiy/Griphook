@@ -4,9 +4,10 @@ from sqlalchemy import func
 
 from griphook.server.average_load.strategy.abstract import ChildrenStrategyAbstract
 from griphook.server.models import BatchStoryBilling, MetricBilling, Service, ServicesGroup
+from griphook.server import db
 
 
-class ServicesGroupServicesStrategy(ChildrenStrategyAbstract):
+class GroupServicesStrategy(ChildrenStrategyAbstract):
 
     def get_items_with_average_value(self, time_from: datetime, time_until: datetime, target: str, metric_type: str):
         """

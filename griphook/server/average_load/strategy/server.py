@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy import func
+
 from griphook.server import db
 
 from griphook.server.average_load.strategy.abstract import RootStrategyAbstract, ChildrenStrategyAbstract
@@ -7,7 +9,7 @@ from griphook.server.models import Server, Service, ServicesGroup, MetricBilling
 
 
 class ServerGroupsStrategy(ChildrenStrategyAbstract):
-    def server_average_load_query_strategy(
+    def get_items_with_average_value(
             self, time_from: datetime, time_until: datetime, target: str, metric_type: str):
         """
         :param time_from: datetime
