@@ -1,9 +1,8 @@
 import pytest
 
 from datetime import datetime
-from griphook.server.average_load.services_helper import (
-    service_average_load_query_strategy
-)
+
+from griphook.server.average_load.server_helper import server_average_load_query_strategy
 
 
 @pytest.fixture(scope="function")
@@ -14,13 +13,11 @@ def filters_data():
         "time_from": time_from,
         "time_until": time_until,
         "metric_type": "vsize",
-        "target": "adv-by",
+        "target": "adv",
     }
     return data
 
 
-def test_service_average_load_query(session, filters_data):
-    instances = service_average_load_query_strategy(**filters_data)
-
-    print(instances)
+def test_services_group_instances_query(session, filters_data):
+    instances = server_average_load_query_strategy(**filters_data)
     assert len(instances) != 0
