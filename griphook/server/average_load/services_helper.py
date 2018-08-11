@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from griphook.server.models import (
     Service,
     ServicesGroup,
@@ -44,8 +42,8 @@ def get_instances_average_metric_value(
             instances_subquery.c.service_title,
             instances_subquery.c.instance,
         )
-    ).all()
-    return aggregated_instances
+    )
+    return aggregated_instances.all()
 
 
 def get_metric_billing_query(metric_type):

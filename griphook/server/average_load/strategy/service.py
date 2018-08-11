@@ -20,7 +20,7 @@ class ServiceInstancesStrategy(ChildrenStrategyAbstract):
         aggregated_instances = get_instances_average_metric_value(
             instances_subquery, batch_story_subquery, metric_subquery
         )
-        return aggregated_instances.all()
+        return aggregated_instances
 
     def convert_data_to_useful_form(self, query_result):
         """
