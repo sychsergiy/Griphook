@@ -11,5 +11,7 @@ class ChildrenStrategyAbstract(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
 
-class RootStrategyAbstract(object):
-    pass
+class RootStrategyAbstract(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def get_metric_average_value(self, target, metric_type, time_from, time_until):
+        raise NotImplementedError
