@@ -2,7 +2,7 @@ import pytest
 
 from datetime import datetime
 
-from griphook.server.average_load.strategy.service import ServiceInstancesStrategy
+from griphook.server.average_load.strategy.service import ServiceInstancesStrategy, ServiceStrategy
 
 
 @pytest.fixture(scope="function")
@@ -37,6 +37,11 @@ def filters_data():
     return data
 
 
-def test_service_average_load_query(session, filters_data):
-    instances = ServiceInstancesStrategy().get_items_with_average_value(**filters_data)
+def test_service_instances_average_load_query(session, filters_data):
+    instances = ServiceInstancesStrategy().get_items_metric_average_value(**filters_data)
     assert len(instances) != 0
+
+
+def test_service_average_load_query(session, filters_data):
+    instance = ServiceStrategy().get_metric_average_value(**filters_data)
+    assert instance == tuple(['adv-by', 1175481906.32966])

@@ -33,5 +33,5 @@ def filters_data():
 
 
 def test_services_group_instances_query(session, filters_data):
-    instances = ClusterServersStrategy().get_items_with_average_value(**filters_data)
+    instances = ClusterServersStrategy().get_items_metric_average_value(**filters_data)
     assert len(instances) != 0

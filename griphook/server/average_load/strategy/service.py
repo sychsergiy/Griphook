@@ -1,3 +1,6 @@
+from sqlalchemy import func
+
+from griphook.server import db
 from griphook.server.average_load.queries.service import (
     get_services_query,
     get_batch_story_query,
@@ -8,10 +11,11 @@ from griphook.server.average_load.strategy.abstract import (
     RootStrategyAbstract,
     ChildrenStrategyAbstract,
 )
+from griphook.server.models import Service, MetricBilling, BatchStoryBilling
 
 
 class ServiceInstancesStrategy(ChildrenStrategyAbstract):
-    def get_items_with_average_value(self, target, metric_type, time_from, time_until):
+    def get_items_metric_average_value(self, target, metric_type, time_from, time_until):
         instances_subquery = get_services_query(target).subquery()
         batch_story_subquery = get_batch_story_query(time_from, time_until).subquery()
         metric_subquery = get_metric_billing_query(metric_type).subquery()
@@ -30,9 +34,21 @@ class ServiceInstancesStrategy(ChildrenStrategyAbstract):
             (f"{group}:{service}:{instance}", value)
             for (group, service, instance, value) in query_result
         ]
+        # todo: remove all others, it must be not here
         labels, values = zip(*chart_data)
         return labels, values
 
 
 class ServiceStrategy(RootStrategyAbstract):
-    pass
+    def get_metric_average_value(self, target, metric_type, time_from, time_until):
+        batch_story_subquery = get_batch_story_query(time_from, time_until).subquery()
+        metric_subquery = get_metric_billing_query(metric_type).subquery()
+        query = (
+            db.session.query(Service)
+                .filter(Service.title == target)
+                .join(metric_subquery)
+                .join(batch_story_subquery)
+                .with_entities(Service.title, func.avg(metric_subquery.c.value))
+                .group_by(Service.title)
+        )
+        return query.one()
