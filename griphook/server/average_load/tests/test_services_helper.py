@@ -21,6 +21,4 @@ def filters_data():
 
 def test_service_average_load_query(session, filters_data):
     instances = service_average_load_query_strategy(**filters_data)
-
-    print(instances)
     assert len(instances) != 0

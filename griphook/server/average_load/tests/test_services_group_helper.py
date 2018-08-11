@@ -21,4 +21,5 @@ def filters_data():
 
 def test_services_group_instances_query(session, filters_data):
     instances = services_group_average_load_query_strategy(**filters_data)
+    print(instances)
     assert len(instances) != 0

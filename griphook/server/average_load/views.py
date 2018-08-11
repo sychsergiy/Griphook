@@ -41,6 +41,5 @@ class AverageLoadChartDataView(MethodView):
         time_from = datetime.strptime(data["time_from"], "%Y-%m-%d")
         time_until = datetime.strptime(data["time_until"], "%Y-%m-%d")
 
-        service_average_load_query_strategy(time_from, time_until, data['target'], data['metric_type'])
-
+        service_average_load_query_strategy(data['target'], data['metric_type'], time_from, time_until, )
         return jsonify({})

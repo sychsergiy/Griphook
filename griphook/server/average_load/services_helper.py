@@ -12,7 +12,7 @@ from griphook.server import db
 
 
 def service_average_load_query_strategy(
-        time_from: datetime, time_until: datetime, target: str, metric_type: str
+        target, metric_type, time_from, time_until
 ):
     instances_subquery = get_services_query(target).subquery()
     batch_story_subquery = get_batch_story_query(
