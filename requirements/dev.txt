@@ -9,3 +9,4 @@ pytest-flask==0.10.0
 pytest==3.6.3
 mypy==0.620
 httmock==1.2.6
+black==18.6b4
