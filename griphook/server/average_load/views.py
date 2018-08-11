@@ -1,89 +1,46 @@
-from flask import jsonify
+from datetime import datetime
+
+from trafaret import Dict, String, DataError
+
+from flask import jsonify, request
 from flask.views import MethodView
 
-from griphook.server.average_load.mixins import QueryParametersForMethodMixin
-from griphook.server.average_load.helper import (
-    ServerChartDataHelper,
-    ServicesChartDataHelper,
-    ServicesGroupChartDataHelper,
+from .services_helper import service_average_load_query
+
+template = Dict(
+    {
+        "target": String(),
+        "target_type": String(),
+        "time_from": String(),
+        "time_until": String(),
+        "metric_type": String(),
+    }
 )
 
 
-# todo: optional argument: 'cluster'
-class ServerAverageLoadView(QueryParametersForMethodMixin, MethodView):
+class AverageLoadChartDataView(MethodView):
     """
-    Endpoint with data for server average load chart
-    returns average load for server and for every service_group inside current server
-    in following format:
+    response:
     {
-        "root": {
-            "target": "values"
-            "value": "value"
-            }
-        "children": [
-            {"target": "value", "value": "value"},
-            ...
-        ]
+        "target_label": str,
+        "target_value": int,
+        "children_label: List[str],
+        "children_values: List[int],
     }
     """
-    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'server',)
 
-    def get(self):
-        server_chart_data_helper = ServerChartDataHelper(self.parameters['server'], self.parameters['metric_type'])
-        response_data = server_chart_data_helper.get_data(self.parameters['time_from'], self.parameters['time_until'])
-        return jsonify(response_data)
+    def post(self):
+        data = request.get_json()
+        try:
+            template.check(data)
+        except DataError as e:
+            response = jsonify({"error": str(e)})
+            response.status_code = 400
+            return response
 
+        time_from = datetime.strptime(data["time_from"], "%Y-%m-%d")
+        time_until = datetime.strptime(data["time_until"], "%Y-%m-%d")
 
-# todo: optional arguments: 'cluster', 'server',
-class ServicesGroupAverageLoadView(QueryParametersForMethodMixin, MethodView):
-    """
-    Endpoint with data for service_group average load chart
-    returns average load for server and for every service inside current service_group
-    in following format:
-    {
-        "root": {
-            "target": "values"
-            "value": "value"
-            }
-        "children": [
-            {"target": "value", "value": "value"},
-            ...
-        ]
-    }
-    """
-    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'services_group')
+        service_average_load_query(time_from, time_until)
 
-    def get(self):
-        sv_group_helper = ServicesGroupChartDataHelper(
-            self.parameters['services_group'], self.parameters['metric_type']
-        )
-        response_data = sv_group_helper.get_data(
-            self.parameters['time_from'], self.parameters['time_until'])
-        return jsonify(response_data)
-
-
-# todo: optional arguments: 'cluster', 'server', 'service_group'
-class ServiceAverageLoadView(QueryParametersForMethodMixin, MethodView):
-    """
-    Endpoint with data for service average load chart
-    returns average load for server and for every instance inside current service
-    in following format:
-    {
-        "root": {
-            "target": "values"
-            "value": "value"
-            }
-        "children": [
-            {"target": "value", "value": "value"},
-            ...
-        ]
-    }
-    """
-    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'service',)
-
-    def get(self):
-        services_helper = ServicesChartDataHelper(self.parameters['service'], self.parameters['metric_type'])
-        response_data = services_helper.get_data(self.parameters['time_from'], self.parameters['time_until'])
-        return jsonify(response_data)
-
-# todo: maybe separate endpoints for getting average_load data for root and children
+        return jsonify({})
