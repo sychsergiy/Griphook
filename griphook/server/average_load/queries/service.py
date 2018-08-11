@@ -9,21 +9,6 @@ from sqlalchemy import func
 from griphook.server import db
 
 
-def service_average_load_query_strategy(
-        target, metric_type, time_from, time_until
-):
-    instances_subquery = get_services_query(target).subquery()
-    batch_story_subquery = get_batch_story_query(
-        time_from, time_until
-    ).subquery()
-    metric_subquery = get_metric_billing_query(metric_type).subquery()
-
-    aggregated_instances = get_instances_average_metric_value(
-        instances_subquery, batch_story_subquery, metric_subquery
-    )
-    return aggregated_instances
-
-
 def get_instances_average_metric_value(
         instances_subquery, batch_story_subquery, metric_subquery
 ):

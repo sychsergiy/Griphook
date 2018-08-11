@@ -1,4 +1,4 @@
-from griphook.server.average_load.services_helper import (
+from griphook.server.average_load.queries.service import (
     get_services_query,
     get_batch_story_query,
     get_metric_billing_query,
