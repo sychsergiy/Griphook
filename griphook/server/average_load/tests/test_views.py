@@ -12,9 +12,7 @@ class TestAverageLoadChartDataView(object):
             "target_type": "service",
             "target": "adv-by",
         }
-        response = self.client.post(
-            url_for("average_load.chart_data"), json=data
-        )
+        response = self.client.post(url_for("average_load.chart_data"), json=data)
         assert response.status_code == 200
 
     def test_view_return_400_status_code(self):
@@ -24,7 +22,5 @@ class TestAverageLoadChartDataView(object):
             "metric_type": "vsize",
             "target": "adv-by",
         }
-        response = self.client.post(
-            url_for("average_load.chart_data"), json=data
-        )
+        response = self.client.post(url_for("average_load.chart_data"), json=data)
         assert response.status_code == 400
