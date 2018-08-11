@@ -1,6 +1,6 @@
 import pytest
 
-from griphook.server.average_load.strategy.services_group import ServicesGroupServicesStrategy
+from griphook.server.average_load.strategy.group import ServicesGroupServicesStrategy
 
 
 @pytest.fixture(scope="function")
