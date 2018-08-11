@@ -5,7 +5,7 @@ from trafaret import Dict, String, DataError
 from flask import jsonify, request
 from flask.views import MethodView
 
-from .services_helper import service_average_load_query
+from .services_helper import service_average_load_query_strategy
 
 template = Dict(
     {
@@ -41,6 +41,6 @@ class AverageLoadChartDataView(MethodView):
         time_from = datetime.strptime(data["time_from"], "%Y-%m-%d")
         time_until = datetime.strptime(data["time_until"], "%Y-%m-%d")
 
-        service_average_load_query(time_from, time_until)
+        service_average_load_query_strategy(time_from, time_until, data['target'], data['metric_type'])
 
         return jsonify({})

@@ -34,7 +34,7 @@ def db(app, request):
     return _db
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def session(db, request):
     """Creates a new database session for a test."""
     connection = db.engine.connect()
