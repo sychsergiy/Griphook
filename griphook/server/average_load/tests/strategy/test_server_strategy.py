@@ -2,24 +2,10 @@ from datetime import datetime
 
 import pytest
 
-from griphook.server.average_load.strategy.server import ServerGroupsStrategy
-
-
-@pytest.fixture(scope="function")
-def query_result():
-    return [
-        ("adv", "adv-stable", 5845704938.62776),
-        ("adv", "adv-trunk", 1546212393.15366),
-    ]
-
-
-def test_convert_data_to_useful_form_method(query_result):
-    labels, values = ServerGroupsStrategy().convert_data_to_useful_form(query_result)
-    assert labels == tuple(["adv:adv-stable", "adv:adv-trunk"])
-    assert values == tuple([5845704938.62776, 1546212393.15366])
-
-
-# todo: add get_items_with_average_value method test
+from griphook.server.average_load.strategy.server import (
+    get_server_groups_metric_average_values_strategy,
+    get_server_metric_average_value_strategy
+)
 
 
 @pytest.fixture(scope="function")
@@ -35,6 +21,12 @@ def filters_data():
     return data
 
 
-def test_services_group_instances_query(session, filters_data):
-    instances = ServerGroupsStrategy().get_items_metric_average_value(**filters_data)
-    assert len(instances) != 0
+def test_get_server_groups_metric_average_values_strategy(session, filters_data):
+    groups_chart_data_sequence = get_server_groups_metric_average_values_strategy(**filters_data)
+    assert len(groups_chart_data_sequence) != 0
+
+
+def test_get_server_metric_average_value_strategy(session, filters_data):
+    label, value = get_server_metric_average_value_strategy(**filters_data)
+    assert label == 'adv'
+    assert value == 3695958665.89071
