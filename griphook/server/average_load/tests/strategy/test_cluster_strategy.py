@@ -2,21 +2,10 @@ import pytest
 
 from datetime import datetime
 
-from griphook.server.average_load.strategy.cluster import ClusterServersStrategy
-
-
-@pytest.fixture(scope="function")
-def query_result():
-    return [("dev", "adv", 3695958665.89072), ("dev", "bart", 1658363655.43835)]
-
-
-def test_convert_data_to_useful_form_method(query_result):
-    labels, values = ClusterServersStrategy().convert_data_to_useful_form(query_result)
-    assert labels == tuple(["dev:adv", "dev:bart"])
-    assert values == tuple([3695958665.89072, 1658363655.43835])
-
-
-# todo: add get_items_with_average_value method test
+from griphook.server.average_load.strategy.cluster import (
+    get_cluster_servers_metric_average_values_strategy,
+    get_cluster_metric_average_value_strategy
+)
 
 
 @pytest.fixture(scope="function")
@@ -33,5 +22,11 @@ def filters_data():
 
 
 def test_services_group_instances_query(session, filters_data):
-    instances = ClusterServersStrategy().get_items_metric_average_value(**filters_data)
+    instances = get_cluster_servers_metric_average_values_strategy(**filters_data)
     assert len(instances) != 0
+
+
+def test_get_cluster_metric_average_value_strategy(session, filters_data):
+    label, value = get_cluster_metric_average_value_strategy(**filters_data)
+    assert label == 'dev'
+    assert value == 1033193632.05005
