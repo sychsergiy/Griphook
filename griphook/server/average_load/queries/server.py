@@ -1,7 +1,6 @@
-from griphook.server.models import (
-    Service,
-    Server, ServicesGroup)
 from sqlalchemy import func
+
+from griphook.server.models import Service, Server, ServicesGroup
 
 from griphook.server import db
 

@@ -3,7 +3,6 @@ from datetime import datetime
 from griphook.server.average_load.queries.server import (
     get_server_average_metric_value,
     get_server_query,
-
     get_server_groups_average_metric_values,
     get_server_groups_services_query
 )

@@ -1,20 +1,16 @@
 from datetime import datetime
 
-from sqlalchemy import func
-
-from griphook.server import db
-
-from griphook.server.models import (
-    Server,
-    Service,
-    MetricBilling,
-    BatchStoryBilling,
-    Cluster,
+from griphook.server.average_load.queries.common import average_load_query_builder
+from griphook.server.average_load.queries.cluster import (
+    get_cluster_servers_average_metric_values,
+    get_cluster_server_services_query,
+    get_cluster_average_metric_value,
+    get_cluster_query,
 )
 
 
 def get_cluster_servers_metric_average_values_strategy(
-        time_from: datetime, time_until: datetime, target: str, metric_type: str
+        target: str, metric_type: str, time_from: datetime, time_until: datetime,
 ):
     """
     :param time_from: datetime
@@ -24,26 +20,19 @@ def get_cluster_servers_metric_average_values_strategy(
     :return: average load for each server inside current server
      (only part of service which inside current services_group)
     """
-    query = (
-        db.session.query(Cluster)
-            .filter(Cluster.title == target)
-            .join(Server)
-            .join(Service)
-            .join(MetricBilling)
-            .filter(MetricBilling.type == metric_type)
-            .join(BatchStoryBilling)
-            .filter(
-            BatchStoryBilling.time >= time_from,
-            BatchStoryBilling.time <= time_until,
-        )
-            .with_entities(Cluster.title, Server.title, func.avg(MetricBilling.value))
-            .group_by(Cluster.title, Server.title)
+    services_query_getter = get_cluster_server_services_query
+    result_handler = get_cluster_servers_average_metric_values
+
+    cluster_servers_metric_average_values = average_load_query_builder(
+        target, metric_type, time_from, time_until, services_query_getter, result_handler
     )
-    return query.all()
+    print(cluster_servers_metric_average_values)
+
+    return cluster_servers_metric_average_values
 
 
 def get_cluster_metric_average_value_strategy(
-        time_from: datetime, time_until: datetime, target: str, metric_type: str
+        target: str, metric_type: str, time_from: datetime, time_until: datetime,
 ):
     """
     :param time_from: datetime
@@ -51,19 +40,11 @@ def get_cluster_metric_average_value_strategy(
     :param target: cluster_title
     :param metric_type: vsize or user_cpu_percent
     """
-    query = (
-        db.session.query(Cluster)
-            .filter(Cluster.title == target)
-            .join(Server)
-            .join(Service)
-            .join(MetricBilling)
-            .filter(MetricBilling.type == metric_type)
-            .join(BatchStoryBilling)
-            .filter(
-            BatchStoryBilling.time >= time_from,
-            BatchStoryBilling.time <= time_until,
-        )
-            .with_entities(Cluster.title, func.avg(MetricBilling.value))
-            .group_by(Cluster.title)
+    services_query_getter = get_cluster_query
+    result_handler = get_cluster_average_metric_value
+
+    cluster_metric_average_load = average_load_query_builder(
+        target, metric_type, time_from, time_until, services_query_getter, result_handler
     )
-    return query.one()
+    print(cluster_metric_average_load)
+    return cluster_metric_average_load
