@@ -1,55 +1,30 @@
 from datetime import datetime
 
-from sqlalchemy import func
+from griphook.server.average_load.queries.group import (
+    get_group_query,
+    get_group_average_metric_value,
 
-from griphook.server.models import (
-    BatchStoryBilling,
-    MetricBilling,
-    Service,
-    ServicesGroup,
+    get_group_services_query,
+    get_services_average_metric_values
 )
-from griphook.server import db
+
+from griphook.server.average_load.queries.common import average_load_query_builder
 
 
 def get_group_services_metric_average_values_strategy(
-        time_from: datetime, time_until: datetime, target: str, metric_type: str):
-    """
-    :param time_from: datetime
-    :param time_until: datetime
-    :param target: services_group_title
-    :param metric_type: vsize or user_cpu_percent
-    :return: average load for each services inside current services_group
-    """
-    query = (
-        db.session.query(ServicesGroup)
-            .filter(ServicesGroup.title == target)
-            .join(Service)
-            .join(MetricBilling)
-            .filter(MetricBilling.type == metric_type)
-            .join(BatchStoryBilling)
-            .filter(
-            BatchStoryBilling.time >= time_from,
-            BatchStoryBilling.time <= time_until,
-        ).with_entities(
-            ServicesGroup.title, Service.title, func.avg(MetricBilling.value)
-        ).group_by(ServicesGroup.title, Service.title)
+        target: str, metric_type: str, time_from: datetime, time_until: datetime, ):
+    services_query_getter = get_group_services_query
+    result_query_handler = get_services_average_metric_values
+    return average_load_query_builder(
+        target, metric_type, time_from, time_until, services_query_getter, result_query_handler
     )
-    return query.all()
 
 
-def get_group_metric_average_value_strategy(time_from: datetime, time_until: datetime, target: str, metric_type: str):
-    query = (
-        db.session.query(ServicesGroup)
-            .filter(ServicesGroup.title == target)
-            .join(Service)
-            .join(MetricBilling)
-            .filter(MetricBilling.type == metric_type)
-            .join(BatchStoryBilling)
-            .filter(
-            BatchStoryBilling.time >= time_from,
-            BatchStoryBilling.time <= time_until,
-        ).with_entities(
-            ServicesGroup.title, func.avg(MetricBilling.value)
-        ).group_by(ServicesGroup.title)
+def get_group_metric_average_value_strategy(target: str, metric_type: str, time_from: datetime, time_until: datetime, ):
+    services_query_getter = get_group_query
+    result_query_handler = get_group_average_metric_value
+
+    group_metric_average_value = average_load_query_builder(
+        target, metric_type, time_from, time_until, services_query_getter, result_query_handler
     )
-    return query.one()
+    return group_metric_average_value
