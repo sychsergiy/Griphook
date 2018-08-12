@@ -7,48 +7,30 @@ from griphook.server.average_load.queries.service import (
     get_metric_billing_query,
     get_instances_average_metric_value,
 )
-from griphook.server.average_load.strategy.abstract import (
-    RootStrategyAbstract,
-    ChildrenStrategyAbstract,
-)
-from griphook.server.models import Service, MetricBilling, BatchStoryBilling
+
+from griphook.server.models import Service
 
 
-class ServiceInstancesStrategy(ChildrenStrategyAbstract):
-    def get_items_metric_average_value(self, target, metric_type, time_from, time_until):
-        instances_subquery = get_services_query(target).subquery()
-        batch_story_subquery = get_batch_story_query(time_from, time_until).subquery()
-        metric_subquery = get_metric_billing_query(metric_type).subquery()
+def get_service_instances_metric_average_values_strategy(target, metric_type, time_from, time_until):
+    instances_subquery = get_services_query(target).subquery()
+    batch_story_subquery = get_batch_story_query(time_from, time_until).subquery()
+    metric_subquery = get_metric_billing_query(metric_type).subquery()
 
-        aggregated_instances = get_instances_average_metric_value(
-            instances_subquery, batch_story_subquery, metric_subquery
-        )
-        return aggregated_instances
-
-    def convert_data_to_useful_form(self, query_result):
-        """
-        :param query_result: query_children_from_target
-        :return:
-        """
-        chart_data = [
-            (f"{group}:{service}:{instance}", value)
-            for (group, service, instance, value) in query_result
-        ]
-        # todo: remove all others, it must be not here
-        labels, values = zip(*chart_data)
-        return labels, values
+    aggregated_instances = get_instances_average_metric_value(
+        instances_subquery, batch_story_subquery, metric_subquery
+    )
+    return aggregated_instances
 
 
-class ServiceStrategy(RootStrategyAbstract):
-    def get_metric_average_value(self, target, metric_type, time_from, time_until):
-        batch_story_subquery = get_batch_story_query(time_from, time_until).subquery()
-        metric_subquery = get_metric_billing_query(metric_type).subquery()
-        query = (
-            db.session.query(Service)
-                .filter(Service.title == target)
-                .join(metric_subquery)
-                .join(batch_story_subquery)
-                .with_entities(Service.title, func.avg(metric_subquery.c.value))
-                .group_by(Service.title)
-        )
-        return query.one()
+def get_service_metric_average_value_strategy(target, metric_type, time_from, time_until):
+    batch_story_subquery = get_batch_story_query(time_from, time_until).subquery()
+    metric_subquery = get_metric_billing_query(metric_type).subquery()
+    query = (
+        db.session.query(Service)
+            .filter(Service.title == target)
+            .join(metric_subquery)
+            .join(batch_story_subquery)
+            .with_entities(Service.title, func.avg(metric_subquery.c.value))
+            .group_by(Service.title)
+    )
+    return query.one()

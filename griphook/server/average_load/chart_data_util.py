@@ -1,16 +1,30 @@
+from griphook.server.average_load.strategy.service import (
+    get_service_metric_average_value_strategy,
+    get_service_instances_metric_average_values_strategy
+)
+
+
 class ChartDataUtil(object):
-    def __init__(self, root_strategy, children_strategy, **filter_params):
-        self._root_strategy = root_strategy
-        self._children_strategy = children_strategy
+    def __init__(self, target_type, **filter_params):
+        """
+        :param filter_params: [target, metric_type, time_from, time_until], all required
+        """
+        if target_type == 'service':
+            self._get_root_chart_data = get_service_metric_average_value_strategy
+            self._get_children_chart_data = get_service_instances_metric_average_values_strategy
+
         self.filter_params = filter_params
 
     def get_root_metric_average_value(self):
-        label, value = self._root_strategy.get_metric_average_value(**self.filter_params)
+        label, value = self._get_root_chart_data(**self.filter_params)
         return label, value
 
     def get_children_metric_average_values(self):
-        data = self._children_strategy.get_items_metric_average_value(**self.filter_params)
+        query_result = self._get_children_chart_data(**self.filter_params)
 
-        labels, values = self._children_strategy.convert_data_to_useful_form(data)
-        # todo: here must unzip: labels, values = (*zipped)
+        chart_data = [
+            (":".join(label_parts), value)
+            for (*label_parts, value) in query_result
+        ]
+        labels, values = zip(*chart_data)
         return labels, values

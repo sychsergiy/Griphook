@@ -6,7 +6,6 @@ from flask import jsonify, request, abort
 from flask.views import MethodView
 
 from griphook.server.average_load.chart_data_util import ChartDataUtil
-from griphook.server.average_load.strategy.service import ServiceStrategy, ServiceInstancesStrategy
 
 template = Dict(
     {
@@ -39,18 +38,9 @@ class AverageLoadChartDataView(MethodView):
             response.status_code = 400
             return response
 
-        filter_params = data.copy()
-        filter_params.pop('target_type', None)
-
-        if data["target_type"] == 'service':
-            chart_data_util = ChartDataUtil(ServiceStrategy(), ServiceInstancesStrategy(), **filter_params)
-            # todo: check other target types
-        else:
-            # todo: remove it
-            abort(400)
+        chart_data_util = ChartDataUtil(data.pop('target_type'), **data)
         children_data = chart_data_util.get_children_metric_average_values()
-        root_data = chart_data_util.get_root_metric_average_value()
-
+        root_label, root_value = chart_data_util.get_root_metric_average_value()
         return jsonify({})
 
     def is_request_data_invalid(self, data):
