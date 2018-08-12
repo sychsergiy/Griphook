@@ -49,7 +49,6 @@ class AverageLoadChartDataView(MethodView):
             "children_labels": children_labels,
             "children_values": children_values,
         }
-        pprint(response_data)
         return jsonify(response_data)
 
     def is_request_data_invalid(self, data):
