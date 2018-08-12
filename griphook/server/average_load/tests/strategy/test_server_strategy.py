@@ -29,4 +29,4 @@ def test_get_server_groups_metric_average_values_strategy(session, filters_data)
 def test_get_server_metric_average_value_strategy(session, filters_data):
     label, value = get_server_metric_average_value_strategy(**filters_data)
     assert label == 'adv'
-    assert value == 3695958665.89071
+    assert value == 3695958665.89072

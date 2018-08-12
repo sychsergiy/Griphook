@@ -1,20 +1,18 @@
 from datetime import datetime
 
-from sqlalchemy import func
+from griphook.server.average_load.queries.server import (
+    get_server_average_metric_value,
+    get_server_query,
 
-from griphook.server import db
-
-from griphook.server.models import (
-    Server,
-    Service,
-    ServicesGroup,
-    MetricBilling,
-    BatchStoryBilling,
+    get_server_groups_average_metric_values,
+    get_server_groups_services_query
 )
+
+from griphook.server.average_load.queries.common import average_load_query_builder
 
 
 def get_server_groups_metric_average_values_strategy(
-        time_from: datetime, time_until: datetime, target: str, metric_type: str
+        target: str, metric_type: str, time_from: datetime, time_until: datetime,
 ):
     """
     :param time_from: datetime
@@ -24,26 +22,17 @@ def get_server_groups_metric_average_values_strategy(
     :return: average load for each services inside current services_group
      (only part of service which inside current services_group)
     """
-    query = (
-        db.session.query(Server)
-            .filter(Server.title == target)
-            .join(Service)
-            .join(ServicesGroup)
-            .join(MetricBilling)
-            .filter(MetricBilling.type == metric_type)
-            .join(BatchStoryBilling)
-            .filter(
-                BatchStoryBilling.time >= time_from,
-                BatchStoryBilling.time <= time_until,
-            ).with_entities(
-                Server.title, ServicesGroup.title, func.avg(MetricBilling.value)
-            ).group_by(Server.title, ServicesGroup.title)
+    services_query_getter = get_server_groups_services_query
+    result_handler = get_server_groups_average_metric_values
+
+    server_groups_metric_average_values = average_load_query_builder(
+        target, metric_type, time_from, time_until, services_query_getter, result_handler
     )
-    return query.all()
+    return server_groups_metric_average_values
 
 
 def get_server_metric_average_value_strategy(
-        time_from: datetime, time_until: datetime, target: str, metric_type: str
+        target: str, metric_type: str, time_from: datetime, time_until: datetime,
 ):
     """
     :param time_from: datetime
@@ -53,19 +42,11 @@ def get_server_metric_average_value_strategy(
     :return: average load for each services inside current services_group
      (only part of service which inside current services_group)
     """
-    query = (
-        db.session.query(Server)
-            .filter(Server.title == target)
-            .join(Service)
-            .join(ServicesGroup)
-            .join(MetricBilling)
-            .filter(MetricBilling.type == metric_type)
-            .join(BatchStoryBilling)
-            .filter(
-                BatchStoryBilling.time >= time_from,
-                BatchStoryBilling.time <= time_until,
-            ).with_entities(
-                Server.title, func.avg(MetricBilling.value)
-            ).group_by(Server.title)
+    services_query_getter = get_server_query
+    result_handler = get_server_average_metric_value
+
+    server_average_metric_value = average_load_query_builder(
+        target, metric_type, time_from, time_until, services_query_getter, result_handler
     )
-    return query.one()
+
+    return server_average_metric_value
