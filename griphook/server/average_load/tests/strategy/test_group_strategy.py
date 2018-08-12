@@ -2,21 +2,10 @@ import pytest
 
 from datetime import datetime
 
-from griphook.server.average_load.strategy.group import GroupServicesStrategy
-
-
-@pytest.fixture(scope="function")
-def query_result():
-    return [
-        ("adv-stable", "adv-by", 1228382856.63708),
-        ("adv-stable", "adv-kz", 1438634030.3411),
-    ]
-
-
-def test_convert_data_to_useful_form_method(query_result):
-    labels, values = GroupServicesStrategy().convert_data_to_useful_form(query_result)
-    assert labels == tuple(["adv-stable:adv-by", "adv-stable:adv-kz"])
-    assert values == tuple([1228382856.63708, 1438634030.3411])
+from griphook.server.average_load.strategy.group import (
+    get_group_metric_average_value_strategy,
+    get_group_services_metric_average_values_strategy
+)
 
 
 # todo: add get_items_with_average_value method test
@@ -35,6 +24,12 @@ def filters_data():
     return data
 
 
-def test_services_group_instances_query(session, filters_data):
-    instances = GroupServicesStrategy().get_items_metric_average_value(**filters_data)
+def test_get_group_services_metric_average_value_strategy(session, filters_data):
+    instances = get_group_services_metric_average_values_strategy(**filters_data)
     assert len(instances) != 0
+
+
+def test_get_group_metric_average_value_strategy(session, filters_data):
+    label, value = get_group_metric_average_value_strategy(**filters_data)
+    assert label == 'adv-stable'
+    assert value == 5845704938.62776

@@ -9,8 +9,8 @@ class TestAverageLoadChartDataView(object):
             "time_from": "2018-06-10",
             "time_until": "2018-08-10",
             "metric_type": "vsize",
-            "target_type": "service",
-            "target": "adv-by",
+            "target_type": "services_group",
+            "target": "adv-stable",
         }
         response = self.client.post(url_for("average_load.chart_data"), json=data)
         assert response.status_code == 200

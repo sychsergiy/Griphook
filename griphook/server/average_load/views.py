@@ -2,7 +2,7 @@ from datetime import datetime
 
 from trafaret import Dict, String, DataError
 
-from flask import jsonify, request, abort
+from flask import jsonify, request
 from flask.views import MethodView
 
 from griphook.server.average_load.chart_data_util import ChartDataUtil

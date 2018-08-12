@@ -3,6 +3,11 @@ from griphook.server.average_load.strategy.service import (
     get_service_instances_metric_average_values_strategy
 )
 
+from griphook.server.average_load.strategy.group import (
+    get_group_services_metric_average_values_strategy,
+    get_group_metric_average_value_strategy
+)
+
 
 class ChartDataUtil(object):
     def __init__(self, target_type, **filter_params):
@@ -12,6 +17,9 @@ class ChartDataUtil(object):
         if target_type == 'service':
             self._get_root_chart_data = get_service_metric_average_value_strategy
             self._get_children_chart_data = get_service_instances_metric_average_values_strategy
+        elif target_type == 'services_group':
+            self._get_root_chart_data = get_group_metric_average_value_strategy
+            self._get_children_chart_data = get_group_services_metric_average_values_strategy
 
         self.filter_params = filter_params
 
