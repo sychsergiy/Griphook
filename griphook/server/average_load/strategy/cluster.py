@@ -45,4 +45,4 @@ class ClusterStrategy(AbstractStrategy):
             joined_subquery.c.title,
             func.avg(joined_subquery.c.value).label("metric_average"),
         ).group_by(joined_subquery.c.title)
-        return server_average_value.one()
+        return server_average_value.one_or_none()

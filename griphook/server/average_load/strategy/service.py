@@ -49,4 +49,4 @@ class ServiceStrategy(AbstractStrategy):
             joined_subquery.c.service_title,
             func.avg(joined_subquery.c.value).label("metric_average"),
         ).group_by(joined_subquery.c.service_title)
-        return service_average_value.one()
+        return service_average_value.one_or_none()

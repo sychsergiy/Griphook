@@ -14,10 +14,10 @@ class ServerStrategy(AbstractStrategy):
          """
         services_query = (
             db.session.query(Server)
-            .filter(Server.title == self.target)
-            .join(Service)
-            .join(ServicesGroup)
-            .with_entities(
+                .filter(Server.title == self.target)
+                .join(Service)
+                .join(ServicesGroup)
+                .with_entities(
                 Server.title.label("server_title"),
                 ServicesGroup.title.label("services_group_title"),
                 Service.id,
@@ -39,9 +39,9 @@ class ServerStrategy(AbstractStrategy):
     def get_root_services_query(self):
         query = (
             db.session.query(Server)
-            .filter(Server.title == self.target)
-            .join(Service)
-            .with_entities(Service.id, Server.title)
+                .filter(Server.title == self.target)
+                .join(Service)
+                .with_entities(Service.id, Server.title)
         )
         return query
 
@@ -51,4 +51,4 @@ class ServerStrategy(AbstractStrategy):
             joined_subquery.c.title,
             func.avg(joined_subquery.c.value).label("metric_average"),
         ).group_by(joined_subquery.c.title)
-        return server_average_value.one()
+        return server_average_value.one_or_none()

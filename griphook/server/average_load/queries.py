@@ -37,6 +37,3 @@ def get_filtered_batch_story_query(time_from, time_until):
         .with_entities(BatchStoryBilling.id)
     )
     return query
-
-
-# todo: rename this function
