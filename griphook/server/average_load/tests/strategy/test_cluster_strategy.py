@@ -2,9 +2,11 @@ import pytest
 
 from datetime import datetime
 
+from griphook.server.average_load.chart_data_util import ChartDataUtil
 from griphook.server.average_load.strategy.cluster import (
-    get_cluster_servers_metric_average_values_strategy,
-    get_cluster_metric_average_value_strategy
+    ClusterStrategy,
+    # get_cluster_servers_metric_average_values_strategy,
+    # get_cluster_metric_average_value_strategy
 )
 
 
@@ -22,11 +24,18 @@ def filters_data():
 
 
 def test_services_group_instances_query(session, filters_data):
-    instances = get_cluster_servers_metric_average_values_strategy(**filters_data)
+    strategy = ClusterStrategy(**filters_data)
+    chart_data_util = ChartDataUtil('cluster', **filters_data)
+    joined_subquery = chart_data_util.get_joined_services_subquery(False)
+    instances = strategy.get_cluster_servers_average_metric_values(joined_subquery)
+    print(instances)
     assert len(instances) != 0
 
 
 def test_get_cluster_metric_average_value_strategy(session, filters_data):
-    label, value = get_cluster_metric_average_value_strategy(**filters_data)
+    strategy = ClusterStrategy(**filters_data)
+    chart_data_util = ChartDataUtil('cluster', **filters_data)
+    joined_subquery = chart_data_util.get_joined_services_subquery()
+    label, value = strategy.get_cluster_average_metric_value(joined_subquery)
     assert label == 'dev'
     assert value == 1033193632.05005

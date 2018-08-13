@@ -38,14 +38,4 @@ def get_filtered_batch_story_query(time_from, time_until):
 
 
 # todo: rename this function
-def average_load_query_builder(
-        target, metric_type, time_from, time_until, services_query_getter, average_metric_value_getter
-):
-    batch_story_subquery = get_filtered_batch_story_query(time_from, time_until).subquery()
-    metric_subquery = get_metric_billing_query(metric_type).subquery()
-    services_subquery = services_query_getter(target).subquery()
-    joined_subquery = get_joined_services_batch_story_metrics_query(
-        services_subquery, batch_story_subquery, metric_subquery
-    ).subquery()
 
-    return average_metric_value_getter(joined_subquery)
