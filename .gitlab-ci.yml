@@ -1,25 +1,23 @@
 stages:
-#  - lint
+  - build
+  - lint
   - test
-  - deploy
+#  - deploy
 
 pytest:
   stage: test
   script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml build && docker-compose -f compose-test.yml run pytest
 
 build:
-  stage: deploy
+  stage: build
   script: docker build . -t griphook
-  only:
-    - master
 
-push:
-  stage: deploy
-  script: docker tag griphook registry.gitlab.uaprom:7000/griphook/tasks && docker push registry.gitlab.uaprom:7000/griphook/tasks
-  only:
-    - master
+#push:
+#  stage: deploy
+#  script: docker tag griphook registry.gitlab.uaprom:7000/griphook/tasks && docker push registry.gitlab.uaprom:7000/griphook/tasks
+#  only:
+#    - master
 
 flake8:
   stage: lint
-  script:
-   - flake8 griphook
+  script: docker run griphook python manage.py flake
