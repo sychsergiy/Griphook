@@ -4,9 +4,9 @@ from griphook.api.parsers import GenericParser
 
 
 class DataSource:
-    def __init__(self, *,
-                 parser: GenericParser,
-                 data_formatter: Callable[[str], List[Dict]]) -> None:
+    def __init__(
+        self, *, parser: GenericParser, data_formatter: Callable[[str], List[Dict]]
+    ) -> None:
         """
         DataSource constructor
 
@@ -27,5 +27,6 @@ class DataSource:
         :param time_until: upper limit of time interval
         :returns: formatted data as python objects
         """
-        return self.data_formatter(self.parser.fetch(time_from=time_from,
-                                                     time_until=time_until))
+        return self.data_formatter(
+            self.parser.fetch(time_from=time_from, time_until=time_until)
+        )

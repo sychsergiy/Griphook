@@ -3,8 +3,7 @@ from typing import Any, Optional, Type, Union
 from griphook.api.graphite.target import Target
 
 # Type alias for base type of types
-BuiltInOrTarget = Union[Type[Target], Type[str],
-                        Type[bool], Type[int], Type[float]]
+BuiltInOrTarget = Union[Type[Target], Type[str], Type[bool], Type[int], Type[float]]
 
 
 class Argument(object):
@@ -17,11 +16,16 @@ class Argument(object):
     any other type should implement __str__ method and will
     be rendered as result of __str__ call
     """
-    allowed_types = (int, bool, float, str, Target,)
 
-    def __init__(self, type_: BuiltInOrTarget, *,
-                 name: Optional[str] = None,
-                 default: Optional[Any] = None) -> None:
+    allowed_types = (int, bool, float, str, Target)
+
+    def __init__(
+        self,
+        type_: BuiltInOrTarget,
+        *,
+        name: Optional[str] = None,
+        default: Optional[Any] = None,
+    ) -> None:
         """
         Function Argument constructor
 
@@ -46,9 +50,11 @@ class Argument(object):
         if type_ not in self.allowed_types:
             # If not allowed - show types which are allowed in error
             allowed_typenames = tuple(x.__name__ for x in self.allowed_types)
-            raise ValueError(f"Not supported type of argument, "
-                             f"argument type should be one of these types:\n"
-                             f"{allowed_typenames}")
+            raise ValueError(
+                f"Not supported type of argument, "
+                f"argument type should be one of these types:\n"
+                f"{allowed_typenames}"
+            )
         self._type = type_
 
     @property
@@ -87,9 +93,7 @@ class Function(Target):
     rendered to string.
     """
 
-    def __init__(self,
-                 name: str,
-                 *arg_types: Union[BuiltInOrTarget, Argument]) -> None:
+    def __init__(self, name: str, *arg_types: Union[BuiltInOrTarget, Argument]) -> None:
         """
         Function constructor.
         Creates Graphite function object, sets the name to function and
@@ -109,7 +113,7 @@ class Function(Target):
         :type *arg_types:  Argument, Target, str, bool, int or float,
         """
         if not isinstance(name, str):
-            raise TypeError('Function name should be str instance')
+            raise TypeError("Function name should be str instance")
         self.name = name
         self._args = [self._type_to_argument(t) for t in arg_types]
 
@@ -132,14 +136,16 @@ class Function(Target):
             arg.value = value
 
         # Join all arguments with period
-        arguments = ','.join(map(str, self._args))
+        arguments = ",".join(map(str, self._args))
 
-        return f'{self.name}({arguments})'
+        return f"{self.name}({arguments})"
 
 
 # Built-in functions
-summarize = Function('summarize',
-                     Argument(Target, name='seriesList'),
-                     Argument(str, name='interval', default='1hour',),
-                     Argument(str, name='func', default='max',),
-                     Argument(bool, name='AlignToFrom', default=False))
+summarize = Function(
+    "summarize",
+    Argument(Target, name="seriesList"),
+    Argument(str, name="interval", default="1hour"),
+    Argument(str, name="func", default="max"),
+    Argument(bool, name="AlignToFrom", default=False),
+)

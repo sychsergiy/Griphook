@@ -1,5 +1,9 @@
-from griphook.server.average_load.graphite import average, summarize, send_request, GraphiteAPIError
-from flask import abort
+from griphook.server.average_load.graphite import (
+    average,
+    summarize,
+    send_request,
+    GraphiteAPIError,
+)
 
 
 # todo: better name for this class
@@ -8,7 +12,8 @@ class ChartDataHelper(object):
     Helper class for average services load endpoints.
     Provide convenient interface to work with services
      hierarchy(cluster, server, service_group, service, instance)
-    Flexible interface for constructing `target` argument for each item in hierarchy
+    Flexible interface for constructing `target` argument
+    for each item in hierarchy
     """
 
     def __init__(self, root: str, metric_type: str):
@@ -34,9 +39,11 @@ class ChartDataHelper(object):
 
     def children_target_constructor(self, children_item) -> str:
         """
-        Each inherited item in hierarchy(cluster, server, service_group, service)
-         has it own logic of constructing `target` argument for Graphite api, implement it here.
-        :param children_item: item from collection returned by `retrieve_children` method, keep in mind!
+        Each inherited item in hierarchy(cluster, server,
+         service_group, service) has it own logic of constructing
+         `target` argument for Graphite api, implement it here.
+        :param children_item: item from collection returned by
+        `retrieve_children` method, keep in mind!
         :return: path to objects to be obtained from API
         """
         raise NotImplementedError
@@ -62,7 +69,7 @@ class ChartDataHelper(object):
         """
         for item in self.children:
             target = self.children_target_constructor(item)
-            yield average(summarize(target, "3month", 'avg'))
+            yield average(summarize(target, "3month", "avg"))
 
     def get_data(self, time_from: int, time_until: int) -> dict:
         """
@@ -78,7 +85,7 @@ class ChartDataHelper(object):
         # more user friendly format for showing on hover in chart
         root_target_to_visualize = self.root_target_constructor()
 
-        empty_response = {'root': {}, 'children': []}
+        empty_response = {"root": {}, "children": []}
 
         # send request to Graphite API with root target
         try:
@@ -88,11 +95,11 @@ class ChartDataHelper(object):
 
         # parse json
         try:
-            root_response_value = parent_response[0]['datapoints'][0][0]
+            root_response_value = parent_response[0]["datapoints"][0][0]
         except (KeyError, ValueError):
             return empty_response
 
-        root_data = {'target': root_target_to_visualize, 'value': root_response_value}
+        root_data = {"target": root_target_to_visualize, "value": root_response_value}
 
         # tuple of targets(item is target for each children_item) for sending multiple target argument
         children_target = tuple(self.children_target())
@@ -103,16 +110,16 @@ class ChartDataHelper(object):
             return empty_response
         # convert response to convenient form
         try:
-            children_data = [{
-                'target': self.children_target_constructor(self.children[index]),
-                'value': value['datapoints'][0][0],  # todo: check IndexError
-            } for index, value in enumerate(children_response)]
+            children_data = [
+                {
+                    "target": self.children_target_constructor(self.children[index]),
+                    "value": value["datapoints"][0][0],  # todo: check IndexError
+                }
+                for index, value in enumerate(children_response)
+            ]
         except (KeyError, ValueError):
             return empty_response
 
-        result = {
-            'root': root_data,
-            'children': children_data
-        }
+        result = {"root": root_data, "children": children_data}
         # todo: refactor this method
         return result

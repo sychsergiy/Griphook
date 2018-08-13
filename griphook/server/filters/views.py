@@ -4,7 +4,7 @@ from griphook.server.filters.helper import (
     get_clusters_hierarchy_part,
     get_servers_hierarchy_part,
     get_services_groups_hierarchy_part,
-    get_services_hierarchy_part
+    get_services_hierarchy_part,
 )
 
 
@@ -53,9 +53,9 @@ def filters_hierarchy_api_view():
     services = get_services_hierarchy_part()
 
     response_data = {
-        'clusters': clusters,
-        'servers': servers,
-        'services_groups': services_groups,
-        'services': services,
+        "clusters": clusters,
+        "servers": servers,
+        "services_groups": services_groups,
+        "services": services,
     }
     return jsonify(response_data)

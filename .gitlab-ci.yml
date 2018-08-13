@@ -19,7 +19,7 @@ push:
   only:
     - master
 
-#flake8:
-#  stage: lint
-#  script:
-#   - git diff HEAD^ | flake8 --diff # lint only changed files
+flake8:
+  stage: lint
+  script:
+   - flake8 griphook
