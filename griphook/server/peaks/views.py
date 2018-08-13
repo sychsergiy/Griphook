@@ -1,10 +1,14 @@
 from flask import request, render_template, jsonify
 
-from griphook.server.peaks.utils import validate_peaks_query, get_peaks_query_group_by_time_step, peak_formatter
+from griphook.server.peaks.utils import (
+    validate_peaks_query,
+    get_peaks_query_group_by_time_step,
+    peak_formatter,
+)
 
 
 def index():
-    return render_template('peaks/index.html')
+    return render_template("peaks/index.html")
 
 
 def get_peaks_for_chart():
@@ -38,8 +42,12 @@ def get_peaks_for_chart():
         query_result = query.get_items()
         timeline = [peak_formatter(element) for element in query_result]
         values = [element.peaks for element in query_result]
-        data = {"timeline": timeline, "values": values, 'metric_type': query_result[0].type.value}
-        response_data = {'data': data}
+        data = {
+            "timeline": timeline,
+            "values": values,
+            "metric_type": query_result[0].type.value,
+        }
+        response_data = {"data": data}
         response = jsonify(response_data)
 
     return response

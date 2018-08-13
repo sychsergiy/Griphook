@@ -1,6 +1,13 @@
 from sqlalchemy.orm import Query
 
-from griphook.server.models import MetricPeak, BatchStoryPeaks, Service, ServicesGroup, Server, Cluster
+from griphook.server.models import (
+    MetricPeak,
+    BatchStoryPeaks,
+    Service,
+    ServicesGroup,
+    Server,
+    Cluster,
+)
 
 
 class MetricPeakGroupFilter(object):
@@ -16,7 +23,9 @@ class MetricPeakGroupFilter(object):
     def __join_cluster(self):
         if not self.__cluster_joined:
             self.__join_server()
-            self.query = self.query.join(Cluster, Server.cluster_id == Cluster.id)
+            self.query = self.query.join(
+                Cluster, Server.cluster_id == Cluster.id
+            )
             self.__cluster_joined = True
 
     def __join_server(self):
@@ -35,7 +44,9 @@ class MetricPeakGroupFilter(object):
         if not self.__service_group_joined:
             if not self.__service_joined:
                 self.__join_service()
-            self.query = self.query.join(ServicesGroup, MetricPeak.services_group_id == ServicesGroup.id)
+            self.query = self.query.join(
+                ServicesGroup, MetricPeak.services_group_id == ServicesGroup.id
+            )
             self.__service_group_joined = True
 
     def __join_batch_story(self):
@@ -64,7 +75,9 @@ class MetricPeakGroupFilter(object):
 
     def filter_by_time_period(self, time_from, time_until):
         self.__join_batch_story()
-        self.query = self.query.filter(BatchStoryPeaks.time.between(time_from, time_until))
+        self.query = self.query.filter(
+            BatchStoryPeaks.time.between(time_from, time_until)
+        )
         return self
 
     def filter_by_metric_type(self, *args: str):
