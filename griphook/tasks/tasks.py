@@ -19,7 +19,11 @@ from griphook.server.models import (
     Cluster,
     Server,
 )
-from griphook.tasks.utils import DATA_GRANULATION, BatchStatus, concurrent_get_or_create
+from griphook.tasks.utils import (
+    DATA_GRANULATION,
+    BatchStatus,
+    concurrent_get_or_create,
+)
 
 
 conf = Config().options
@@ -66,7 +70,9 @@ def parse_metrics(batch_id: int):
                         time_from, time_until
                     )
                 )
-                data = cantal_source.read(time_from=time_from, time_until=time_until)
+                data = cantal_source.read(
+                    time_from=time_from, time_until=time_until
+                )
                 data_count = save_metric_to_db(
                     session=session, metrics=data, batch=batch
                 )

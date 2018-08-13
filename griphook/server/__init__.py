@@ -25,7 +25,9 @@ def create_app(script_info=None):
     )
 
     # set config
-    app_settings = os.getenv("APP_SETTINGS", "griphook.server.config.DevelopmentConfig")
+    app_settings = os.getenv(
+        "APP_SETTINGS", "griphook.server.config.DevelopmentConfig"
+    )
     app.config.from_object(app_settings)
 
     # set up extensions

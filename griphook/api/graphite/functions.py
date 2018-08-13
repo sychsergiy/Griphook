@@ -3,7 +3,9 @@ from typing import Any, Optional, Type, Union
 from griphook.api.graphite.target import Target
 
 # Type alias for base type of types
-BuiltInOrTarget = Union[Type[Target], Type[str], Type[bool], Type[int], Type[float]]
+BuiltInOrTarget = Union[
+    Type[Target], Type[str], Type[bool], Type[int], Type[float]
+]
 
 
 class Argument(object):
@@ -93,7 +95,9 @@ class Function(Target):
     rendered to string.
     """
 
-    def __init__(self, name: str, *arg_types: Union[BuiltInOrTarget, Argument]) -> None:
+    def __init__(
+        self, name: str, *arg_types: Union[BuiltInOrTarget, Argument]
+    ) -> None:
         """
         Function constructor.
         Creates Graphite function object, sets the name to function and

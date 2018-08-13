@@ -58,7 +58,9 @@ class ServicesGroup(db.Model):
         db.Integer, db.ForeignKey(column="projects.id", name="project_fk")
     )
 
-    team_id = db.Column(db.Integer, db.ForeignKey(column="teams.id", name="team_fk"))
+    team_id = db.Column(
+        db.Integer, db.ForeignKey(column="teams.id", name="team_fk")
+    )
 
 
 class Service(db.Model):
@@ -73,7 +75,8 @@ class Service(db.Model):
     )
 
     services_group_id = db.Column(
-        db.Integer, db.ForeignKey(column="services_groups.id", name="services_group_fk")
+        db.Integer,
+        db.ForeignKey(column="services_groups.id", name="services_group_fk"),
     )
 
     __table_args__ = (
@@ -117,7 +120,9 @@ class MetricPeak(db.Model):
 
     batch_id = db.Column(
         db.Integer,
-        db.ForeignKey(column="batches_story_peaks.id", name="batch_story_peaks_fk"),
+        db.ForeignKey(
+            column="batches_story_peaks.id", name="batch_story_peaks_fk"
+        ),
     )
 
     service_id = db.Column(
@@ -133,7 +138,9 @@ class MetricPeak(db.Model):
         db.Integer, db.ForeignKey(column="projects.id", name="projects_fk")
     )
 
-    team_id = db.Column(db.Integer, db.ForeignKey(column="teams.id", name="teams_fk"))
+    team_id = db.Column(
+        db.Integer, db.ForeignKey(column="teams.id", name="teams_fk")
+    )
 
     __table_args__ = (
         db.UniqueConstraint(
@@ -155,7 +162,9 @@ class MetricBilling(db.Model):
 
     batch_id = db.Column(
         db.Integer,
-        db.ForeignKey(column="batches_story_billing.id", name="batch_story_billing_fk"),
+        db.ForeignKey(
+            column="batches_story_billing.id", name="batch_story_billing_fk"
+        ),
     )
 
     service_id = db.Column(
@@ -171,7 +180,9 @@ class MetricBilling(db.Model):
         db.Integer, db.ForeignKey(column="projects.id", name="projects_fk")
     )
 
-    team_id = db.Column(db.Integer, db.ForeignKey(column="teams.id", name="teams_fk"))
+    team_id = db.Column(
+        db.Integer, db.ForeignKey(column="teams.id", name="teams_fk")
+    )
 
     __table_args__ = (
         db.UniqueConstraint(

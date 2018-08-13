@@ -15,7 +15,9 @@ DEFAULT_PREFIX = "GH_"
 
 class Config(object):
     def __init__(
-        self, template: trafaret.base.Dict = default_template, prefix=DEFAULT_PREFIX
+        self,
+        template: trafaret.base.Dict = default_template,
+        prefix=DEFAULT_PREFIX,
     ) -> None:
         self.prefix = prefix
 

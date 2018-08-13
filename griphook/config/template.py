@@ -4,7 +4,10 @@ template = trafaret.Dict(
     {
         "api": trafaret.Dict({"GRAPHITE_URL": trafaret.String()}),
         "db": trafaret.Dict(
-            {"DATABASE_URL": trafaret.String(), "DATABASE_TEST_URL": trafaret.String()}
+            {
+                "DATABASE_URL": trafaret.String(),
+                "DATABASE_TEST_URL": trafaret.String(),
+            }
         ),
         "tasks": trafaret.Dict(
             {

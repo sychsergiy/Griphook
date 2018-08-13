@@ -2,7 +2,7 @@ from flask import request, render_template, jsonify
 
 from griphook.server.peaks.utils import (
     validate_peaks_query,
-    peaks_query,
+    get_peaks_query_group_by_time_step,
     peak_formatter,
 )
 
@@ -11,13 +11,12 @@ def index():
     return render_template("peaks/index.html")
 
 
-def get_peaks():
+def get_peaks_for_chart():
     """
     input:
     {
-        "server": string, | required
-        "services_group": string,
-        "service": string,
+        "target_type": string, | required
+        "target_id": string,
         "time_from": string, | required
         "time_until": string, | required
         "metric_type": string, | required
@@ -32,13 +31,15 @@ def get_peaks():
     }
     """
     data = request.get_json()
+    if not data:
+        data = request.args
     validated_data, error_data = validate_peaks_query(data)
     if error_data:
         response = jsonify(error_data)
         response.status_code = 400
     else:
-        query = peaks_query(validated_data)
-        query_result = query.all()
+        query = get_peaks_query_group_by_time_step(**validated_data)
+        query_result = query.get_items()
         timeline = [peak_formatter(element) for element in query_result]
         values = [element.peaks for element in query_result]
         data = {

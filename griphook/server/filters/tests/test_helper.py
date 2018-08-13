@@ -7,7 +7,9 @@ from griphook.server.filters.helper import (
 def test_get_clusters_hierarchy_part(clusters):
     real_clusters = get_clusters_hierarchy_part()
 
-    expected_clusters = tuple({"id": id_, "title": title} for (id_, title) in clusters)
+    expected_clusters = tuple(
+        {"id": id_, "title": title} for (id_, title) in clusters
+    )
 
     assert real_clusters == expected_clusters
 

@@ -16,7 +16,9 @@ class GraphiteAPIParser(APIParser):
     """
 
     __path = DotPath("cantal", "*", "*", "cgroups", "lithos", "*", "*")
-    __metrics = MultipleValues("user_cpu_percent", "system_cpu_percent", "vsize")
+    __metrics = MultipleValues(
+        "user_cpu_percent", "system_cpu_percent", "vsize"
+    )
     __default_function = summarize
 
     def fetch(

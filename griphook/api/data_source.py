@@ -5,7 +5,10 @@ from griphook.api.parsers import GenericParser
 
 class DataSource:
     def __init__(
-        self, *, parser: GenericParser, data_formatter: Callable[[str], List[Dict]]
+        self,
+        *,
+        parser: GenericParser,
+        data_formatter: Callable[[str], List[Dict]]
     ) -> None:
         """
         DataSource constructor
