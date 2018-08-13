@@ -37,7 +37,8 @@ class GroupStrategy(AbstractStrategy):
             joined_subquery.c.service_title,
             func.avg(joined_subquery.c.value).label("metric_average"),
         ).group_by(
-            joined_subquery.c.services_group_title, joined_subquery.c.service_title
+            joined_subquery.c.services_group_title,
+            joined_subquery.c.service_title,
         )
         return aggregated_services.all()
 

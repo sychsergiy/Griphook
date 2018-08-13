@@ -32,7 +32,8 @@ def get_filtered_batch_story_query(time_from, time_until):
     query = (
         db.session.query(BatchStoryBilling)
         .filter(
-            BatchStoryBilling.time >= time_from, BatchStoryBilling.time <= time_until
+            BatchStoryBilling.time >= time_from,
+            BatchStoryBilling.time <= time_until,
         )
         .with_entities(BatchStoryBilling.id)
     )

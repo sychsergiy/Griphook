@@ -7,8 +7,9 @@ from griphook.server.average_load.chart_data_util import ChartDataUtil
 from griphook.server.average_load.utils import get_strategy_for_target
 
 
-
-WRONG_TARGET_TYPE_ERROR_MESSAGE = "Wrong target type, must one of (service, services_group, server, cluster)"
+WRONG_TARGET_TYPE_ERROR_MESSAGE = (
+    "Wrong target type, must one of (service, services_group, server, cluster)"
+)
 
 
 class AverageLoadChartDataView(MethodView):
@@ -21,6 +22,7 @@ class AverageLoadChartDataView(MethodView):
         "children_values: List[int],
     }
     """
+
     template = Dict(
         {
             "target": String(),
@@ -51,7 +53,9 @@ class AverageLoadChartDataView(MethodView):
 
         chart_data_util = ChartDataUtil(strategy_class(target), **request_data)
 
-        target_label_value_tuple = chart_data_util.get_root_metric_average_value()
+        target_label_value_tuple = (
+            chart_data_util.get_root_metric_average_value()
+        )
         if not target_label_value_tuple:
             error_message = f"Not found {target_type} with id: {target}"
             response = jsonify({"error": error_message})

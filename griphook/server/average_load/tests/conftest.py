@@ -83,4 +83,6 @@ def servers(session, clusters: tuple):
     session.add_all(servers)
     session.commit()
 
-    return Server.query.with_entities(Server.id, Server.title, Server.cluster_id).all()
+    return Server.query.with_entities(
+        Server.id, Server.title, Server.cluster_id
+    ).all()

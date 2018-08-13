@@ -26,7 +26,9 @@ class ClusterStrategy(AbstractStrategy):
             joined_subquery.c.cluster_title,
             joined_subquery.c.server_title,
             func.avg(joined_subquery.c.value).label("metric_average"),
-        ).group_by(joined_subquery.c.cluster_title, joined_subquery.c.server_title)
+        ).group_by(
+            joined_subquery.c.cluster_title, joined_subquery.c.server_title
+        )
         return aggregated_servers.all()
 
     def get_root_services_query(self):
