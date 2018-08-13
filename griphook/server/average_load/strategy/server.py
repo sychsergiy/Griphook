@@ -1,51 +1,63 @@
-from datetime import datetime
+from sqlalchemy import func
 
-from griphook.server.average_load.queries.server import (
-    get_server_average_metric_value,
-    get_server_query,
-    get_server_groups_average_metric_values,
-    get_server_groups_services_query
-)
+from griphook.server.models import Service, Server, ServicesGroup
 
-from griphook.server.average_load.queries.common import average_load_query_builder
+from griphook.server import db
+
+from griphook.server.average_load.strategy.abstract import AbstractStrategy
 
 
-def get_server_groups_metric_average_values_strategy(
-        target: str, metric_type: str, time_from: datetime, time_until: datetime,
-):
-    """
-    :param time_from: datetime
-    :param time_until: datetime
-    :param target: server_title
-    :param metric_type: vsize or user_cpu_percent
-    :return: average load for each services inside current services_group
-     (only part of service which inside current services_group)
-    """
-    services_query_getter = get_server_groups_services_query
-    result_handler = get_server_groups_average_metric_values
+class ServerStrategy(AbstractStrategy):
+    def get_children_services_query(self):
+        """
+        services groups are children of server,
+         but one services group can be distributes between few servers,
+         take only part from current server
+         """
+        services_query = (
+            db.session.query(Server)
+                .filter(Server.title == self.target)
+                .join(Service)
+                .join(ServicesGroup)
+                .with_entities(
+                Server.title.label("server_title"),
+                ServicesGroup.title.label("services_group_title"),
+                Service.id,
+            )
+        )
+        return services_query
 
-    server_groups_metric_average_values = average_load_query_builder(
-        target, metric_type, time_from, time_until, services_query_getter, result_handler
-    )
-    return server_groups_metric_average_values
+    @staticmethod
+    def get_children_average_metric_values(joined_subquery):
+        aggregated_services = (
+            db.session.query(
+                joined_subquery.c.services_group_title,
+                joined_subquery.c.server_title,
+                func.avg(joined_subquery.c.value).label("metric_average"),
+            ).group_by(
+                joined_subquery.c.services_group_title,
+                joined_subquery.c.server_title,
+            )
+        )
+        return aggregated_services.all()
 
+    def get_root_services_query(self):
+        query = (
+            db.session.query(Server)
+                .filter(Server.title == self.target)
+                .join(Service)
+                .with_entities(
+                Service.id, Server.title
+            )
+        )
+        return query
 
-def get_server_metric_average_value_strategy(
-        target: str, metric_type: str, time_from: datetime, time_until: datetime,
-):
-    """
-    :param time_from: datetime
-    :param time_until: datetime
-    :param target: server_title
-    :param metric_type: vsize or user_cpu_percent
-    :return: average load for each services inside current services_group
-     (only part of service which inside current services_group)
-    """
-    services_query_getter = get_server_query
-    result_handler = get_server_average_metric_value
-
-    server_average_metric_value = average_load_query_builder(
-        target, metric_type, time_from, time_until, services_query_getter, result_handler
-    )
-
-    return server_average_metric_value
+    @staticmethod
+    def get_root_average_metric_value(joined_subquery):
+        server_average_value = (
+            db.session.query(
+                joined_subquery.c.title,
+                func.avg(joined_subquery.c.value).label("metric_average")
+            ).group_by(joined_subquery.c.title)
+        )
+        return server_average_value.one()
