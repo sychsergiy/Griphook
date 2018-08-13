@@ -99,21 +99,30 @@ class ChartDataHelper(object):
         except (KeyError, ValueError):
             return empty_response
 
-        root_data = {"target": root_target_to_visualize, "value": root_response_value}
+        root_data = {
+            "target": root_target_to_visualize,
+            "value": root_response_value,
+        }
 
         # tuple of targets(item is target for each children_item) for sending multiple target argument
         children_target = tuple(self.children_target())
         # send request to Graphite API with root target
         try:
-            children_response = send_request(children_target, time_from, time_until)
+            children_response = send_request(
+                children_target, time_from, time_until
+            )
         except GraphiteAPIError:
             return empty_response
         # convert response to convenient form
         try:
             children_data = [
                 {
-                    "target": self.children_target_constructor(self.children[index]),
-                    "value": value["datapoints"][0][0],  # todo: check IndexError
+                    "target": self.children_target_constructor(
+                        self.children[index]
+                    ),
+                    "value": value["datapoints"][0][
+                        0
+                    ],  # todo: check IndexError
                 }
                 for index, value in enumerate(children_response)
             ]

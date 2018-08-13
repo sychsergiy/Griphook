@@ -27,7 +27,10 @@ class TestConfig(unittest.TestCase):
                 "cli": trafaret.String(),
                 "tasks": trafaret.String(),
                 "db": trafaret.Dict(
-                    {"DATABASE_URL": trafaret.String(), "EXPIRES_TIME": trafaret.Int()}
+                    {
+                        "DATABASE_URL": trafaret.String(),
+                        "EXPIRES_TIME": trafaret.Int(),
+                    }
                 ),
             }
         )
@@ -110,13 +113,18 @@ class TestConfig(unittest.TestCase):
         },
     )
     def test_override_options_from_environ_method_with_nested_dict(self):
-        data = {"TOP_LEVEL_VARIABLE": 1, "NESTED_DICT": {"SOURCE_DATA_EXPIRES": 1}}
+        data = {
+            "TOP_LEVEL_VARIABLE": 1,
+            "NESTED_DICT": {"SOURCE_DATA_EXPIRES": 1},
+        }
         self.write_yml_config(data)
 
         template = trafaret.Dict(
             {
                 "TOP_LEVEL_VARIABLE": trafaret.Int(),
-                "NESTED_DICT": trafaret.Dict({"SOURCE_DATA_EXPIRES": trafaret.Int()}),
+                "NESTED_DICT": trafaret.Dict(
+                    {"SOURCE_DATA_EXPIRES": trafaret.Int()}
+                ),
             }
         )
 

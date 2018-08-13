@@ -10,8 +10,12 @@ services_group_average_load_view = views.ServicesGroupAverageLoadView.as_view(
 )
 services_average_load_view = views.ServiceAverageLoadView.as_view("service")
 
-average_load_blueprint.add_url_rule("/server", view_func=server_average_load_view)
+average_load_blueprint.add_url_rule(
+    "/server", view_func=server_average_load_view
+)
 average_load_blueprint.add_url_rule(
     "/services_group", view_func=services_group_average_load_view
 )
-average_load_blueprint.add_url_rule("/service", view_func=services_average_load_view)
+average_load_blueprint.add_url_rule(
+    "/service", view_func=services_average_load_view
+)

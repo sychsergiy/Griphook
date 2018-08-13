@@ -29,10 +29,14 @@ class QueryParametersMixin(object):
 
     def dispatch_request(self, *args, **kwargs):
         self.save_parameters(self.required_parameters, self.optional_parameters)
-        return super(QueryParametersMixin, self).dispatch_request(*args, **kwargs)
+        return super(QueryParametersMixin, self).dispatch_request(
+            *args, **kwargs
+        )
 
     def save_parameters(
-        self, required_parameters: Iterable[str], optional_parameters: Iterable[str]
+        self,
+        required_parameters: Iterable[str],
+        optional_parameters: Iterable[str],
     ):
         self.validate_and_save_params(*required_parameters)
         self.validate_and_save_params(*optional_parameters, required=False)

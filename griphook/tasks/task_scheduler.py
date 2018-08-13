@@ -113,7 +113,9 @@ def main():
 
     schedule.every(DATA_GRANULATION).seconds.do(requeue_expired_batches)
 
-    schedule.every(CREATING_BATCHES_INTERVAL).seconds.do(create_batches_until_now)
+    schedule.every(CREATING_BATCHES_INTERVAL).seconds.do(
+        create_batches_until_now
+    )
 
     schedule.every(FILLING_TASK_QUEUE_INTERVAL).seconds.do(fill_task_queue)
 

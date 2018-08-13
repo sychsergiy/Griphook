@@ -66,7 +66,10 @@ class ServicesChartDataHelper(ChartDataHelper):
         # use format in accordance to `retrieve_children` method returns
         group, service, instance = children_item
         return construct_target(
-            self.metric_type, services_group=group, service=service, instance=instance
+            self.metric_type,
+            services_group=group,
+            service=service,
+            instance=instance,
         )
 
     def root_target_constructor(self) -> str:

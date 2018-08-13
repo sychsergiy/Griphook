@@ -27,7 +27,12 @@ class ServerAverageLoadView(QueryParametersForMethodMixin, MethodView):
     }
     """
 
-    get_required_parameters = ("time_from", "time_until", "metric_type", "server")
+    get_required_parameters = (
+        "time_from",
+        "time_until",
+        "metric_type",
+        "server",
+    )
 
     def get(self):
         server_chart_data_helper = ServerChartDataHelper(
@@ -92,7 +97,12 @@ class ServiceAverageLoadView(QueryParametersForMethodMixin, MethodView):
     }
     """
 
-    get_required_parameters = ("time_from", "time_until", "metric_type", "service")
+    get_required_parameters = (
+        "time_from",
+        "time_until",
+        "metric_type",
+        "service",
+    )
 
     def get(self):
         services_helper = ServicesChartDataHelper(

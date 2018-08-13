@@ -35,7 +35,9 @@ class GraphiteAPIError(Exception):
     pass
 
 
-def send_request(target: Union[str, tuple], time_from: int, time_until: int) -> dict:
+def send_request(
+    target: Union[str, tuple], time_from: int, time_until: int
+) -> dict:
     """
     Helper function for sending requests to Graphite APi
     :param target: Graphite API `target` argument,
