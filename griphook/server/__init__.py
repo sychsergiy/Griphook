@@ -36,9 +36,6 @@ def create_app(script_info=None):
     cors.init_app(app)
 
     # register blueprints
-    from griphook.server.main import main_blueprint
-    app.register_blueprint(main_blueprint)
-
     from griphook.server.billing import billing_blueprint
     app.register_blueprint(billing_blueprint, url_prefix='/billing')
 
