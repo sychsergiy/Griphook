@@ -1,7 +1,7 @@
-from griphook.server.average_load.queries.common import (
+from griphook.server.average_load.common import (
     get_joined_services_batch_story_metrics_query,
     get_filtered_batch_story_query,
-    get_metric_billing_query
+    get_metric_billing_query,
 )
 
 
@@ -23,17 +23,20 @@ class ChartDataUtil(object):
         query_result = self._strategy.get_children_average_metric_values(joined_query)
 
         chart_data = [
-            (":".join(label_parts), value)
-            for (*label_parts, value) in query_result
+            (":".join(label_parts), value) for (*label_parts, value) in query_result
         ]
         labels, values = zip(*chart_data)
         return labels, values
 
     def get_joined_services_subquery(self, for_root=True):
         batch_story_subquery = get_filtered_batch_story_query(
-            self.filter_params['time_from'], self.filter_params['time_until']
+            self.filter_params["time_from"], self.filter_params["time_until"]
         ).subquery()
-        metric_subquery = get_metric_billing_query(self.filter_params['metric_type']).subquery()
+
+        metric_subquery = get_metric_billing_query(
+            self.filter_params["metric_type"]
+        ).subquery()
+
         if for_root:
             services_subquery = self._strategy.get_root_services_query().subquery()
         else:

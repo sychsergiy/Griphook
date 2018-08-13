@@ -32,5 +32,5 @@ def test_get_server_metric_average_value(session, filters_data):
     chart_data_util = ChartDataUtil(strategy, **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery()
     label, value = strategy.get_root_average_metric_value(joined_subquery)
-    assert label == 'adv'
+    assert label == "adv"
     assert value == 3695958665.89072

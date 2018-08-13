@@ -1,6 +1,6 @@
-import pytest
-
 from datetime import datetime
+
+import pytest
 
 from griphook.server.average_load.chart_data_util import ChartDataUtil
 from griphook.server.average_load.strategy.cluster import ClusterStrategy
@@ -32,5 +32,5 @@ def test_get_cluster_metric_average_value(session, filters_data):
     chart_data_util = ChartDataUtil(strategy, **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery()
     label, value = strategy.get_root_average_metric_value(joined_subquery)
-    assert label == 'dev'
+    assert label == "dev"
     assert value == 1033193632.05005

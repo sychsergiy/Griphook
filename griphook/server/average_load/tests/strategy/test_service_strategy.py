@@ -1,6 +1,6 @@
-import pytest
-
 from datetime import datetime
+
+import pytest
 
 from griphook.server.average_load.chart_data_util import ChartDataUtil
 from griphook.server.average_load.strategy.service import ServiceStrategy
@@ -34,4 +34,4 @@ def test_get_service_metric_average_value(session, filters_data):
     joined_subquery = chart_data_util.get_joined_services_subquery()
     label, value = strategy.get_root_average_metric_value(joined_subquery)
     # todo: check if query is empty
-    assert label, value == ('adv-by', 1175481906.32966)
+    assert label, value == ("adv-by", 1175481906.32966)
