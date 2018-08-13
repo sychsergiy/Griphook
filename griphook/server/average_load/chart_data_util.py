@@ -23,6 +23,8 @@ from griphook.server.average_load.queries.common import (
 #     get_cluster_metric_average_value_strategy
 # )
 from griphook.server.average_load.strategy.cluster import ClusterStrategy
+from griphook.server.average_load.strategy.group import GroupStrategy
+
 
 
 class ChartDataUtil(object):
@@ -34,9 +36,8 @@ class ChartDataUtil(object):
             pass
         #     self._get_root_chart_data = get_service_metric_average_value_strategy
         #     self._get_children_chart_data = get_service_instances_metric_average_values_strategy
-        # elif target_type == 'services_group':
-        #     self._get_root_chart_data = get_group_metric_average_value_strategy
-        #     self._get_children_chart_data = get_group_services_metric_average_values_strategy
+        elif target_type == 'services_group':
+            self._strategy = GroupStrategy(**filter_params)
         # elif target_type == "server":
         #     self._get_root_chart_data = get_server_metric_average_value_strategy
         #     self._get_children_chart_data = get_server_groups_metric_average_values_strategy

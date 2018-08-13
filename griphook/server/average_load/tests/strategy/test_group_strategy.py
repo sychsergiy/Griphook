@@ -2,13 +2,8 @@ import pytest
 
 from datetime import datetime
 
-from griphook.server.average_load.strategy.group import (
-    get_group_metric_average_value_strategy,
-    get_group_services_metric_average_values_strategy
-)
-
-
-# todo: add get_items_with_average_value method test
+from griphook.server.average_load.chart_data_util import ChartDataUtil
+from griphook.server.average_load.strategy.group import GroupStrategy
 
 
 @pytest.fixture(scope="function")
@@ -24,12 +19,18 @@ def filters_data():
     return data
 
 
-def test_get_group_services_metric_average_value_strategy(session, filters_data):
-    instances = get_group_services_metric_average_values_strategy(**filters_data)
+def test_get_group_services_metric_average_value(session, filters_data):
+    strategy = GroupStrategy(**filters_data)
+    chart_data_util = ChartDataUtil('services_group', **filters_data)
+    joined_subquery = chart_data_util.get_joined_services_subquery(False)
+    instances = strategy.get_children_average_metric_values(joined_subquery)
     assert len(instances) != 0
 
 
-def test_get_group_metric_average_value_strategy(session, filters_data):
-    label, value = get_group_metric_average_value_strategy(**filters_data)
+def test_get_group_metric_average_value(session, filters_data):
+    strategy = GroupStrategy(**filters_data)
+    chart_data_util = ChartDataUtil('services_group', **filters_data)
+    joined_subquery = chart_data_util.get_joined_services_subquery()
+    label, value = strategy.get_root_average_metric_value(joined_subquery)
     assert label == 'adv-stable'
     assert value == 5845704938.62776

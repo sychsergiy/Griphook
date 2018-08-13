@@ -3,11 +3,7 @@ import pytest
 from datetime import datetime
 
 from griphook.server.average_load.chart_data_util import ChartDataUtil
-from griphook.server.average_load.strategy.cluster import (
-    ClusterStrategy,
-    # get_cluster_servers_metric_average_values_strategy,
-    # get_cluster_metric_average_value_strategy
-)
+from griphook.server.average_load.strategy.cluster import ClusterStrategy
 
 
 @pytest.fixture(scope="function")
@@ -28,11 +24,10 @@ def test_services_group_instances_query(session, filters_data):
     chart_data_util = ChartDataUtil('cluster', **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery(False)
     instances = strategy.get_children_average_metric_values(joined_subquery)
-    print(instances)
     assert len(instances) != 0
 
 
-def test_get_cluster_metric_average_value_strategy(session, filters_data):
+def test_get_cluster_metric_average_value(session, filters_data):
     strategy = ClusterStrategy(**filters_data)
     chart_data_util = ChartDataUtil('cluster', **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery()

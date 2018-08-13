@@ -1,29 +1,60 @@
-from datetime import datetime
-
-from griphook.server.average_load.queries.group import (
-    get_group_query,
-    get_group_average_metric_value,
-    get_group_services_query,
-    get_group_services_average_metric_values
+from griphook.server.models import (
+    Service,
+    ServicesGroup,
 )
+from sqlalchemy import func
 
-from griphook.server.average_load.queries.common import average_load_query_builder
+from griphook.server import db
 
-
-def get_group_services_metric_average_values_strategy(
-        target: str, metric_type: str, time_from: datetime, time_until: datetime, ):
-    services_query_getter = get_group_services_query
-    result_query_handler = get_group_services_average_metric_values
-    return average_load_query_builder(
-        target, metric_type, time_from, time_until, services_query_getter, result_query_handler
-    )
+from griphook.server.average_load.strategy.abstract import AbstractStrategy
 
 
-def get_group_metric_average_value_strategy(target: str, metric_type: str, time_from: datetime, time_until: datetime, ):
-    services_query_getter = get_group_query
-    result_query_handler = get_group_average_metric_value
+class GroupStrategy(AbstractStrategy):
 
-    group_metric_average_value = average_load_query_builder(
-        target, metric_type, time_from, time_until, services_query_getter, result_query_handler
-    )
-    return group_metric_average_value
+    def get_children_services_query(self):
+        services_query = (
+            db.session.query(ServicesGroup)
+                .filter(ServicesGroup.title == self.target)
+                .join(Service)
+                .with_entities(
+                ServicesGroup.title.label("services_group_title"),
+                Service.title.label("service_title"),
+                Service.id,
+            )
+        )
+        return services_query
+
+    def get_root_services_query(self):
+        query = (
+            db.session.query(ServicesGroup)
+                .filter(ServicesGroup.title == self.target)
+                .join(Service)
+                .with_entities(
+                Service.id, ServicesGroup.title.label("services_group_title")
+            )
+        )
+        return query
+
+    @staticmethod
+    def get_children_average_metric_values(joined_subquery):
+        aggregated_services = (
+            db.session.query(
+                joined_subquery.c.services_group_title,
+                joined_subquery.c.service_title,
+                func.avg(joined_subquery.c.value).label("metric_average"),
+            ).group_by(
+                joined_subquery.c.services_group_title,
+                joined_subquery.c.service_title,
+            )
+        )
+        return aggregated_services.all()
+
+    @staticmethod
+    def get_root_average_metric_value(joined_subquery):
+        service_average_value = (
+            db.session.query(
+                joined_subquery.c.services_group_title,
+                func.avg(joined_subquery.c.value).label("metric_average")
+            ).group_by(joined_subquery.c.services_group_title)
+        )
+        return service_average_value.one()
