@@ -1,12 +1,14 @@
-from datetime import datetime
-from pprint import pprint
-
 from trafaret import Dict, String, DataError
 
 from flask import jsonify, request
 from flask.views import MethodView
 
 from griphook.server.average_load.chart_data_util import ChartDataUtil
+
+from griphook.server.average_load.strategy.cluster import ClusterStrategy
+from griphook.server.average_load.strategy.group import GroupStrategy
+from griphook.server.average_load.strategy.server import ServerStrategy
+from griphook.server.average_load.strategy.service import ServiceStrategy
 
 template = Dict(
     {
@@ -31,25 +33,36 @@ class AverageLoadChartDataView(MethodView):
     """
 
     def post(self):
-        data = request.get_json()
+        request_data = request.get_json()
 
-        error = self.is_request_data_invalid(data)
+        error = self.is_request_data_invalid(request_data)
         if error:
             response = jsonify({'error': error})
             response.status_code = 400
             return response
 
-        chart_data_util = ChartDataUtil(data.pop('target_type'), **data)
+        target_type = request_data.pop('target_type')
+
+        if target_type == 'service':
+            strategy = ServiceStrategy(**request_data)
+        elif target_type == 'services_group':
+            strategy = GroupStrategy(**request_data)
+        elif target_type == "server":
+            strategy = ServerStrategy(**request_data)
+        elif target_type == 'cluster':
+            strategy = ClusterStrategy(**request_data)
+        else:
+            raise ValueError("target_type is not valid, check request data validation function")
+
+        chart_data_util = ChartDataUtil(strategy, **request_data)
         target_label, target_value = chart_data_util.get_root_metric_average_value()
         children_labels, children_values = chart_data_util.get_children_metric_average_values()
-
         response_data = {
             "target_label": target_label,
             "target_value": target_value,
             "children_labels": children_labels,
             "children_values": children_values,
         }
-        print(response_data)
         return jsonify(response_data)
 
     def is_request_data_invalid(self, data):

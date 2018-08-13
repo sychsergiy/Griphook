@@ -21,7 +21,7 @@ def filters_data():
 
 def test_get_service_instances_metric_average_values(session, filters_data):
     strategy = ServiceStrategy(**filters_data)
-    chart_data_util = ChartDataUtil('service', **filters_data)
+    chart_data_util = ChartDataUtil(strategy, **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery(False)
     instances = strategy.get_children_average_metric_values(joined_subquery)
     # todo: check if query is empty
@@ -30,8 +30,8 @@ def test_get_service_instances_metric_average_values(session, filters_data):
 
 def test_get_service_metric_average_value(session, filters_data):
     strategy = ServiceStrategy(**filters_data)
-    chart_data_util = ChartDataUtil('service', **filters_data)
+    chart_data_util = ChartDataUtil(strategy, **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery()
     label, value = strategy.get_root_average_metric_value(joined_subquery)
-    # todo: check if query is emptpy
+    # todo: check if query is empty
     assert label, value == ('adv-by', 1175481906.32966)
