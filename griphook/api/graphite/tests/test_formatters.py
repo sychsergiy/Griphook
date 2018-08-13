@@ -4,16 +4,16 @@ import pathlib
 from griphook.api.graphite.formatters import (
     Metric,
     format_cantal_data,
-    validate_input_cantal_data
+    validate_input_cantal_data,
 )
 
 TEST_DATA_PATH = pathlib.Path(__file__).parent / "test_input_data.json"
 
 # test data for check fields metric object
-LAST_METRIC_SERVICES_GROUP = 'galdr--backend'
-LAST_METRIC_SERVICE = 'ua'
+LAST_METRIC_SERVICES_GROUP = "galdr--backend"
+LAST_METRIC_SERVICE = "ua"
 LAST_METRIC_VALUE = 573423616
-LAST_METRIC_TYPE = 'user_cpu_percent'
+LAST_METRIC_TYPE = "user_cpu_percent"
 
 
 class TestCantalFormatter:
@@ -34,8 +34,8 @@ class TestCantalFormatter:
             assert data_series_object.datapoints[0][0] is not None
 
             # check metric target validator
-            assert 'cantal' in data_series_object.target
-            assert 'lithos' in data_series_object.target
+            assert "cantal" in data_series_object.target
+            assert "lithos" in data_series_object.target
 
     def test_format_cantal_data(self):
         test_data = get_test_data()

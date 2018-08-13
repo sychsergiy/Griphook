@@ -26,11 +26,16 @@ class ServerAverageLoadView(QueryParametersForMethodMixin, MethodView):
         ]
     }
     """
-    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'server',)
+
+    get_required_parameters = ("time_from", "time_until", "metric_type", "server")
 
     def get(self):
-        server_chart_data_helper = ServerChartDataHelper(self.parameters['server'], self.parameters['metric_type'])
-        response_data = server_chart_data_helper.get_data(self.parameters['time_from'], self.parameters['time_until'])
+        server_chart_data_helper = ServerChartDataHelper(
+            self.parameters["server"], self.parameters["metric_type"]
+        )
+        response_data = server_chart_data_helper.get_data(
+            self.parameters["time_from"], self.parameters["time_until"]
+        )
         return jsonify(response_data)
 
 
@@ -51,14 +56,21 @@ class ServicesGroupAverageLoadView(QueryParametersForMethodMixin, MethodView):
         ]
     }
     """
-    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'services_group')
+
+    get_required_parameters = (
+        "time_from",
+        "time_until",
+        "metric_type",
+        "services_group",
+    )
 
     def get(self):
         sv_group_helper = ServicesGroupChartDataHelper(
-            self.parameters['services_group'], self.parameters['metric_type']
+            self.parameters["services_group"], self.parameters["metric_type"]
         )
         response_data = sv_group_helper.get_data(
-            self.parameters['time_from'], self.parameters['time_until'])
+            self.parameters["time_from"], self.parameters["time_until"]
+        )
         return jsonify(response_data)
 
 
@@ -79,11 +91,17 @@ class ServiceAverageLoadView(QueryParametersForMethodMixin, MethodView):
         ]
     }
     """
-    get_required_parameters = ('time_from', 'time_until', 'metric_type', 'service',)
+
+    get_required_parameters = ("time_from", "time_until", "metric_type", "service")
 
     def get(self):
-        services_helper = ServicesChartDataHelper(self.parameters['service'], self.parameters['metric_type'])
-        response_data = services_helper.get_data(self.parameters['time_from'], self.parameters['time_until'])
+        services_helper = ServicesChartDataHelper(
+            self.parameters["service"], self.parameters["metric_type"]
+        )
+        response_data = services_helper.get_data(
+            self.parameters["time_from"], self.parameters["time_until"]
+        )
         return jsonify(response_data)
+
 
 # todo: maybe separate endpoints for getting average_load data for root and children
