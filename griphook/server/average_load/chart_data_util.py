@@ -47,12 +47,12 @@ class ChartDataUtil(object):
 
     def get_root_metric_average_value(self):
         joined_query = self.get_joined_services_subquery()
-        label, value = self._strategy.get_cluster_average_metric_value(joined_query)
+        label, value = self._strategy.get_root_average_metric_value(joined_query)
         return label, value
 
     def get_children_metric_average_values(self):
         joined_query = self.get_joined_services_subquery(False)
-        query_result = self._strategy.get_cluster_servers_average_metric_values(joined_query)
+        query_result = self._strategy.get_children_average_metric_values(joined_query)
 
         chart_data = [
             (":".join(label_parts), value)
@@ -67,9 +67,9 @@ class ChartDataUtil(object):
         ).subquery()
         metric_subquery = get_metric_billing_query(self.filter_params['metric_type']).subquery()
         if for_root:
-            services_subquery = self._strategy.get_cluster_query().subquery()
+            services_subquery = self._strategy.get_root_services_query().subquery()
         else:
-            services_subquery = self._strategy.get_cluster_server_services_query().subquery()
+            services_subquery = self._strategy.get_children_services_query().subquery()
         joined_subquery = get_joined_services_batch_story_metrics_query(
             services_subquery, batch_story_subquery, metric_subquery
         ).subquery()

@@ -27,7 +27,7 @@ def test_services_group_instances_query(session, filters_data):
     strategy = ClusterStrategy(**filters_data)
     chart_data_util = ChartDataUtil('cluster', **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery(False)
-    instances = strategy.get_cluster_servers_average_metric_values(joined_subquery)
+    instances = strategy.get_children_average_metric_values(joined_subquery)
     print(instances)
     assert len(instances) != 0
 
@@ -36,6 +36,6 @@ def test_get_cluster_metric_average_value_strategy(session, filters_data):
     strategy = ClusterStrategy(**filters_data)
     chart_data_util = ChartDataUtil('cluster', **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery()
-    label, value = strategy.get_cluster_average_metric_value(joined_subquery)
+    label, value = strategy.get_root_average_metric_value(joined_subquery)
     assert label == 'dev'
     assert value == 1033193632.05005
