@@ -1,11 +1,11 @@
 from typing import Callable, Dict, List
 
-from griphook.api import parsers
+from griphook.api.parsers import GenericParser
 
 
 class DataSource:
     def __init__(self, *,
-                 parser: parsers.APIParser,
+                 parser: GenericParser,
                  data_formatter: Callable[[str], List[Dict]]) -> None:
         """
         DataSource constructor

@@ -1,8 +1,8 @@
 api:
   GRAPHITE_URL: https://graphite.olympus.evo/render
 db:
-  DATABASE_URL: postgres://user:password@postgres:5432/database_name
-  DATABASE_TEST_URL: postgres://user:password@postgres:5432/database_name
+  DATABASE_URL: postgres://user:qwerty123@localhost:5432/griphook
+  DATABASE_TEST_URL: postgres://user:qwerty123@localhost:5432/test_griphook
 tasks:
   CELERY_BROKER_URL: ampq://user:password@localhost/root
   DATA_SOURCE_DATA_EXPIRES: 7776000
