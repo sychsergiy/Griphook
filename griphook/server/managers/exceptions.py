@@ -12,3 +12,7 @@ class TeamManagerException(ManagerException):
 
 class ServerManagerException(ManagerException):
     pass
+
+
+class ClusterManagerException(ManagerException):
+    pass
