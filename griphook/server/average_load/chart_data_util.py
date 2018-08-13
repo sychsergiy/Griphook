@@ -3,14 +3,11 @@ from griphook.server.average_load.queries.common import (
     get_filtered_batch_story_query,
     get_metric_billing_query
 )
-# from griphook.server.average_load.strategy.service import (
-#     get_service_metric_average_value_strategy,
-#     get_service_instances_metric_average_values_strategy
-# )
 
 from griphook.server.average_load.strategy.cluster import ClusterStrategy
 from griphook.server.average_load.strategy.group import GroupStrategy
 from griphook.server.average_load.strategy.server import ServerStrategy
+from griphook.server.average_load.strategy.service import ServiceStrategy
 
 
 class ChartDataUtil(object):
@@ -19,16 +16,14 @@ class ChartDataUtil(object):
         :param filter_params: [target, metric_type, time_from, time_until], all required
         """
         if target_type == 'service':
-            pass
-        #     self._get_root_chart_data = get_service_metric_average_value_strategy
-        #     self._get_children_chart_data = get_service_instances_metric_average_values_strategy
+            self._strategy = ServiceStrategy(**filter_params)
         elif target_type == 'services_group':
             self._strategy = GroupStrategy(**filter_params)
         elif target_type == "server":
             self._strategy = ServerStrategy(**filter_params)
         elif target_type == 'cluster':
             self._strategy = ClusterStrategy(**filter_params)
-
+        # todo: move this check to views.py, take strategy as argument
         self.filter_params = filter_params
 
     def get_root_metric_average_value(self):

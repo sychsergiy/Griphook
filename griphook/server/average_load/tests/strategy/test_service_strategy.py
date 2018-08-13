@@ -2,13 +2,8 @@ import pytest
 
 from datetime import datetime
 
-from griphook.server.average_load.strategy.service import (
-    get_service_instances_metric_average_values_strategy,
-    get_service_metric_average_value_strategy
-)
-
-
-# todo: add get_items_with_average_value method test
+from griphook.server.average_load.chart_data_util import ChartDataUtil
+from griphook.server.average_load.strategy.service import ServiceStrategy
 
 
 @pytest.fixture(scope="function")
@@ -24,11 +19,19 @@ def filters_data():
     return data
 
 
-def test_service_instances_average_load_query(session, filters_data):
-    instances = get_service_instances_metric_average_values_strategy(**filters_data)
+def test_get_service_instances_metric_average_values(session, filters_data):
+    strategy = ServiceStrategy(**filters_data)
+    chart_data_util = ChartDataUtil('service', **filters_data)
+    joined_subquery = chart_data_util.get_joined_services_subquery(False)
+    instances = strategy.get_children_average_metric_values(joined_subquery)
+    # todo: check if query is empty
     assert len(instances) != 0
 
 
-def test_service_average_load_query(session, filters_data):
-    instance = get_service_metric_average_value_strategy(**filters_data)
-    assert instance == tuple(['adv-by', 1175481906.32966])
+def test_get_service_metric_average_value(session, filters_data):
+    strategy = ServiceStrategy(**filters_data)
+    chart_data_util = ChartDataUtil('service', **filters_data)
+    joined_subquery = chart_data_util.get_joined_services_subquery()
+    label, value = strategy.get_root_average_metric_value(joined_subquery)
+    # todo: check if query is emptpy
+    assert label, value == ('adv-by', 1175481906.32966)

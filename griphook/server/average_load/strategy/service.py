@@ -1,27 +1,59 @@
-from griphook.server.average_load.queries.common import average_load_query_builder
-from griphook.server.average_load.queries.service import (
-    get_instances_average_metric_values,
-    get_service_average_metric_value,
-    get_service_instances_query,
-    get_service_query
-)
+from griphook.server.models import Service, ServicesGroup
+
+from sqlalchemy import func
+
+from griphook.server import db
+
+from griphook.server.average_load.strategy.abstract import AbstractStrategy
 
 
-def get_service_instances_metric_average_values_strategy(target, metric_type, time_from, time_until):
-    services_subquery_getter = get_service_instances_query
-    result_query_handler = get_instances_average_metric_values
+class ServiceStrategy(AbstractStrategy):
+    def get_children_services_query(self):
+        """
+        instances are children for service
+        """
+        instances_query = (
+            db.session.query(Service)
+                .filter(Service.title == self.target)
+                .join(ServicesGroup)
+                .with_entities(
+                ServicesGroup.title.label("services_group_title"),
+                Service.title.label("service_title"),
+                Service.instance,
+                Service.id,
+            )
+        )
+        return instances_query
 
-    aggregated_instances = average_load_query_builder(
-        target, metric_type, time_from, time_until, services_subquery_getter, result_query_handler
-    )
-    return aggregated_instances
+    @staticmethod
+    def get_children_average_metric_values(joined_subquery):
+        aggregated_instances = (
+            db.session.query(
+                joined_subquery.c.services_group_title,
+                joined_subquery.c.service_title,
+                joined_subquery.c.instance,
+                func.avg(joined_subquery.c.value).label("metric_average"),
+            ).group_by(
+                joined_subquery.c.services_group_title,
+                joined_subquery.c.service_title,
+                joined_subquery.c.instance,
+            )
+        )
+        return aggregated_instances.all()
 
+    def get_root_services_query(self):
+        query = (
+            db.session.query(Service.id, Service.title.label("service_title"))
+                .filter(Service.title == self.target)
+        )
+        return query
 
-def get_service_metric_average_value_strategy(target, metric_type, time_from, time_until):
-    services_subquery_getter = get_service_query
-    result_query_handler = get_service_average_metric_value
-
-    service_average_metric_value = average_load_query_builder(
-        target, metric_type, time_from, time_until, services_subquery_getter, result_query_handler
-    )
-    return service_average_metric_value
+    @staticmethod
+    def get_root_average_metric_value(joined_subquery):
+        service_average_value = (
+            db.session.query(
+                joined_subquery.c.service_title,
+                func.avg(joined_subquery.c.value).label("metric_average")
+            ).group_by(joined_subquery.c.service_title)
+        )
+        return service_average_value.one()
