@@ -2,8 +2,17 @@ from datetime import datetime, timedelta
 import pytest
 
 from griphook.server import create_app, db as _db
-from griphook.server.models import Cluster, Server, Service, ServicesGroup, MetricPeak, BatchStoryPeaks
-from griphook.server.peaks.constants import DATA_TIME_FORMAT
+from griphook.server.models import (
+    Cluster,
+    Server,
+    Service,
+    ServicesGroup,
+    MetricPeak,
+    BatchStoryPeaks,
+)
+from griphook.server.peaks.constants import (
+    REQUEST_DATE_TIME_FORMAT,
+)
 
 
 @pytest.fixture(scope="session")
@@ -57,9 +66,7 @@ def session(db, request):
 
 @pytest.fixture(scope="function")
 def clusters(session):
-    clusters = [
-        Cluster(title="test1"),
-    ]
+    clusters = [Cluster(title="test1")]
     session.add_all(clusters)
     session.commit()
     return Cluster.query.with_entities(Cluster.id, Cluster.title)
@@ -82,7 +89,9 @@ def services_groups(session, clusters):
     services_group2 = ServicesGroup(title="test2")
     session.add_all([services_group1, services_group2])
     session.commit()
-    return ServicesGroup.query.with_entities(ServicesGroup.id, ServicesGroup.title)
+    return ServicesGroup.query.with_entities(
+        ServicesGroup.id, ServicesGroup.title
+    )
 
 
 @pytest.fixture(scope="function")
@@ -90,11 +99,11 @@ def services(session, servers, services_groups):
     services_group1, services_group2, *_ = services_groups
     server1, server2, *_ = servers
     service1 = Service(
-                title="service1",
-                instance="test",
-                server_id=server1.id,
-                services_group_id=services_group1.id,
-            )
+        title="service1",
+        instance="test",
+        server_id=server1.id,
+        services_group_id=services_group1.id,
+    )
     service2 = Service(
         title="service2",
         instance="test",
@@ -120,7 +129,9 @@ def batch_storys(session):
     batches_story2 = BatchStoryPeaks(time=time2)
     session.add_all([batches_story1, batches_story2])
     session.commit()
-    return BatchStoryPeaks.query.with_entities(BatchStoryPeaks.id, BatchStoryPeaks.time)
+    return BatchStoryPeaks.query.with_entities(
+        BatchStoryPeaks.id, BatchStoryPeaks.time
+    )
 
 
 @pytest.fixture(scope="function")
@@ -169,7 +180,7 @@ def peaks_endpoint_request_data(batch_storys, servers):
         "target_id": servers[1].id,
         "metric_type": "user_cpu_percent",
         "step": 1,
-        "time_from": batch_storys[0].time.strftime(DATA_TIME_FORMAT),
-        "time_until": batch_storys[1].time.strftime(DATA_TIME_FORMAT),
+        "time_from": batch_storys[0].time.strftime(REQUEST_DATE_TIME_FORMAT),
+        "time_until": batch_storys[1].time.strftime(REQUEST_DATE_TIME_FORMAT),
     }
     return data

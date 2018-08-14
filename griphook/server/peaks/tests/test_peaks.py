@@ -2,17 +2,20 @@ import json
 
 from flask import url_for
 
-from griphook.server.peaks.constants import DATA_TIME_FORMAT
+from griphook.server.peaks.constants import (
+    RESPONSE_DATE_TIME_FORMAT,
+    WEEK_TIME_STAMP,
+)
 from griphook.server.peaks.utils import validate_peaks_query
 
 
-def test_get_clusters_hierarchy_part(app, servers,
-                                     metrics, peaks_endpoint_request_data):
+def test_get_clusters_hierarchy_part(
+    app, servers, metrics, peaks_endpoint_request_data
+):
     client = app.test_client()
     url = url_for("peaks.peaks-api")
     server1, server2, *_ = servers
-    week = 604800
-    peaks_endpoint_request_data['step'] == week
+    peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP
     response = client.post(
         url,
         data=json.dumps(peaks_endpoint_request_data),
@@ -38,8 +41,7 @@ def request_without_reuired_field(client, url, data, field):
 def test_validation_request_data(app, peaks_endpoint_request_data):
     client = app.test_client()
     url = url_for("peaks.peaks-api")
-    week = 604800
-    peaks_endpoint_request_data['step'] = week
+    peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP
     for key in peaks_endpoint_request_data:
         response = request_without_reuired_field(
             client, url, peaks_endpoint_request_data, key
@@ -49,14 +51,14 @@ def test_validation_request_data(app, peaks_endpoint_request_data):
         assert error_msg
 
 
-def test_endpoint_response_data(app, metrics,
-                                batch_storys, peaks_endpoint_request_data):
+def test_endpoint_response_data(
+    app, metrics, batch_storys, peaks_endpoint_request_data
+):
     client = app.test_client()
     time1 = batch_storys[0].time
     time2 = batch_storys[1].time
     url = url_for("peaks.peaks-api")
-    week = 604800
-    peaks_endpoint_request_data['step'] = week
+    peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP
     response = client.post(
         url,
         data=json.dumps(peaks_endpoint_request_data),
@@ -66,12 +68,14 @@ def test_endpoint_response_data(app, metrics,
     assert response.status_code == 200
     resp_data = json.loads(response.data.decode("utf-8"))["data"]
     assert len(resp_data["timeline"]) == 2
-    assert resp_data["timeline"][0] == time1.strftime(DATA_TIME_FORMAT)
-    assert resp_data["timeline"][1] == time2.strftime(DATA_TIME_FORMAT)
+    assert resp_data["timeline"][0] == time1.strftime(RESPONSE_DATE_TIME_FORMAT)
+    assert resp_data["timeline"][1] == time2.strftime(RESPONSE_DATE_TIME_FORMAT)
     assert resp_data["values"][0] == 4
     assert resp_data["values"][1] == 3
-    assert resp_data["metric_type"] == peaks_endpoint_request_data["metric_type"]
-    peaks_endpoint_request_data["step"] = week * 4
+    assert (
+        resp_data["metric_type"] == peaks_endpoint_request_data["metric_type"]
+    )
+    peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP * 4
     response = client.post(
         url,
         data=json.dumps(peaks_endpoint_request_data),
@@ -82,49 +86,50 @@ def test_endpoint_response_data(app, metrics,
     resp_data = json.loads(response.data.decode("utf-8"))["data"]
     assert len(resp_data["timeline"]) == 1
     assert resp_data["values"][0] == 4
-    assert resp_data["timeline"][0] == time1.strftime(DATA_TIME_FORMAT)
-    assert resp_data["metric_type"] == peaks_endpoint_request_data["metric_type"]
+    assert resp_data["timeline"][0] == time1.strftime(RESPONSE_DATE_TIME_FORMAT)
+    assert (
+        resp_data["metric_type"] == peaks_endpoint_request_data["metric_type"]
+    )
 
 
 def test_validation_request_data_funcrion(peaks_endpoint_request_data):
-    week = 604800
-    peaks_endpoint_request_data['step'] = 'test'
+    peaks_endpoint_request_data["step"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
-    assert error.get('error')
-    assert 'step' in error['error']
+    assert error.get("error")
+    assert "step" in error["error"]
 
-    peaks_endpoint_request_data['step'] = week
-    time_from = peaks_endpoint_request_data['time_from']
-    peaks_endpoint_request_data['time_from'] = 'test'
+    peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP
+    time_from = peaks_endpoint_request_data["time_from"]
+    peaks_endpoint_request_data["time_from"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
-    assert error.get('error')
-    assert 'time_from' in error['error']
-    peaks_endpoint_request_data['time_from'] = time_from
+    assert error.get("error")
+    assert "time_from" in error["error"]
+    peaks_endpoint_request_data["time_from"] = time_from
 
-    time_until = peaks_endpoint_request_data['time_until']
-    peaks_endpoint_request_data['time_until'] = 'test'
+    time_until = peaks_endpoint_request_data["time_until"]
+    peaks_endpoint_request_data["time_until"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
-    assert error.get('error')
-    assert 'time_until' in error['error']
-    peaks_endpoint_request_data['time_until'] = time_until
+    assert error.get("error")
+    assert "time_until" in error["error"]
+    peaks_endpoint_request_data["time_until"] = time_until
 
-    metric_type = peaks_endpoint_request_data['metric_type']
-    del peaks_endpoint_request_data['metric_type']
+    metric_type = peaks_endpoint_request_data["metric_type"]
+    del peaks_endpoint_request_data["metric_type"]
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
-    assert error.get('error')
-    assert 'metric_type' in error['error']
-    peaks_endpoint_request_data['metric_type'] = metric_type
+    assert error.get("error")
+    assert "metric_type" in error["error"]
+    peaks_endpoint_request_data["metric_type"] = metric_type
 
-    target_type = peaks_endpoint_request_data['target_type']
-    peaks_endpoint_request_data['target_type'] = 'test'
+    target_type = peaks_endpoint_request_data["target_type"]
+    peaks_endpoint_request_data["target_type"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
-    assert error.get('error')
-    assert 'target_type' in error['error']
-    peaks_endpoint_request_data['target_type'] = target_type
+    assert error.get("error")
+    assert "target_type" in error["error"]
+    peaks_endpoint_request_data["target_type"] = target_type
 
-    target_id = peaks_endpoint_request_data['target_id']
-    peaks_endpoint_request_data['target_id'] = 'test'
+    target_id = peaks_endpoint_request_data["target_id"]
+    peaks_endpoint_request_data["target_id"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
-    assert error.get('error')
-    assert 'target_id' in error['error']
-    peaks_endpoint_request_data['target_id'] = target_id
+    assert error.get("error")
+    assert "target_id" in error["error"]
+    peaks_endpoint_request_data["target_id"] = target_id
