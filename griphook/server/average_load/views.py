@@ -49,7 +49,9 @@ class AverageLoadChartDataView(MethodView):
             response.status_code = 400
             return response
 
-        chart_data_util = ChartDataUtil(strategy_class(target_id), **request_data)
+        chart_data_util = ChartDataUtil(
+            strategy_class(target_id), **request_data
+        )
 
         target_label_value_tuple = (
             chart_data_util.get_root_metric_average_value()
@@ -60,7 +62,7 @@ class AverageLoadChartDataView(MethodView):
                 "target_value": "",
                 "children_labels": [],
                 "children_values": [],
-                "metric_type": request_data.get('metric_type')
+                "metric_type": request_data.get("metric_type"),
             }
             return jsonify(response_data)
 
@@ -74,7 +76,7 @@ class AverageLoadChartDataView(MethodView):
             "target_value": target_value,
             "children_labels": children_labels,
             "children_values": children_values,
-            "metric_type": request_data.get('metric_type')
+            "metric_type": request_data.get("metric_type"),
         }
         return jsonify(response_data)
 

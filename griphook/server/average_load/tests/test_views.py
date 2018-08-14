@@ -30,15 +30,14 @@ class TestAverageLoadChartDataView(object):
     def test_400_status_code_when_not_enough_request_arguments(
         self, request_data
     ):
-
         request_data.pop("metric_type")
         response = self.client.post(
             url_for("average_load.chart_data"), json=request_data
         )
         assert response.status_code == 400
 
-        expected_message= "{'metric_type': DataError(is required)}"
-        response_message=response.get_json()["error"]
+        expected_message = "{'metric_type': DataError(is required)}"
+        response_message = response.get_json()["error"]
         assert response_message == expected_message
 
     def test_wrong_target_type(self, request_data):
@@ -70,7 +69,7 @@ class TestAverageLoadChartDataView(object):
             "target_value": "",
             "children_labels": [],
             "children_values": [],
-            "metric_type": request_data['metric_type']
+            "metric_type": request_data["metric_type"],
         }
 
         assert response.status_code == 200
