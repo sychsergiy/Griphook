@@ -4,6 +4,7 @@ from sqlalchemy import func
 
 from griphook.server import db
 from griphook.server.models import MetricPeak, BatchStoryPeaks
+from griphook.server.peaks.constants import DATA_TIME_FORMAT
 from griphook.server.peaks.peaks_filter import MetricPeakGroupFilter
 
 
@@ -22,7 +23,6 @@ def round_time(since, until, step):
 
 
 def get_shift(since, step):
-
     """
     UNIX timestamp divided by the step into intervals that synchronize with the time_from
     """
@@ -65,12 +65,11 @@ def get_peaks_query_group_by_time_step(
 def peak_formatter(peak):
     return datetime.datetime.fromtimestamp(
         peak.time, tz=datetime.timezone.utc
-    ).strftime("%Y-%m-%d %H")
+    ).strftime(DATA_TIME_FORMAT)
 
 
 def validate_peaks_query(validation_data):
     valid_target_types = ("service", "services_group", "server", "cluster")
-    date_time_format = "%Y-%m-%d %H"
     data = dict()
     error_data = dict()
     try:
@@ -81,17 +80,17 @@ def validate_peaks_query(validation_data):
         error_data = {"error": "Error step format. Expected int"}
     try:
         data["time_from"] = datetime.datetime.strptime(
-            validation_data.get("time_from"), date_time_format
+            validation_data.get("time_from"), DATA_TIME_FORMAT
         )
         data["time_until"] = datetime.datetime.strptime(
-            validation_data.get("time_until"), date_time_format
+            validation_data.get("time_until"), DATA_TIME_FORMAT
         )
     except TypeError:
         error_data = {"error": "time_from and time_until are required fields"}
     except ValueError:
         error_data = {
             "error": "Error datetime (time_from or time_until) format. Expected {0}".format(
-                date_time_format
+                DATA_TIME_FORMAT
             )
         }
     data["target_type"] = validation_data.get("target_type")
