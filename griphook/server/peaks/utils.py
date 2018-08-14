@@ -94,12 +94,19 @@ def validate_peaks_query(validation_data):
             )
         }
     data["target_type"] = validation_data.get("target_type")
-    data["target_id"] = validation_data.get("target_id")
+
+    try:
+        data["target_id"] = int(validation_data.get("target_id"))
+    except ValueError:
+        error_data = {"error": "Error target_id format. Expected int"}
+    except TypeError:
+        error_data = {"error": "target_id is required field"}
+
     data["metric_type"] = validation_data.get("metric_type")
-    if not data["metric_type"]:
+    if not data.get("metric_type"):
         error_data = {"error": "metric_type is required field"}
-    elif not data["target_type"] in valid_target_types:
+    elif not data.get("target_type")in valid_target_types:
         error_data = {"error": "target_type is required field"}
-    elif not data["target_id"]:
+    elif not data.get("target_id"):
         error_data = {"error": "target_id is required field"}
     return data, error_data
