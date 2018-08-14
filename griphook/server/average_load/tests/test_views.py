@@ -51,7 +51,7 @@ class TestAverageLoadChartDataView(object):
 
     def test_correct_target_type(self, request_data):
         request_data["target_type"] = "service"
-        request_data["target_id"] = "1"
+        request_data["target_id"] = 1
 
         response = self.client.post(
             url_for("average_load.chart_data"), json=request_data
@@ -64,6 +64,14 @@ class TestAverageLoadChartDataView(object):
         response = self.client.post(
             url_for("average_load.chart_data"), json=request_data
         )
-        assert response.status_code == 404
-        error_message = "Not found service with id: 10000"
-        assert response.get_json()["error"] == error_message
+
+        expected_response_data = {
+            "target_label": "",
+            "target_value": "",
+            "children_labels": [],
+            "children_values": [],
+            "metric_type": request_data['metric_type']
+        }
+
+        assert response.status_code == 200
+        assert response.get_json() == expected_response_data

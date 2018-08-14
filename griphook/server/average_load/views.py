@@ -34,8 +34,6 @@ class AverageLoadChartDataView(MethodView):
 
     def post(self):
         request_data = request.get_json()
-        print(request_data)
-
         error = self.is_request_data_invalid(request_data)
         if error:
             response = jsonify({"error": error})
@@ -57,10 +55,14 @@ class AverageLoadChartDataView(MethodView):
             chart_data_util.get_root_metric_average_value()
         )
         if not target_label_value_tuple:
-            error_message = f"Not found {target_type} with id: {target_id}"
-            response = jsonify({"error": error_message})
-            response.status_code = 404
-            return response
+            response_data = {
+                "target_label": "",
+                "target_value": "",
+                "children_labels": [],
+                "children_values": [],
+                "metric_type": request_data.get('metric_type')
+            }
+            return jsonify(response_data)
 
         target_label, target_value = target_label_value_tuple
 
