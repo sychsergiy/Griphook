@@ -34,6 +34,8 @@ class AverageLoadChartDataView(MethodView):
 
     def post(self):
         request_data = request.get_json()
+        print(request_data)
+
         error = self.is_request_data_invalid(request_data)
         if error:
             response = jsonify({"error": error})

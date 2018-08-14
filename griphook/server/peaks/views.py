@@ -45,7 +45,7 @@ def get_peaks_for_chart():
         data = {
             "timeline": timeline,
             "values": values,
-            "metric_type": query_result[0].type.value,
+            "metric_type": data["metric_type"],
         }
         response_data = {"data": data}
         response = jsonify(response_data)
