@@ -8,14 +8,14 @@ from griphook.server.models import (
     Project,
     Cluster,
     Server,
-    Team
+    Team,
 )
 
 
 @pytest.fixture
 def app():
     app = create_app()
-    app.config.from_object('griphook.server.config.TestingConfig')
+    app.config.from_object("griphook.server.config.TestingConfig")
     return app
 
 
@@ -32,26 +32,26 @@ def db_session(app):
 def create_project_team_test_data(db_session):
     db_session.add_all(
         [
-            Project(id=1, title='test_project_1'),
-            Project(id=2, title='test_project_2'),
-            Project(id=3, title='test_project_3')
+            Project(id=1, title="test_project_1"),
+            Project(id=2, title="test_project_2"),
+            Project(id=3, title="test_project_3"),
         ]
     )
     db_session.commit()
     db_session.add_all(
         [
-            Team(id=1, title='test_team_1'),
-            Team(id=2, title='test_team_2'),
-            Team(id=3, title='test_team_3')
+            Team(id=1, title="test_team_1"),
+            Team(id=2, title="test_team_2"),
+            Team(id=3, title="test_team_3"),
         ]
     )
     db_session.commit()
     db_session.add_all(
         [
-            ServicesGroup(id=1, title='test_services_group_1'),
-            ServicesGroup(id=2, title='test_services_group_2'),
-            ServicesGroup(id=3, title='test_services_group_3'),
-            ServicesGroup(id=4, title='test_services_group_4', project_id=2)
+            ServicesGroup(id=1, title="test_services_group_1"),
+            ServicesGroup(id=2, title="test_services_group_2"),
+            ServicesGroup(id=3, title="test_services_group_3"),
+            ServicesGroup(id=4, title="test_services_group_4", project_id=2),
         ]
     )
     db_session.commit()
@@ -63,7 +63,7 @@ def create_project_team_test_data(db_session):
             MetricPeak(id=4, value=132468, services_group_id=2),
             MetricPeak(id=5, value=798754, services_group_id=4, project_id=2),
             MetricPeak(id=6, value=798631, services_group_id=4, project_id=2),
-            MetricPeak(id=7, value=798464, services_group_id=4, project_id=2)
+            MetricPeak(id=7, value=798464, services_group_id=4, project_id=2),
         ]
     )
     db_session.commit()
@@ -73,14 +73,14 @@ def create_project_team_test_data(db_session):
 def create_server_cluster_test_data(db_session):
     db_session.add_all(
         [
-            Server(id=1, title='test_server_1', cpu_price=2.4, memory_price=6),
-            Server(id=2, title='test_server_2')
+            Server(id=1, title="test_server_1", cpu_price=2.4, memory_price=6),
+            Server(id=2, title="test_server_2"),
         ]
     )
     db_session.add_all(
         [
-            Cluster(id=1, title='test_cluster_1', cpu_price=3, memory_price=2),
-            Cluster(id=2, title='test_cluster_2')
+            Cluster(id=1, title="test_cluster_1", cpu_price=3, memory_price=2),
+            Cluster(id=2, title="test_cluster_2"),
         ]
     )
     db_session.commit()
