@@ -65,12 +65,12 @@ def get_peaks_query_group_by_time_step(
 def peak_formatter(peak):
     return datetime.datetime.fromtimestamp(
         peak.time, tz=datetime.timezone.utc
-    ).strftime("%Y-%m-%d %H")
+    ).strftime("%Y-%m-%d")
 
 
 def validate_peaks_query(validation_data):
     valid_target_types = ("service", "services_group", "server", "cluster")
-    date_time_format = "%Y-%m-%d %H"
+    date_time_format = "%Y-%m-%d"
     data = dict()
     error_data = dict()
     try:

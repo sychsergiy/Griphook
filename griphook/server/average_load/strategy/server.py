@@ -14,7 +14,7 @@ class ServerStrategy(AbstractStrategy):
          """
         services_query = (
             db.session.query(Server)
-            .filter(Server.title == self.target)
+            .filter(Server.id == self.target_id)
             .join(Service)
             .join(ServicesGroup)
             .with_entities(
@@ -40,7 +40,7 @@ class ServerStrategy(AbstractStrategy):
     def get_root_services_query(self):
         query = (
             db.session.query(Server)
-            .filter(Server.title == self.target)
+            .filter(Server.id == self.target_id)
             .join(Service)
             .with_entities(Service.id, Server.title)
         )

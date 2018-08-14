@@ -9,7 +9,7 @@ class GroupStrategy(AbstractStrategy):
     def get_children_services_query(self):
         services_query = (
             db.session.query(ServicesGroup)
-            .filter(ServicesGroup.title == self.target)
+            .filter(ServicesGroup.id == self.target_id)
             .join(Service)
             .with_entities(
                 ServicesGroup.title.label("services_group_title"),
@@ -22,7 +22,7 @@ class GroupStrategy(AbstractStrategy):
     def get_root_services_query(self):
         query = (
             db.session.query(ServicesGroup)
-            .filter(ServicesGroup.title == self.target)
+            .filter(ServicesGroup.id == self.target_id)
             .join(Service)
             .with_entities(
                 Service.id, ServicesGroup.title.label("services_group_title")

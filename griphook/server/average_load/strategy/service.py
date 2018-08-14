@@ -12,7 +12,7 @@ class ServiceStrategy(AbstractStrategy):
         """
         instances_query = (
             db.session.query(Service)
-            .filter(Service.title == self.target)
+            .filter(Service.id == self.target_id)
             .join(ServicesGroup)
             .with_entities(
                 ServicesGroup.title.label("services_group_title"),
@@ -40,7 +40,7 @@ class ServiceStrategy(AbstractStrategy):
     def get_root_services_query(self):
         query = db.session.query(
             Service.id, Service.title.label("service_title")
-        ).filter(Service.title == self.target)
+        ).filter(Service.id == self.target_id)
         return query
 
     @staticmethod

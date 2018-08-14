@@ -14,13 +14,13 @@ def filters_data():
         "time_from": time_from,
         "time_until": time_until,
         "metric_type": "vsize",
-        "target": "adv-by",
+        "target_id": 1,
     }
     return data
 
 
 def test_get_service_instances_metric_average_values(session, filters_data):
-    strategy = ServiceStrategy(filters_data.pop("target"))
+    strategy = ServiceStrategy(filters_data.pop("target_id"))
     chart_data_util = ChartDataUtil(strategy, **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery(False)
     instances = strategy.get_children_average_metric_values(joined_subquery)
@@ -28,8 +28,8 @@ def test_get_service_instances_metric_average_values(session, filters_data):
 
 
 def test_get_service_metric_average_value(session, filters_data):
-    strategy = ServiceStrategy(filters_data.pop("target"))
+    strategy = ServiceStrategy(filters_data.pop("target_id"))
     chart_data_util = ChartDataUtil(strategy, **filters_data)
     joined_subquery = chart_data_util.get_joined_services_subquery()
     label, value = strategy.get_root_average_metric_value(joined_subquery)
-    assert label, value == ("adv-by", 1175481906.32966)
+    assert label, int(value) == ("adv-by", 1175481906)

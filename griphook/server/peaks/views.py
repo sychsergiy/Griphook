@@ -49,5 +49,4 @@ def get_peaks_for_chart():
         }
         response_data = {"data": data}
         response = jsonify(response_data)
-
     return response

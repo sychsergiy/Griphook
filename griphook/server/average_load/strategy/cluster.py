@@ -9,7 +9,7 @@ class ClusterStrategy(AbstractStrategy):
     def get_children_services_query(self):
         services_query = (
             db.session.query(Cluster)
-            .filter(Cluster.title == self.target)
+            .filter(Cluster.id == self.target_id)
             .join(Server)
             .join(Service)
             .with_entities(
@@ -34,7 +34,7 @@ class ClusterStrategy(AbstractStrategy):
     def get_root_services_query(self):
         query = (
             db.session.query(Cluster)
-            .filter(Cluster.title == self.target)
+            .filter(Cluster.id == self.target_id)
             .join(Server)
             .join(Service)
             .with_entities(Service.id, Cluster.title)

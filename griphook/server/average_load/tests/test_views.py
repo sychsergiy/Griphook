@@ -13,7 +13,7 @@ def request_data():
         "time_until": "2018-08-10",
         "metric_type": "vsize",
         "target_type": "service",
-        "target": "adv-by",
+        "target_id": 1,
     }
 
     return data
@@ -27,19 +27,19 @@ class TestAverageLoadChartDataView(object):
         )
         assert response.status_code == 200
 
-    def test_400_status_code_when_request_data_not_enough_arguments(
+    def test_400_status_code_when_not_enough_request_arguments(
         self, request_data
     ):
-        request_data.pop("metric_type", None)
 
+        request_data.pop("metric_type")
         response = self.client.post(
             url_for("average_load.chart_data"), json=request_data
         )
         assert response.status_code == 400
-        assert (
-            response.get_json()["error"]
-            == "{'metric_type': DataError(is required)}"
-        )
+
+        expected_message= "{'metric_type': DataError(is required)}"
+        response_message=response.get_json()["error"]
+        assert response_message == expected_message
 
     def test_wrong_target_type(self, request_data):
         request_data["target_type"] = "wrong"
@@ -51,7 +51,7 @@ class TestAverageLoadChartDataView(object):
 
     def test_correct_target_type(self, request_data):
         request_data["target_type"] = "service"
-        request_data["target"] = "adv-by"
+        request_data["target_id"] = "1"
 
         response = self.client.post(
             url_for("average_load.chart_data"), json=request_data
@@ -60,10 +60,10 @@ class TestAverageLoadChartDataView(object):
 
     def test_404_status_code_when_target_not_founded(self, request_data):
         request_data["target_type"] = "service"
-        request_data["target"] = "wrong"
+        request_data["target_id"] = 10000
         response = self.client.post(
             url_for("average_load.chart_data"), json=request_data
         )
         assert response.status_code == 404
-        error_message = "Not found service with id: wrong"
+        error_message = "Not found service with id: 10000"
         assert response.get_json()["error"] == error_message

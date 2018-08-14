@@ -2,8 +2,8 @@ import abc
 
 
 class AbstractStrategy(metaclass=abc.ABCMeta):
-    def __init__(self, target):
-        self.target = target
+    def __init__(self, target_id):
+        self.target_id = target_id
 
     @abc.abstractmethod
     def get_children_services_query(self):
