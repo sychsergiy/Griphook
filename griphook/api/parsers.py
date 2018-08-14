@@ -11,6 +11,7 @@ Timeout = Union[float, Tuple[float, float]]
 
 class GenericParser(metaclass=ABCMeta):
     """Generic parser interface"""
+
     @abstractmethod
     def fetch(self, *, time_from: int, time_until: int) -> str:
         """
@@ -31,10 +32,12 @@ class APIParser(GenericParser):
         self.base_url = base_url
         self._session = requests.Session()
 
-    def request(self,
-                method: str = 'GET',
-                params: Dict[str, str] = None,
-                timeout: Optional[Timeout] = 20.0) -> str:
+    def request(
+        self,
+        method: str = "GET",
+        params: Dict[str, str] = None,
+        timeout: Optional[Timeout] = 20.0,
+    ) -> str:
         """
         Performs request on base url using session and returns
         text as string.
@@ -48,15 +51,18 @@ class APIParser(GenericParser):
             If set to None - wait until server will respond.
         """
         try:
-            response = self._session.request(url=self.base_url,
-                                             method=method,
-                                             params=params or {},
-                                             timeout=timeout,
-                                             verify=False)
+            response = self._session.request(
+                url=self.base_url,
+                method=method,
+                params=params or {},
+                timeout=timeout,
+                verify=False,
+            )
 
             if response.status_code != 200:
-                raise APIConnectionError(f'Connection error, '
-                                         'status [{response.status_code}]')
+                raise APIConnectionError(
+                    f"Connection error, " "status [{response.status_code}]"
+                )
 
             return response.text
         except requests.exceptions.RequestException as e:
