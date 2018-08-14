@@ -10,9 +10,7 @@ from griphook.server.models import (
     MetricPeak,
     BatchStoryPeaks,
 )
-from griphook.server.peaks.constants import (
-    REQUEST_DATE_TIME_FORMAT,
-)
+from griphook.server.peaks.constants import REQUEST_DATE_TIME_FORMAT
 
 
 @pytest.fixture(scope="session")
@@ -122,7 +120,7 @@ def services(session, servers, services_groups):
 
 
 @pytest.fixture(scope="function")
-def batch_storys(session):
+def batch_stories(session):
     time1 = datetime.now() - timedelta(days=8)
     time2 = datetime.now()
     batches_story1 = BatchStoryPeaks(time=time1)
@@ -135,8 +133,8 @@ def batch_storys(session):
 
 
 @pytest.fixture(scope="function")
-def metrics(session, services, services_groups, batch_storys):
-    batches_story1, batches_story2, *_ = batch_storys
+def metrics(session, services, services_groups, batch_stories):
+    batches_story1, batches_story2, *_ = batch_stories
     service1, service2, service3, *_ = services
     services_group1, services_group2, *_ = services_groups
 
@@ -174,13 +172,13 @@ def metrics(session, services, services_groups, batch_storys):
 
 
 @pytest.fixture(scope="function")
-def peaks_endpoint_request_data(batch_storys, servers):
+def peaks_endpoint_request_data(batch_stories, servers):
     data = {
         "target_type": "server",
         "target_id": servers[1].id,
         "metric_type": "user_cpu_percent",
         "step": 1,
-        "time_from": batch_storys[0].time.strftime(REQUEST_DATE_TIME_FORMAT),
-        "time_until": batch_storys[1].time.strftime(REQUEST_DATE_TIME_FORMAT),
+        "time_from": batch_stories[0].time.strftime(REQUEST_DATE_TIME_FORMAT),
+        "time_until": batch_stories[1].time.strftime(REQUEST_DATE_TIME_FORMAT),
     }
     return data
