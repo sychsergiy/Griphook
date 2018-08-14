@@ -19,6 +19,7 @@ class QueryParametersMixin(object):
                 self.parameters.get('param3', None)
                 ...
     """
+
     required_parameters: tuple = tuple()
     optional_parameters: tuple = tuple()
 
@@ -28,9 +29,15 @@ class QueryParametersMixin(object):
 
     def dispatch_request(self, *args, **kwargs):
         self.save_parameters(self.required_parameters, self.optional_parameters)
-        return super(QueryParametersMixin, self).dispatch_request(*args, **kwargs)
+        return super(QueryParametersMixin, self).dispatch_request(
+            *args, **kwargs
+        )
 
-    def save_parameters(self, required_parameters: Iterable[str], optional_parameters: Iterable[str]):
+    def save_parameters(
+        self,
+        required_parameters: Iterable[str],
+        optional_parameters: Iterable[str],
+    ):
         self.validate_and_save_params(*required_parameters)
         self.validate_and_save_params(*optional_parameters, required=False)
 
@@ -69,8 +76,14 @@ class QueryParametersForMethodMixin(QueryParametersMixin):
     """
 
     def dispatch_request(self, *args, **kwargs):
-        optional_params = getattr(self, request.method.lower() + '_optional_parameters', tuple())
-        required_params = getattr(self, request.method.lower() + '_required_parameters', tuple())
+        optional_params = getattr(
+            self, request.method.lower() + "_optional_parameters", tuple()
+        )
+        required_params = getattr(
+            self, request.method.lower() + "_required_parameters", tuple()
+        )
         self.save_parameters(required_params, optional_params)
 
-        return super(QueryParametersForMethodMixin, self).dispatch_request(*args, **kwargs)
+        return super(QueryParametersForMethodMixin, self).dispatch_request(
+            *args, **kwargs
+        )

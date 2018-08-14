@@ -24,9 +24,9 @@ class DotPath(Target):
         Builds string of chunks joined with separator and returns it.
         Any object with __str__ method implemented is suitable
         """
-        return '.'.join(map(str, self.chunks))
+        return ".".join(map(str, self.chunks))
 
-    def __add__(self, other: Union[str, 'DotPath']) -> 'DotPath':
+    def __add__(self, other: Union[str, "DotPath"]) -> "DotPath":
         """
         Overloaded plus operator
 
