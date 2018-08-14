@@ -92,12 +92,16 @@ def test_endpoint_response_data(
     )
 
 
-def test_validation_request_data_funcrion(peaks_endpoint_request_data):
+def test_ivalid_step_data_in_validation_function(peaks_endpoint_request_data):
     peaks_endpoint_request_data["step"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
     assert error.get("error")
     assert "step" in error["error"]
 
+
+def test_invalid_time_from_data_in_validation_function(
+    peaks_endpoint_request_data
+):
     peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP
     time_from = peaks_endpoint_request_data["time_from"]
     peaks_endpoint_request_data["time_from"] = "test"
@@ -106,6 +110,10 @@ def test_validation_request_data_funcrion(peaks_endpoint_request_data):
     assert "time_from" in error["error"]
     peaks_endpoint_request_data["time_from"] = time_from
 
+
+def test_invalid_time_until_data_in_validation_function(
+    peaks_endpoint_request_data
+):
     time_until = peaks_endpoint_request_data["time_until"]
     peaks_endpoint_request_data["time_until"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
@@ -113,6 +121,10 @@ def test_validation_request_data_funcrion(peaks_endpoint_request_data):
     assert "time_until" in error["error"]
     peaks_endpoint_request_data["time_until"] = time_until
 
+
+def test_invalid_metric_type_data_in_validation_function(
+    peaks_endpoint_request_data
+):
     metric_type = peaks_endpoint_request_data["metric_type"]
     del peaks_endpoint_request_data["metric_type"]
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
@@ -120,6 +132,10 @@ def test_validation_request_data_funcrion(peaks_endpoint_request_data):
     assert "metric_type" in error["error"]
     peaks_endpoint_request_data["metric_type"] = metric_type
 
+
+def test_invalid_target_type_data_in_validation_function(
+    peaks_endpoint_request_data
+):
     target_type = peaks_endpoint_request_data["target_type"]
     peaks_endpoint_request_data["target_type"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)
@@ -127,6 +143,10 @@ def test_validation_request_data_funcrion(peaks_endpoint_request_data):
     assert "target_type" in error["error"]
     peaks_endpoint_request_data["target_type"] = target_type
 
+
+def test_invalid_target_id_data_in_validation_function(
+    peaks_endpoint_request_data
+):
     target_id = peaks_endpoint_request_data["target_id"]
     peaks_endpoint_request_data["target_id"] = "test"
     valid_data, error = validate_peaks_query(peaks_endpoint_request_data)

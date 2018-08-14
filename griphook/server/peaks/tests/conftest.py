@@ -10,9 +10,7 @@ from griphook.server.models import (
     MetricPeak,
     BatchStoryPeaks,
 )
-from griphook.server.peaks.constants import (
-    REQUEST_DATE_TIME_FORMAT,
-)
+from griphook.server.peaks.constants import REQUEST_DATE_TIME_FORMAT
 
 
 @pytest.fixture(scope="session")
