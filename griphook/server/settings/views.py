@@ -5,6 +5,7 @@ from flask.views import View
 from pydantic import ValidationError
 
 from griphook.server import db
+from griphook.server.settings.db import DataBase
 from griphook.server.managers.project_manager import ProjectManager
 from griphook.server.managers.team_manager import TeamManager
 from griphook.server.managers.server_manager import ServerManager
@@ -26,6 +27,17 @@ from griphook.server.settings.constants import (
     PARAMETERS_SERVER_CLUSTER_CPU_PRICE,
     PARAMETERS_SERVER_CLUSTER_MEMORY_PRICE
 )
+
+
+class GetProjects(View):
+    methods = ['GET']
+
+    def dispatch_request(self):
+        projects_query = DataBase.get_projects(db.session)
+        projects = [{"id": project_id, "title": project_title} for (project_id, project_title) in projects_query]
+        return jsonify(
+            {'projects': projects}
+        )
 
 
 class ProjectCreate(View):
@@ -121,6 +133,17 @@ class ProjectDelete(View):
         ), 400
 
 
+class GetTeams(View):
+    methods = ['GET']
+
+    def dispatch_request(self):
+        teams_query = DataBase.get_teams(db.session)
+        teams = [{"id": team_id, "title": team_title} for (team_id, team_title) in teams_query]
+        return jsonify(
+            {'teams': teams}
+        )
+
+
 class TeamCreate(View):
     methods = ['POST']
 
@@ -214,6 +237,17 @@ class TeamDelete(View):
         ), 400
 
 
+class GetServers(View):
+    methods = ['GET']
+
+    def dispatch_request(self):
+        servers_query = DataBase.get_servers(db.session)
+        servers = [{"id": server_id, "title": server_title} for (server_id, server_title) in servers_query]
+        return jsonify(
+            {'servers': servers}
+        )
+
+
 class ServerUpdateCPUPrice(View):
     methods = ['PUT']
 
@@ -273,6 +307,17 @@ class ServerUpdateMemoryPrice(View):
             ), 400
         return jsonify(
             {'success': True}
+        )
+
+
+class GetClusters(View):
+    methods = ['GET']
+
+    def dispatch_request(self):
+        clusters_query = DataBase.get_clusters(db.session)
+        clusters = [{"id": cluster_id, "title": cluster_title} for (cluster_id, cluster_title) in clusters_query]
+        return jsonify(
+            {'clusters': clusters}
         )
 
 
