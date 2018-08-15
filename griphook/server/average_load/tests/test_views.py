@@ -21,14 +21,14 @@ def request_data():
 
 @pytest.mark.usefixtures("client_class")
 class TestAverageLoadChartDataView(object):
-    def test_view_return_200_status_code(self, request_data):
+    def test_view_return_200_status_code(self, session, request_data):
         response = self.client.post(
             url_for("average_load.chart_data"), json=request_data
         )
         assert response.status_code == 200
 
     def test_400_status_code_when_not_enough_request_arguments(
-        self, request_data
+            self, request_data, session
     ):
         request_data.pop("metric_type")
         response = self.client.post(
@@ -40,7 +40,7 @@ class TestAverageLoadChartDataView(object):
         response_message = response.get_json()["error"]
         assert response_message == expected_message
 
-    def test_wrong_target_type(self, request_data):
+    def test_wrong_target_type(self, session, request_data):
         request_data["target_type"] = "wrong"
         response = self.client.post(
             url_for("average_load.chart_data"), json=request_data
@@ -48,7 +48,7 @@ class TestAverageLoadChartDataView(object):
         assert response.status_code == 400
         assert response.get_json()["error"] == WRONG_TARGET_TYPE_ERROR_MESSAGE
 
-    def test_correct_target_type(self, request_data):
+    def test_correct_target_type(self, request_data, session):
         request_data["target_type"] = "service"
         request_data["target_id"] = 1
 
@@ -57,7 +57,7 @@ class TestAverageLoadChartDataView(object):
         )
         assert response.status_code == 200
 
-    def test_404_status_code_when_target_not_founded(self, request_data):
+    def test_404_status_code_when_target_not_founded(self, session, request_data):
         request_data["target_type"] = "service"
         request_data["target_id"] = 10000
         response = self.client.post(
