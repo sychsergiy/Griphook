@@ -50,7 +50,6 @@ def get_peaks_filters_hierarchy():
         }
       ]
     }
-    :return:
     """
     clusters = get_clusters_hierarchy_part()
     servers = get_servers_hierarchy_part()
@@ -67,8 +66,57 @@ def get_peaks_filters_hierarchy():
 
 
 def get_billing_filters_hierarchy():
+    """
+    Endpoint to get full hierarchy of ...
+    in following format:
+    {
+      "teams    ": [
+        {
+          "id": "id",
+          "title": "title"
+        }
+      ],
+      "projects": [
+        {
+          "id": "id",
+          "title": "title"
+        }
+      ],
+      "clusters": [
+        {
+          "id": "id",
+          "title": "title"
+        }
+      ],
+      "servers": [
+        {
+          "id": "id",
+          "title": "title",
+          "cluster_id": "cluster_id"
+        }
+      ],
+      "services_groups": [
+        {
+          "id": "id",
+          "title": "title",
+          "server_ids": [],
+          "clusters_ids": []
+        }
+      ]
+
+      "services": [
+        {
+          "id": "id",
+          "title": "title",
+          "group": "services_group_id",
+          "server_id": "server_id",
+          "cluster_id": "cluster_id"
+        }
+      ]
+    }
+    """
     teams = get_all_teams_converted_to_dict()
-    projects = get_all_teams_converted_to_dict()
+    projects = get_all_projects_converted_to_dict()
 
     clusters = get_clusters_hierarchy_part()
     servers = get_servers_hierarchy_part()
