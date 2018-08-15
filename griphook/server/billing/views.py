@@ -1,12 +1,29 @@
 import json
 
 from flask import request, abort, current_app
-from sqlalchemy import func
-from sqlalchemy.sql import label
 
-from griphook.server.models import MetricBilling, Team, Project, BatchStoryBilling, Service, ServicesGroup
+from griphook.server.billing.utils import output_formatter, validate_request_json, billing_table_query
 
-from griphook.server.billing.utils import modify_time, raw_output_formatter
+#
+# CLUSTERS = [
+# "dev", |1
+# "kalm", |2...
+# "olympus",
+# "spark",
+# "test_team_1",
+# "test_team_2",
+# "test_team_3"
+# ]
+
+SCHEMA = {
+        "time_from": {"type": "string", "required": True},
+        "time_until": {"type": "string", "required": True},
+        "services_groups": {"type": "list"},
+        "cluster_id": {"type": "integer"},
+        "team_id": {"type": "integer"},
+        "project_id": {"type": "integer"},
+        "server_id": {"type": "integer"}
+    }
 
 
 def get_billing_table_data():
@@ -15,82 +32,60 @@ def get_billing_table_data():
 
         Incoming json:
         {
-            "service_group": [
-                                "value"
+            "services_groups": [
+                                "id" | integer
                                 ...
                              ],
-            "team": "value",
-            "project": "value",
-            "cluster": "value",
-            "server": "value",
-            "time_from": "value",
-            "time_until": "value"
+            "team": "id" | integer,
+            "project": "id" | integer,
+            "cluster": "id" | integer,
+            "server": "id" | integer,
+            "time_from": "YY-MM-DD", | required
+            "time_until": "YY-MM-DD" | required
 
         }
 
         "time_from" and "time_until" are mandatory fields
 
+        If there are no filters (except for time_from and time_until),
+        return all service groups with average cpu and memory
+
         Result json:
         [
             {
-                "service_group": "value",
-                "team": "value",
-                "project": "value",
-                "cpu": "value",
-                "memory": "value
+                "services_group_id": "id" | integer
+                "services_group": "title" | string,
+                "team": "title" | string,
+                "project": "title" | string,
+                # TODO: evaluate cpu
+                # "cpu_sum": "value" | float,
+                "memory_sum": "value" | integer
             }
             ...
         ]
 
-        If there are no filters (except for time_from and time_until),
-        return all service groups with average cpu and memory
-    """
+        Empty result json means the filter values were incorrect.
 
 
     """
-    select 
-	services_groups.title,
-	metrics_billing.type,
-	sum(metrics_billing.value)
-	
-    from services_groups 
-    join services on services_groups.id = services.id
-    join metrics_billing on services_groups.id = metrics_billing.services_group_id
-    where services_groups.title = 'zk-customers-trunk'
-    group by 1,2;
-    
-    """
-    print(request.get_json())
+
     query_filters = request.get_json() or {}
-    time_from = modify_time(query_filters.get("time_from", None))
-    time_until = modify_time(query_filters.get("time_until", None))
-    print(str(request.args))
-    print("time from", time_from)
-    if not time_from or not time_until:
-        abort(400)
+    print(type(query_filters["time_from"]))
 
-    query = (
-        ServicesGroup.query
-        .with_entities(
-            label("service_group", ServicesGroup.title),
-            # label("team", Team.title),
-            # label("project", Project.title),
-            label("metric_type", MetricBilling.type),
-            label("value", func.sum(MetricBilling.value))
-        )
-        .join(MetricBilling, MetricBilling.services_group_id == ServicesGroup.id)
-        # .join(Team, Team.id == ServicesGroup.team_id)
-        # .join(Project, Project.id == ServicesGroup.project_id)
-        .join(BatchStoryBilling, BatchStoryBilling.id == MetricBilling.batch_id)
-        .filter(BatchStoryBilling.time.between(time_from, time_until))
-        # exclude system_cpu_percent from the query as we don't need it
-        .filter(MetricBilling.type != 'system_cpu_percent')
-        .group_by('service_group', 'metric_type',)
-    )
+    valid, error_message = validate_request_json(SCHEMA, query_filters)
+    if not valid:
+        abort(400, error_message)
 
-    print("Query:", query.all())
+    result = billing_table_query(query_filters)
+    r_list = []
+    for i in result:
+        pass
+    result_obj = {
+        "services_group_id": "value"
+    }
 
-    data = [raw_output_formatter(element) for element in query.all()]
+
+    data = [output_formatter(element) for element in result]
     response_data = {'data': data}
     response = current_app.response_class(
         response=json.dumps(response_data),
