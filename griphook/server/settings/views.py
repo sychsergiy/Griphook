@@ -7,17 +7,24 @@ from pydantic import ValidationError
 from griphook.server import db
 from griphook.server.managers.project_manager import ProjectManager
 from griphook.server.managers.team_manager import TeamManager
+from griphook.server.managers.server_manager import ServerManager
+from griphook.server.managers.cluster_manager import ClusterManager
 
 from griphook.server.settings.validators import (
+    UpdateServerClusterModel,
     UpdateProjectTeamModel
 )
 from griphook.server.managers.exceptions import (
     ProjectManagerException,
-    TeamManagerException
+    TeamManagerException,
+    ServerManagerException,
+    ClusterManagerException
 )
 from griphook.server.settings.constants import (
     EXC_FIELD_IS_REQUIRED,
-    PARAMETERS_PROJECT_TEAM
+    PARAMETERS_PROJECT_TEAM,
+    PARAMETERS_SERVER_CLUSTER_CPU_PRICE,
+    PARAMETERS_SERVER_CLUSTER_MEMORY_PRICE
 )
 
 
@@ -48,7 +55,7 @@ class ProjectCreate(View):
                     'id': new_project.id,
                     'title': new_project.title
                 }
-            ), 200
+            )
         return jsonify(
             {'error': EXC_FIELD_IS_REQUIRED.format('title')}
         ), 400
@@ -82,7 +89,7 @@ class ProjectUpdateTitle(View):
             ), 400
         return jsonify(
             {'success': True}
-        ), 200
+        )
 
 
 class ProjectDelete(View):
@@ -175,7 +182,7 @@ class TeamUpdateTitle(View):
             ), 400
         return jsonify(
             {'success': True}
-        ), 200
+        )
 
 
 class TeamDelete(View):
@@ -205,3 +212,127 @@ class TeamDelete(View):
         return jsonify(
             {'error': EXC_FIELD_IS_REQUIRED.format('id')}
         ), 400
+
+
+class ServerUpdateCPUPrice(View):
+    methods = ['PUT']
+
+    def dispatch_request(self):
+        data_for_update = json.loads(request.data)
+
+        for parameter in PARAMETERS_SERVER_CLUSTER_CPU_PRICE:
+            if parameter not in data_for_update:
+                return jsonify(
+                    {'error': EXC_FIELD_IS_REQUIRED.format(parameter)}
+                ), 400
+        try:
+            valid_data_for_create = UpdateServerClusterModel(**data_for_update)
+        except ValidationError as e:
+            return jsonify(
+                {'error': e.errors()}
+            ), 400
+        try:
+            ServerManager(db.session).set_cpu_price(
+                server_id=valid_data_for_create.id,
+                new_cpu_price=valid_data_for_create.cpu_price
+            )
+        except ServerManagerException as exc:
+            return jsonify(
+                {'error': exc.error_text}
+            ), 400
+        return jsonify(
+            {'success': True}
+        )
+
+
+class ServerUpdateMemoryPrice(View):
+    methods = ['PUT']
+
+    def dispatch_request(self):
+        data_for_update = json.loads(request.data)
+
+        for parameter in PARAMETERS_SERVER_CLUSTER_MEMORY_PRICE:
+            if parameter not in data_for_update:
+                return jsonify(
+                    {'error': EXC_FIELD_IS_REQUIRED.format(parameter)}
+                ), 400
+        try:
+            valid_data_for_create = UpdateServerClusterModel(**data_for_update)
+        except ValidationError as e:
+            return jsonify(
+                {'error': e.errors()}
+            ), 400
+        try:
+            ServerManager(db.session).set_memory_price(
+                server_id=valid_data_for_create.id,
+                new_memory_price=valid_data_for_create.memory_price
+            )
+        except ServerManagerException as exc:
+            return jsonify(
+                {'error': exc.error_text}
+            ), 400
+        return jsonify(
+            {'success': True}
+        )
+
+
+class ClusterUpdateCPUPrice(View):
+    methods = ['PUT']
+
+    def dispatch_request(self):
+        data_for_update = json.loads(request.data)
+
+        for parameter in PARAMETERS_SERVER_CLUSTER_CPU_PRICE:
+            if parameter not in data_for_update:
+                return jsonify(
+                    {'error': EXC_FIELD_IS_REQUIRED.format(parameter)}
+                ), 400
+        try:
+            valid_data_for_create = UpdateServerClusterModel(**data_for_update)
+        except ValidationError as e:
+            return jsonify(
+                {'error': e.errors()}
+            ), 400
+        try:
+            ClusterManager(db.session).set_cpu_price(
+                cluster_id=valid_data_for_create.id,
+                new_cpu_price=valid_data_for_create.cpu_price
+            )
+        except ClusterManagerException as exc:
+            return jsonify(
+                {'error': exc.error_text}
+            ), 400
+        return jsonify(
+            {'success': True}
+        )
+
+
+class ClusterUpdateMemoryPrice(View):
+    methods = ['PUT']
+
+    def dispatch_request(self):
+        data_for_update = json.loads(request.data)
+
+        for parameter in PARAMETERS_SERVER_CLUSTER_MEMORY_PRICE:
+            if parameter not in data_for_update:
+                return jsonify(
+                    {'error': EXC_FIELD_IS_REQUIRED.format(parameter)}
+                ), 400
+        try:
+            valid_data_for_create = UpdateServerClusterModel(**data_for_update)
+        except ValidationError as e:
+            return jsonify(
+                {'error': e.errors()}
+            ), 400
+        try:
+            ClusterManager(db.session).set_memory_price(
+                cluster_id=valid_data_for_create.id,
+                new_memory_price=valid_data_for_create.memory_price
+            )
+        except ClusterManagerException as exc:
+            return jsonify(
+                {'error': exc.error_text}
+            ), 400
+        return jsonify(
+            {'success': True}
+        )
