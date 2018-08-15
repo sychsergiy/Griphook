@@ -5,12 +5,11 @@ from griphook.server.settings import views
 
 settings_blueprint = Blueprint('settings', __name__, )
 
-# routes for settings page
-settings_blueprint.add_url_rule('/', 'settings', view_func=views.index)
-settings_blueprint.add_url_rule('/general', 'general', view_func=views.index)
-
-# routes for settings API
-settings_blueprint.add_url_rule('/project', view_func=views.ProjectSettingsAPI.as_view('project'))
-settings_blueprint.add_url_rule('/team', view_func=views.TeamSettingsAPI.as_view('team'))
-# settings_blueprint.add_url_rule('/server', view_func=views.ServerSettingsAPI.as_view('server'))
-# settings_blueprint.add_url_rule('/cluster', view_func=views.ClusterSettingsAPI.as_view('cluster'))
+# routes for project settings API
+settings_blueprint.add_url_rule('/project/v1/create', view_func=views.ProjectCreate.as_view('project_create'))
+settings_blueprint.add_url_rule('/project/v1/update-title', view_func=views.ProjectUpdateTitle.as_view('project_update_title'))
+settings_blueprint.add_url_rule('/project/v1/delete', view_func=views.ProjectDelete.as_view('project_delete'))
+# routes for team settings API
+settings_blueprint.add_url_rule('/team/v1/create', view_func=views.TeamCreate.as_view('team_create'))
+settings_blueprint.add_url_rule('/team/v1/update-title', view_func=views.TeamUpdateTitle.as_view('team_update_title'))
+settings_blueprint.add_url_rule('/team/v1/delete', view_func=views.TeamDelete.as_view('team_delete'))
