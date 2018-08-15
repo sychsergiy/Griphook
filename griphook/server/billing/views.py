@@ -94,8 +94,3 @@ def get_billing_table_data():
     )
     return response
 
-
-
-
-
-
