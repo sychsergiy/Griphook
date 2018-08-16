@@ -1,117 +1,87 @@
-from flask import jsonify
+from flask import jsonify, request
 from flask.views import MethodView
 
-from griphook.server.average_load.mixins import QueryParametersForMethodMixin
-from griphook.server.average_load.helper import (
-    ServerChartDataHelper,
-    ServicesChartDataHelper,
-    ServicesGroupChartDataHelper,
+from trafaret import DataError, Dict, String, Int
+
+from griphook.server.average_load.chart_data_util import ChartDataUtil
+from griphook.server.average_load.utils import get_strategy_for_target
+
+WRONG_TARGET_TYPE_ERROR_MESSAGE = (
+    "Wrong target type, must one of (service, services_group, server, cluster)"
 )
 
 
-# todo: optional argument: 'cluster'
-class ServerAverageLoadView(QueryParametersForMethodMixin, MethodView):
+class AverageLoadChartDataView(MethodView):
     """
-    Endpoint with data for server average load chart
-    returns average load for server and for every service_group inside current server
-    in following format:
+    response:
     {
-        "root": {
-            "target": "values"
-            "value": "value"
-            }
-        "children": [
-            {"target": "value", "value": "value"},
-            ...
-        ]
+        "target_label": str,
+        "target_value": int,
+        "children_labels: List[str],
+        "children_values: List[int],
     }
     """
 
-    get_required_parameters = (
-        "time_from",
-        "time_until",
-        "metric_type",
-        "server",
+    template = Dict(
+        {
+            "target_id": Int(),
+            "target_type": String(),
+            "time_from": String(),
+            "time_until": String(),
+            "metric_type": String(),
+        }
     )
 
-    def get(self):
-        server_chart_data_helper = ServerChartDataHelper(
-            self.parameters["server"], self.parameters["metric_type"]
-        )
-        response_data = server_chart_data_helper.get_data(
-            self.parameters["time_from"], self.parameters["time_until"]
-        )
-        return jsonify(response_data)
+    def post(self):
+        request_data = request.get_json()
+        error = self.is_request_data_invalid(request_data)
+        if error:
+            response = jsonify({"error": error})
+            response.status_code = 400
+            return response
 
+        target_type = request_data.pop("target_type")
+        target_id = request_data.pop("target_id")
+        strategy_class = get_strategy_for_target(target_type)
+        if not strategy_class:
+            error_message = WRONG_TARGET_TYPE_ERROR_MESSAGE
+            response = jsonify({"error": error_message})
+            response.status_code = 400
+            return response
 
-# todo: optional arguments: 'cluster', 'server',
-class ServicesGroupAverageLoadView(QueryParametersForMethodMixin, MethodView):
-    """
-    Endpoint with data for service_group average load chart
-    returns average load for server and for every service inside current service_group
-    in following format:
-    {
-        "root": {
-            "target": "values"
-            "value": "value"
+        chart_data_util = ChartDataUtil(
+            strategy_class(target_id), **request_data
+        )
+
+        target_label_value_tuple = (
+            chart_data_util.get_root_metric_average_value()
+        )
+        if not target_label_value_tuple:
+            response_data = {
+                "target_label": "",
+                "target_value": "",
+                "children_labels": [],
+                "children_values": [],
+                "metric_type": request_data.get("metric_type"),
             }
-        "children": [
-            {"target": "value", "value": "value"},
-            ...
-        ]
-    }
-    """
+            return jsonify(response_data)
 
-    get_required_parameters = (
-        "time_from",
-        "time_until",
-        "metric_type",
-        "services_group",
-    )
+        target_label, target_value = target_label_value_tuple
 
-    def get(self):
-        sv_group_helper = ServicesGroupChartDataHelper(
-            self.parameters["services_group"], self.parameters["metric_type"]
+        children_labels, children_values = (
+            chart_data_util.get_children_metric_average_values()
         )
-        response_data = sv_group_helper.get_data(
-            self.parameters["time_from"], self.parameters["time_until"]
-        )
+        response_data = {
+            "target_label": target_label,
+            "target_value": target_value,
+            "children_labels": children_labels,
+            "children_values": children_values,
+            "metric_type": request_data.get("metric_type"),
+        }
         return jsonify(response_data)
 
-
-# todo: optional arguments: 'cluster', 'server', 'service_group'
-class ServiceAverageLoadView(QueryParametersForMethodMixin, MethodView):
-    """
-    Endpoint with data for service average load chart
-    returns average load for server and for every instance inside current service
-    in following format:
-    {
-        "root": {
-            "target": "values"
-            "value": "value"
-            }
-        "children": [
-            {"target": "value", "value": "value"},
-            ...
-        ]
-    }
-    """
-
-    get_required_parameters = (
-        "time_from",
-        "time_until",
-        "metric_type",
-        "service",
-    )
-
-    def get(self):
-        services_helper = ServicesChartDataHelper(
-            self.parameters["service"], self.parameters["metric_type"]
-        )
-        response_data = services_helper.get_data(
-            self.parameters["time_from"], self.parameters["time_until"]
-        )
-        return jsonify(response_data)
-
-
-# todo: maybe separate endpoints for getting average_load data for root and children
+    def is_request_data_invalid(self, data):
+        try:
+            self.template.check(data)
+        except DataError as e:
+            return str(e.error)

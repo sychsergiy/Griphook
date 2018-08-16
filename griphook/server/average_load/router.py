@@ -4,18 +4,10 @@ from . import views
 
 average_load_blueprint = Blueprint("average_load", __name__)
 
-server_average_load_view = views.ServerAverageLoadView.as_view("server")
-services_group_average_load_view = views.ServicesGroupAverageLoadView.as_view(
-    "services_group"
+average_load_chart_data_view = views.AverageLoadChartDataView.as_view(
+    "chart_data"
 )
-services_average_load_view = views.ServiceAverageLoadView.as_view("service")
 
 average_load_blueprint.add_url_rule(
-    "/server", view_func=server_average_load_view
-)
-average_load_blueprint.add_url_rule(
-    "/services_group", view_func=services_group_average_load_view
-)
-average_load_blueprint.add_url_rule(
-    "/service", view_func=services_average_load_view
+    "/chart_data", view_func=average_load_chart_data_view
 )
