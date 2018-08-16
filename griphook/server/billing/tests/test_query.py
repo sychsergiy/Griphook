@@ -1,4 +1,3 @@
-from griphook.tests.base import BaseTestCase
 
 TEAMS = ['prom', 'shafa', 'zakupki']
 SERVICES_GROUPS = [ "adv-stable",
@@ -27,9 +26,3 @@ CLUSTERS = [ "dev",
              "olympus",
              "spark"
 ]
-
-
-
-
-class BillingTableQueryTestCase(BaseTestCase):
-    pass
