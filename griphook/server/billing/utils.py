@@ -1,15 +1,13 @@
-from datetime import datetime
-
 from cerberus import Validator
 from sqlalchemy import case, func
 
+from griphook.server.billing.common import string_to_date_time
 from griphook.server.models import (
     MetricBilling,
     BatchStoryBilling,
     Service,
     ServicesGroup,
 )
-from griphook.server.billing.constants import REQUEST_DATE_TIME_FORMAT
 
 
 def get_services_group_metrics_group_by_services(
@@ -47,18 +45,17 @@ def get_services_group_metrics_group_by_services(
 
 
 def validate_data_for_general_table_metrics(validation_data):
-    time_formatter = lambda t: datetime.strptime(t, REQUEST_DATE_TIME_FORMAT)
     schema = {
         "services_group_id": {"type": "integer", "required": True},
         "time_from": {
             "type": "datetime",
             "required": True,
-            "coerce": time_formatter,
+            "coerce": string_to_date_time,
         },
         "time_until": {
             "type": "datetime",
             "required": True,
-            "coerce": time_formatter,
+            "coerce": string_to_date_time,
         },
     }
     v = Validator()
