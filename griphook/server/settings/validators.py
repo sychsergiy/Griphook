@@ -20,3 +20,9 @@ class UpdateServerClusterModel(BaseModel):
     id: int
     cpu_price: Union[float, int, None] = None
     memory_price: Union[float, int, None] = None
+
+
+class AttachDetachProjectTeamModel(BaseModel):
+    project_id: int = None
+    team_id: int = None
+    services_group_id: int

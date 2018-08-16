@@ -12,6 +12,7 @@ from griphook.server.managers.server_manager import ServerManager
 from griphook.server.managers.cluster_manager import ClusterManager
 
 from griphook.server.settings.validators import (
+    AttachDetachProjectTeamModel,
     UpdateServerClusterModel,
     UpdateProjectTeamModel
 )
@@ -24,6 +25,9 @@ from griphook.server.managers.exceptions import (
 from griphook.server.settings.constants import (
     EXC_FIELD_IS_REQUIRED,
     PARAMETERS_PROJECT_TEAM,
+    PARAMETERS_ATTACH_TEAM,
+    PARAMETERS_ATTACH_PROJECT,
+    PARAMETERS_DETACH_PROJECT_TEAM,
     PARAMETERS_SERVER_CLUSTER_CPU_PRICE,
     PARAMETERS_SERVER_CLUSTER_MEMORY_PRICE
 )
@@ -127,10 +131,66 @@ class ProjectDelete(View):
                 ), 400
             return jsonify(
                 {'success': True}
-            ), 200
+            )
         return jsonify(
             {'error': EXC_FIELD_IS_REQUIRED.format('id')}
         ), 400
+
+
+class ProjectAttachToServicesGroup(View):
+    methods = ['PUT']
+
+    def dispatch_request(self):
+        data_for_attach = json.loads(request.data)
+
+        for parameter in PARAMETERS_ATTACH_PROJECT:
+            if parameter not in data_for_attach:
+                return jsonify(
+                    {'error': EXC_FIELD_IS_REQUIRED.format(parameter)}
+                ), 400
+        try:
+            valid_data_for_attach = AttachDetachProjectTeamModel(**data_for_attach)
+        except ValidationError as e:
+            return jsonify(
+                {'error': e.errors()}
+            ), 400
+        try:
+            ProjectManager(db.session).attach_to_services_group(project_id=valid_data_for_attach.project_id, services_group_id=valid_data_for_attach.services_group_id)
+        except ProjectManagerException as exc:
+            return jsonify(
+                {'error': exc.error_text}
+            ), 400
+        return jsonify(
+            {'success': True}
+        )
+
+
+class ProjectDetachFromServicesGroup(View):
+    methods = ['PUT']
+
+    def dispatch_request(self):
+        data_for_detach = json.loads(request.data)
+
+        for parameter in PARAMETERS_DETACH_PROJECT_TEAM:
+            if parameter not in data_for_detach:
+                return jsonify(
+                    {'error': EXC_FIELD_IS_REQUIRED.format(parameter)}
+                ), 400
+        try:
+            valid_data_for_detach = AttachDetachProjectTeamModel(**data_for_detach)
+        except ValidationError as e:
+            return jsonify(
+                {'error': e.errors()}
+            ), 400
+        try:
+            ProjectManager(db.session).detach_from_services_group(services_group_id=valid_data_for_detach.services_group_id)
+        except ProjectManagerException as exc:
+            return jsonify(
+                {'error': exc.error_text}
+            ), 400
+        return jsonify(
+            {'success': True}
+        )
 
 
 class GetTeams(View):
@@ -171,7 +231,7 @@ class TeamCreate(View):
                     'id': new_team.id,
                     'title': new_team.title
                 }
-            ), 200
+            )
         return jsonify(
             {'error': EXC_FIELD_IS_REQUIRED.format('title')}
         ), 400
@@ -231,10 +291,66 @@ class TeamDelete(View):
                 ), 400
             return jsonify(
                 {'success': True}
-            ), 200
+            )
         return jsonify(
             {'error': EXC_FIELD_IS_REQUIRED.format('id')}
         ), 400
+
+
+class TeamAttachToServicesGroup(View):
+    methods = ['PUT']
+
+    def dispatch_request(self):
+        data_for_attach = json.loads(request.data)
+
+        for parameter in PARAMETERS_ATTACH_TEAM:
+            if parameter not in data_for_attach:
+                return jsonify(
+                    {'error': EXC_FIELD_IS_REQUIRED.format(parameter)}
+                ), 400
+        try:
+            valid_data_for_attach = AttachDetachProjectTeamModel(**data_for_attach)
+        except ValidationError as e:
+            return jsonify(
+                {'error': e.errors()}
+            ), 400
+        try:
+            TeamManager(db.session).attach_to_services_group(team_id=valid_data_for_attach.team_id, services_group_id=valid_data_for_attach.services_group_id)
+        except TeamManagerException as exc:
+            return jsonify(
+                {'error': exc.error_text}
+            ), 400
+        return jsonify(
+            {'success': True}
+        )
+
+
+class TeamDetachFromServicesGroup(View):
+    methods = ['PUT']
+
+    def dispatch_request(self):
+        data_for_detach = json.loads(request.data)
+
+        for parameter in PARAMETERS_DETACH_PROJECT_TEAM:
+            if parameter not in data_for_detach:
+                return jsonify(
+                    {'error': EXC_FIELD_IS_REQUIRED.format(parameter)}
+                ), 400
+        try:
+            valid_data_for_detach = AttachDetachProjectTeamModel(**data_for_detach)
+        except ValidationError as e:
+            return jsonify(
+                {'error': e.errors()}
+            ), 400
+        try:
+            TeamManager(db.session).detach_from_services_group(services_group_id=valid_data_for_detach.services_group_id)
+        except TeamManagerException as exc:
+            return jsonify(
+                {'error': exc.error_text}
+            ), 400
+        return jsonify(
+            {'success': True}
+        )
 
 
 class GetServers(View):
