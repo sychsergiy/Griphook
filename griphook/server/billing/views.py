@@ -1,9 +1,11 @@
 import json
 
-from flask import request, abort, current_app
+from flask import request, jsonify
 
-from griphook.server.billing.utils import output_formatter, validate_request_json, billing_table_query
-
+from griphook.server.billing.utils.sql_utils import billing_table_query
+from griphook.server.billing.utils.formatter import output_row_formatter
+from griphook.server.billing.validation.validators import validate_request_json
+from griphook.server.billing.validation import schema
 #
 # CLUSTERS = [
 # "dev", |1
@@ -14,16 +16,6 @@ from griphook.server.billing.utils import output_formatter, validate_request_jso
 # "test_team_2",
 # "test_team_3"
 # ]
-
-SCHEMA = {
-        "time_from": {"type": "string", "required": True},
-        "time_until": {"type": "string", "required": True},
-        "services_groups": {"type": "list"},
-        "cluster_id": {"type": "integer"},
-        "team_id": {"type": "integer"},
-        "project_id": {"type": "integer"},
-        "server_id": {"type": "integer"}
-    }
 
 
 def get_billing_table_data():
@@ -69,28 +61,16 @@ def get_billing_table_data():
 
     """
 
-    query_filters = request.get_json() or {}
-    print(type(query_filters["time_from"]))
+    request_json = request.get_json() or {}
 
-    valid, error_message = validate_request_json(SCHEMA, query_filters)
+    valid, error_message = validate_request_json(schema.SCHEMA, request_json)
     if not valid:
-        abort(400, error_message)
+        response = jsonify(error_message)
+        response.status_code = 400
+    else:
+        result = billing_table_query(request_json)
+        formatted_data = [output_row_formatter(element) for element in result]
+        response = jsonify(formatted_data)
 
-    result = billing_table_query(query_filters)
-    r_list = []
-    for i in result:
-        pass
-    result_obj = {
-        "services_group_id": "value"
-    }
-
-
-    data = [output_formatter(element) for element in result]
-    response_data = {'data': data}
-    response = current_app.response_class(
-        response=json.dumps(response_data),
-        status=200,
-        mimetype='application/json'
-    )
     return response
 
