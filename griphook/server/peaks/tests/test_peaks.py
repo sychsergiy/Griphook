@@ -25,7 +25,7 @@ def test_get_clusters_hierarchy_part(
     assert response.status_code == 200
 
 
-def request_without_reuired_field(client, url, data, field):
+def request_without_required_field(client, url, data, field):
     value = data[field]
     data.pop(field)
     response = client.post(
@@ -43,7 +43,7 @@ def test_validation_request_data(app, peaks_endpoint_request_data):
     url = url_for("peaks.peaks-api")
     peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP
     for key in peaks_endpoint_request_data:
-        response = request_without_reuired_field(
+        response = request_without_required_field(
             client, url, peaks_endpoint_request_data, key
         )
         error_msg = json.loads(response.data.decode("utf-8")).get("error")

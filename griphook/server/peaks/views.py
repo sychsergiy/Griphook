@@ -30,9 +30,7 @@ def get_peaks_for_chart():
         "metric_type": string
     }
     """
-    data = request.get_json()
-    if not data:
-        data = request.args
+    data = request.get_json() or {}
     validated_data, error_data = validate_peaks_query(data)
     if error_data:
         response = jsonify(error_data)
