@@ -7,8 +7,8 @@ from griphook.server.billing.utils.formatter import modify_date
 
 
 def billing_table_query(request_data):
-    time_from = modify_date(request_data.get("time_from", None))
-    time_until = modify_date(request_data.get("time_until", None))
+    time_from = modify_date(request_data.get("time_from"))
+    time_until = modify_date(request_data.get("time_until"))
 
     cluster_id = request_data.get("cluster_id", None)
     server_id = request_data.get("server_id", None)

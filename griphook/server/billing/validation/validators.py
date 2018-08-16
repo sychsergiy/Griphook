@@ -11,7 +11,9 @@ def is_valid_date_format(request_json: dict) -> bool:
 
 def validate_request_json(schema: dict, request_json: dict) -> (bool, dict):
     v = Validator(schema)
-    return not (v.validate(request_json) and is_valid_date_format(request_json)), v.errors
+    if not (v.validate(request_json) and is_valid_date_format(request_json)):
+        return False, v.errors
+    return True
 
 
 def is_correct_time_format(raw_date) -> bool:
