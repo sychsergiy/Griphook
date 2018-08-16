@@ -1,8 +1,10 @@
 from datetime import datetime
 
+DATE_FORMAT = "%Y-%m-%d"
 
-def modify_date(date):
-    return datetime.strptime(date, "%Y-%m-%d")
+
+def modify_date(date: str):
+    return datetime.strptime(date, DATE_FORMAT)
 
 
 def output_row_formatter(row):

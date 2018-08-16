@@ -6,16 +6,6 @@ from griphook.server.billing.utils.sql_utils import billing_table_query
 from griphook.server.billing.utils.formatter import output_row_formatter
 from griphook.server.billing.validation.validators import validate_request_json
 from griphook.server.billing.validation import schema
-#
-# CLUSTERS = [
-# "dev", |1
-# "kalm", |2...
-# "olympus",
-# "spark",
-# "test_team_1",
-# "test_team_2",
-# "test_team_3"
-# ]
 
 
 def get_billing_table_data():
@@ -55,22 +45,16 @@ def get_billing_table_data():
             }
             ...
         ]
-
-        Empty result json means the filter values were incorrect.
-
-
     """
 
     request_json = request.get_json() or {}
-
-    valid, error_message = validate_request_json(schema.SCHEMA, request_json)
+    valid, error_message, formatted_input_json = validate_request_json(schema.SCHEMA, request_json)
     if not valid:
         response = jsonify(error_message)
         response.status_code = 400
     else:
-        result = billing_table_query(request_json)
-        formatted_data = [output_row_formatter(element) for element in result]
-        response = jsonify(formatted_data)
-
+        result = billing_table_query(formatted_input_json)
+        formatted_output = [output_row_formatter(element) for element in result]
+        response = jsonify(formatted_output)
     return response
 

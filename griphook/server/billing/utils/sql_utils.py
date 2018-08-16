@@ -3,19 +3,16 @@ from sqlalchemy.sql import label
 
 from griphook.server.models import (MetricBilling, Team, Project, Cluster,
                                     BatchStoryBilling, Service, ServicesGroup, Server)
-from griphook.server.billing.utils.formatter import modify_date
 
 
-def billing_table_query(request_data):
-    time_from = modify_date(request_data.get("time_from"))
-    time_until = modify_date(request_data.get("time_until"))
-
-    cluster_id = request_data.get("cluster_id", None)
-    server_id = request_data.get("server_id", None)
-    services_groups_ids = request_data.get("services_groups_ids", None)
-    project_id = request_data.get("project_id", None)
-    team_id = request_data.get("team_id", None)
-
+def billing_table_query(valid_json):
+    time_from = valid_json.get("time_from")
+    time_until = valid_json.get("time_until")
+    cluster_id = valid_json.get("cluster_id", None)
+    server_id = valid_json.get("server_id", None)
+    services_groups_ids = valid_json.get("services_groups_ids", None)
+    project_id = valid_json.get("project_id", None)
+    team_id = valid_json.get("team_id", None)
     query = (
         ServicesGroup.query
         .with_entities(
@@ -33,7 +30,6 @@ def billing_table_query(request_data):
                     [(MetricBilling.type == "vsize", MetricBilling.value)], else_=0
                 )
             ))
-
         )
         .join(MetricBilling, MetricBilling.services_group_id == ServicesGroup.id)
         .join(Team, Team.id == ServicesGroup.team_id)
@@ -62,7 +58,6 @@ def billing_table_query(request_data):
         if cluster_id:
             query = query.join(Cluster, Cluster.id == Server.cluster_id)
             query = query.filter(Cluster.id == cluster_id)
-
     result = query.all()
     return result
 
