@@ -57,7 +57,7 @@ def create_data():
 @cli.command()
 def flake():
     """Runs flake8 on the griphook."""
-    exit_code = subprocess.run(['flake8', 'griphook'])
+    exit_code = subprocess.run(['flake8', 'griphook']).returncode
     exit(exit_code)
 
 
