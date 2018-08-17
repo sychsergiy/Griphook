@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from celery import Celery, Task
+from celery import Celery
 from celery.utils.log import get_task_logger
 
 from sqlalchemy import create_engine
@@ -8,10 +8,9 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.exc import IntegrityError
 
 from griphook.config import Config
-from griphook.api.data_source import DataSource
 
 from griphook.api.graphite import (
-    parser as parsers, 
+    parser as parsers,
     formatters,
     functions as graphite_api_functions
 )
@@ -58,7 +57,7 @@ def base_parse_metrics(batch_model, batch_id, parser, target, format_func,
         if time_until <= datetime.now().timestamp():
             logger.info(
                 'Getting data from api <time_from=`{}` time_until=`{}` batch_model=`{}` batch_id=`{}`>'
-                .format(datetime.fromtimestamp(time_from), 
+                .format(datetime.fromtimestamp(time_from),
                         datetime.fromtimestamp(time_until),
                         batch_model.__name__,
                         batch_id)
@@ -82,7 +81,7 @@ def base_parse_metrics(batch_model, batch_id, parser, target, format_func,
                     'Database already had data for batch_id={}'.format(batch_id)
                 )
                 batch.status = BatchStatus.STORED
-            else:    
+            else:
                 logger.info('Saved {} metrics'.format(data_count))
         else:
             logger.warning(
@@ -132,7 +131,7 @@ def parse_average_metrics(batch_id: int):
         target=target,
         format_func=format_func,
         metric_model=metric_model
-    )    
+    )
 
 
 def save_metric_to_db(session, metrics, batch, metric_model) -> int:

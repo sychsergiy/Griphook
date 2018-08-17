@@ -64,7 +64,7 @@ class TaskScheduler(object):
             )
         ])
         self._session.commit()
-    
+
     def requeue_expired_batches(self):
         """Put expired batches to the tasks queue again"""
         expired_batches = (
@@ -85,7 +85,7 @@ class TaskScheduler(object):
 
         for batch in batches:
             self._task.delay(batch_id=batch.id)
-   
+
     def fill_task_queue(self):
         """
         Add tasks to queue if batches with status `QUEUED` less than MAX_TASKS
@@ -114,7 +114,7 @@ class TaskScheduler(object):
             self.requeue_expired_batches()
             self.create_batches_until_now()
             self.fill_task_queue()
-        
+
         schedule.every(
             DATA_GRANULATION
         ).seconds.do(self.requeue_expired_batches)
