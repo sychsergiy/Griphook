@@ -171,7 +171,6 @@ def save_metric_to_db(session, metrics, batch, metric_model) -> int:
             server_id=server.id,
         )
 
-<<<<<<< HEAD
         session.add(metric_model(
             batch_id=batch.id,
             value=metric_tuple.value,
@@ -179,16 +178,5 @@ def save_metric_to_db(session, metrics, batch, metric_model) -> int:
             service_id=service.id,
             services_group_id=services_group.id
         ))
-=======
-        session.add(
-            MetricPeak(
-                batch_id=batch.id,
-                value=metric_tuple.value,
-                type=type_,
-                service_id=service.id,
-                services_group_id=services_group.id,
-            )
-        )
->>>>>>> 8f845235df445fea7072bdc8edbcd61b93f3f165
     batch.status = BatchStatus.STORED
     return counter

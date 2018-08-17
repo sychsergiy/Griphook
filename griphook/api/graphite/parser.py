@@ -60,6 +60,3 @@ class GraphiteAPIParser(APIParser):
 
        target = function(path + metrics, *args)
        return str(target)
-
-        target = function(path + metrics, *args)
-        return str(target)
