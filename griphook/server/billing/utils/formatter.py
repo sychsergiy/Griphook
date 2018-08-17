@@ -1,4 +1,4 @@
-from datetime import  datetime
+from datetime import datetime
 
 from griphook.server.billing.constants import RESPONSE_DATE_TIME_FORMAT, REQUEST_DATE_TIME_FORMAT
 

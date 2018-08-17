@@ -26,15 +26,15 @@ SCHEMA_FOR_BILLING_TABLE = {
 }
 
 SCHEMA_FOR_GENERAL_TABLE = {
-        "services_group_id": {"type": "integer", "required": True},
-        "time_from": {
-            "type": "date",
-            "required": True,
-            "coerce": string_to_date_time,
-        },
-        "time_until": {
-            "type": "date",
-            "required": True,
-            "coerce": string_to_date_time,
-        },
-    }
+    "services_group_id": {"type": "integer", "required": True},
+    "time_from": {
+        "type": "date",
+        "required": True,
+        "coerce": string_to_date_time,
+    },
+    "time_until": {
+        "type": "date",
+        "required": True,
+        "coerce": string_to_date_time,
+    },
+}

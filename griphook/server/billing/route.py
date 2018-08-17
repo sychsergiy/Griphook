@@ -24,4 +24,3 @@ billing_blueprint.add_url_rule(
     view_func=views.get_metric_chart_for_services_group,
     methods=("POST",),
 )
-

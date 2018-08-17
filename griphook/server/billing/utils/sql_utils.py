@@ -10,7 +10,7 @@ def billing_table_query(data):
     time_until = data.get("time_until")
     target_type = data.get("target_type")
     target_ids = data.get("target_ids")
-    #TODO create left join for services_groups with team and project
+    # TODO create left join for services_groups with team and project
     query = (
         ServicesGroup.query
         .with_entities(

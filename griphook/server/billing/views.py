@@ -3,11 +3,12 @@ from flask import request, jsonify
 from griphook.server.billing.utils.sql_utils import (
     billing_table_query,
     get_services_group_metrics_chart,
-    get_services_group_metrics_group_by_services)
+    get_services_group_metrics_group_by_services
+)
 from griphook.server.billing.utils.formatter import (
-                                                    format_output_row_for_billing_table,
-                                                    format_metrics_list_for_general_table
-                                                )
+    format_output_row_for_billing_table,
+    format_metrics_list_for_general_table
+)
 from griphook.server.billing.validation import validators
 from griphook.server.billing.validation import schemas
 

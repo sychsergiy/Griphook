@@ -10,4 +10,3 @@ peaks_blueprint.add_url_rule(
     view_func=views.get_peaks_for_chart,
     methods=("POST",),
 )
-

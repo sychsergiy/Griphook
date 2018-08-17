@@ -33,8 +33,6 @@ def test_validation_request_data(app, billing_table_endpoint_request_data):
 def test_billing_table_endpoint_response_data(app, clusters, teams, projects, servers, services_groups, services,
                                               billing_batch_stories, metrics, billing_table_endpoint_request_data):
     client = app.test_client()
-    time1 = billing_batch_stories[0].time
-    time2 = billing_batch_stories[1].time
     url = url_for("billing.get_filtered_billing_table_data")
     response = client.post(
         url,
