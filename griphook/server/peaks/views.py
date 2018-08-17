@@ -30,9 +30,7 @@ def get_peaks_for_chart():
         "metric_type": string
     }
     """
-    data = request.get_json()
-    if not data:
-        data = request.args
+    data = request.get_json() or {}
     validated_data, error_data = validate_peaks_query(data)
     if error_data:
         response = jsonify(error_data)
@@ -41,7 +39,7 @@ def get_peaks_for_chart():
         query = get_peaks_query_group_by_time_step(**validated_data)
         query_result = query.get_items()
         timeline = [peak_formatter(element) for element in query_result]
-        values = [element.peaks for element in query_result]
+        values = [round(element.peaks, 1) for element in query_result]
         data = {
             "timeline": timeline,
             "values": values,
