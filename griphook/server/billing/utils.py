@@ -49,12 +49,12 @@ def validate_data_for_general_table_metrics(validation_data):
     schema = {
         "services_group_id": {"type": "integer", "required": True},
         "time_from": {
-            "type": "datetime",
+            "type": "date",
             "required": True,
             "coerce": string_to_date_time,
         },
         "time_until": {
-            "type": "datetime",
+            "type": "date",
             "required": True,
             "coerce": string_to_date_time,
         },
