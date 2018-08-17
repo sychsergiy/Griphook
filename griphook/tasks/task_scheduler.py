@@ -79,9 +79,7 @@ class TaskScheduler(object):
 
     def _push_batches_into_queue(self, batches: Sequence[BatchStoryPeaks]):
         """Push batches into queue and set their status to BatchStatus.QUEUED."""
-        
         for batch in batches:
-            print(batch.time, batch.status)
             batch.put_into_queue = datetime.now()
             batch.status = BatchStatus.QUEUED
         self._session.commit()
