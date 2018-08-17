@@ -88,6 +88,8 @@ venv.bak/
 griphook.db
 # VSCode
 .vscode/
-local.yml
+local*.yml
 dev/
 bin
+node_modules/
+bundles/

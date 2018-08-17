@@ -24,12 +24,12 @@ from griphook.server.models import (
     MetricPeak,
     MetricBilling,
     Cluster,
-    Server
+    Server,
 )
 from griphook.tasks.utils import (
     DATA_GRANULATION,
     BatchStatus,
-    concurrent_get_or_create
+    concurrent_get_or_create,
 )
 
 import urllib3
@@ -37,10 +37,10 @@ urllib3.disable_warnings()
 
 
 conf = Config().options
-app = Celery(broker=conf['tasks']['CELERY_BROKER_URL'])
+app = Celery(broker=conf["tasks"]["CELERY_BROKER_URL"])
 logger = get_task_logger(__name__)
 
-engine = create_engine(conf['db']['DATABASE_URL'])
+engine = create_engine(conf["db"]["DATABASE_URL"])
 SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)
 
@@ -148,20 +148,18 @@ def save_metric_to_db(session, metrics, batch, metric_model) -> int:
         services_group, _ = concurrent_get_or_create(
             session=rel_data_session,
             model=ServicesGroup,
-            title=metric_tuple.services_group
+            title=metric_tuple.services_group,
         )
 
         cluster, _ = concurrent_get_or_create(
-            session=rel_data_session,
-            model=Cluster,
-            title=metric_tuple.cluster
+            session=rel_data_session, model=Cluster, title=metric_tuple.cluster
         )
 
         server, _ = concurrent_get_or_create(
             session=rel_data_session,
             model=Server,
             title=metric_tuple.server,
-            cluster_id=cluster.id
+            cluster_id=cluster.id,
         )
 
         service, _ = concurrent_get_or_create(
@@ -170,9 +168,10 @@ def save_metric_to_db(session, metrics, batch, metric_model) -> int:
             title=metric_tuple.service,
             services_group_id=services_group.id,
             instance=metric_tuple.instance,
-            server_id=server.id
+            server_id=server.id,
         )
 
+<<<<<<< HEAD
         session.add(metric_model(
             batch_id=batch.id,
             value=metric_tuple.value,
@@ -180,5 +179,16 @@ def save_metric_to_db(session, metrics, batch, metric_model) -> int:
             service_id=service.id,
             services_group_id=services_group.id
         ))
+=======
+        session.add(
+            MetricPeak(
+                batch_id=batch.id,
+                value=metric_tuple.value,
+                type=type_,
+                service_id=service.id,
+                services_group_id=services_group.id,
+            )
+        )
+>>>>>>> 8f845235df445fea7072bdc8edbcd61b93f3f165
     batch.status = BatchStatus.STORED
     return counter

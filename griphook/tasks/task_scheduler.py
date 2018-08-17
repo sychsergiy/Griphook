@@ -18,18 +18,17 @@ from griphook.tasks import tasks
 
 
 conf = Config().options
-engine = create_engine(conf['db']['DATABASE_URL'])
+engine = create_engine(conf["db"]["DATABASE_URL"])
 Session = sessionmaker(bind=engine)
 
-MAX_TASKS = conf['tasks']['MAX_PARSE_TASKS_IN_QUEUE']
-DATA_SOURCE_DATA_EXPIRES = conf['tasks']['DATA_SOURCE_DATA_EXPIRES']
-PARSE_METRIC_EXPIRES = conf['tasks']['PARSE_METRIC_EXPIRES']
-CREATING_BATCHES_INTERVAL = conf['tasks']['CREATING_BATCHES_INTERVAL']
-FILLING_TASK_QUEUE_INTERVAL = conf['tasks']['FILLING_TASK_QUEUE_INTERVAL']
+MAX_TASKS = conf["tasks"]["MAX_PARSE_TASKS_IN_QUEUE"]
+DATA_SOURCE_DATA_EXPIRES = conf["tasks"]["DATA_SOURCE_DATA_EXPIRES"]
+PARSE_METRIC_EXPIRES = conf["tasks"]["PARSE_METRIC_EXPIRES"]
+CREATING_BATCHES_INTERVAL = conf["tasks"]["CREATING_BATCHES_INTERVAL"]
+FILLING_TASK_QUEUE_INTERVAL = conf["tasks"]["FILLING_TASK_QUEUE_INTERVAL"]
 
 
 class TaskScheduler(object):
-
 
     def __init__(self, batch_model, task):
         self._session = Session()
@@ -147,5 +146,5 @@ def main():
         time.sleep(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
