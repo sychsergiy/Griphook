@@ -8,7 +8,7 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 
 from griphook.config import Config
-from griphook.server.models import BatchStoryPeaks
+from griphook.server.models import BatchStoryPeaks, BatchStoryBilling
 from griphook.tasks.utils import (
     BatchStatus,
     DATA_GRANULATION,
@@ -29,9 +29,10 @@ FILLING_TASK_QUEUE_INTERVAL = conf['tasks']['FILLING_TASK_QUEUE_INTERVAL']
 
 
 class TaskScheduler(object):
-    _session = Session()
+
 
     def __init__(self, batch_model, task):
+        self._session = Session()
         self._batch_model = batch_model
         self._task = task
 
@@ -93,7 +94,7 @@ class TaskScheduler(object):
         """
         queued_tasks_count = (
             self._session.query(self._batch_model)
-            .filter(BatchStoryPeaks.status == BatchStatus.QUEUED)
+            .filter(self._batch_model.status == BatchStatus.QUEUED)
             .count()
         )
 
@@ -135,6 +136,11 @@ def main():
     )
     peaks_parsing_scheduler.fill_schedule(schedule)
 
+    average_parsing_scheduler = TaskScheduler(
+        batch_model=BatchStoryBilling,
+        task=tasks.parse_average_metrics
+    )
+    average_parsing_scheduler.fill_schedule(schedule)
 
     while True:
         schedule.run_pending()
