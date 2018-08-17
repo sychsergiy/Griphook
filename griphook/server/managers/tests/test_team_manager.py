@@ -2,13 +2,18 @@ import pytest
 
 from sqlalchemy.sql import exists
 
-from griphook.server.models import MetricPeak, Team, ServicesGroup
 from griphook.server.managers.exceptions import TeamManagerException
 from griphook.server.managers.team_manager import TeamManager
 from griphook.server.managers.constants import (
     EXC_SERVICES_GROUP_DOESNT_EXISTS,
     EXC_TEAM_ALREADY_EXISTS,
     EXC_TEAM_DOESNT_EXISTS,
+)
+from griphook.server.models import (
+    ServicesGroup,
+    MetricBilling,
+    MetricPeak,
+    Team
 )
 
 
@@ -74,21 +79,28 @@ class TestAttachTeam:
         TeamManager(db_session).attach_to_services_group(
             team_id=test_team_id, services_group_id=test_services_group_id
         )
-
         services_group_team_id = (
             db_session.query(ServicesGroup.team_id)
             .filter_by(id=test_services_group_id)
             .scalar()
         )
-        metrics = (
+        metrics_peaks_query = (
             db_session.query(MetricPeak)
             .filter_by(services_group_id=test_services_group_id)
             .all()
         )
-
+        metrics_billing_query = (
+            db_session.query(MetricBilling)
+            .filter_by(services_group_id=test_services_group_id)
+            .all()
+        )
         assert services_group_team_id == test_team_id
-        for metric in metrics:
-            assert metric.team_id == test_team_id
+
+        for metric_peaks in metrics_peaks_query:
+            assert metric_peaks.team_id == test_team_id
+
+        for metric_billing in metrics_billing_query:
+            assert metric_billing.team_id == test_team_id
 
     def test_attach_team_when_it_doesnt_exists(self, db_session):
         test_team_id = 1
@@ -120,20 +132,24 @@ class TestAttachTeam:
         TeamManager(db_session).attach_to_services_group(
             team_id=test_team_id, services_group_id=test_services_group_id
         )
-
         services_group_team_id = (
             db_session.query(ServicesGroup.team_id)
             .filter_by(id=test_services_group_id)
             .scalar()
         )
-        metrics = (
+        metrics_peaks_query = (
             db_session.query(MetricPeak)
             .filter_by(services_group_id=test_services_group_id)
             .all()
         )
-
+        metrics_billing_query = (
+            db_session.query(MetricBilling)
+            .filter_by(services_group_id=test_services_group_id)
+            .all()
+        )
         assert services_group_team_id == test_team_id
-        assert not metrics
+        assert not metrics_peaks_query
+        assert not metrics_billing_query
 
 
 class TestDetachTeam:
@@ -142,21 +158,28 @@ class TestDetachTeam:
         TeamManager(db_session).detach_from_services_group(
             services_group_id=test_services_group_id
         )
-
         services_group_team_id = (
             db_session.query(ServicesGroup.team_id)
             .filter_by(id=test_services_group_id)
             .scalar()
         )
-        metrics = (
+        metrics_peaks_query = (
             db_session.query(MetricPeak)
             .filter_by(services_group_id=test_services_group_id)
             .all()
         )
-
+        metrics_billing_query = (
+            db_session.query(MetricBilling)
+            .filter_by(services_group_id=test_services_group_id)
+            .all()
+        )
         assert services_group_team_id is None
-        for metric in metrics:
-            assert metric.team_id is None
+
+        for metric_peaks in metrics_peaks_query:
+            assert metric_peaks.team_id is None
+
+        for metric_billing in metrics_billing_query:
+            assert metric_billing.team_id is None
 
     def test_detach_team_when_services_group_doesnt_exists(self, db_session):
         test_services_group_id = 4

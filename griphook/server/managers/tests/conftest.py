@@ -5,6 +5,7 @@ from griphook.server import create_app
 from griphook.server.models import (
     ServicesGroup,
     MetricPeak,
+    MetricBilling,
     Project,
     Cluster,
     Server,
@@ -64,6 +65,18 @@ def create_project_team_test_data(db_session):
             MetricPeak(id=5, value=798754, services_group_id=4, project_id=2),
             MetricPeak(id=6, value=798631, services_group_id=4, project_id=2),
             MetricPeak(id=7, value=798464, services_group_id=4, project_id=2),
+        ]
+    )
+    db_session.commit()
+    db_session.add_all(
+        [
+            MetricBilling(id=1, value=152411, services_group_id=1),
+            MetricBilling(id=2, value=159787, services_group_id=2),
+            MetricBilling(id=3, value=156446, services_group_id=2),
+            MetricBilling(id=4, value=132468, services_group_id=2),
+            MetricBilling(id=5, value=798754, services_group_id=4, project_id=2),
+            MetricBilling(id=6, value=798631, services_group_id=4, project_id=2),
+            MetricBilling(id=7, value=798464, services_group_id=4, project_id=2),
         ]
     )
     db_session.commit()
