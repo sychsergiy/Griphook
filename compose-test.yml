@@ -25,5 +25,6 @@ services:
             - POSTGRES_PASSWORD=password
             - POSTGRES_USER=user
             - POSTGRES_DB=dbname
+            - PYTHONPATH=$PWD
         healthcheck:
             test: "exit 0"

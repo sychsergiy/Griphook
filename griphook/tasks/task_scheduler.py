@@ -9,23 +9,19 @@ from sqlalchemy.orm import sessionmaker
 
 from griphook.config import Config
 from griphook.server.models import BatchStoryPeaks
-from griphook.tasks.utils import (
-    BatchStatus,
-    DATA_GRANULATION,
-    datetime_range
-)
+from griphook.tasks.utils import BatchStatus, DATA_GRANULATION, datetime_range
 from griphook.tasks import tasks
 
 
 conf = Config().options
-engine = create_engine(conf['db']['DATABASE_URL'])
+engine = create_engine(conf["db"]["DATABASE_URL"])
 Session = sessionmaker(bind=engine)
 
-MAX_TASKS = conf['tasks']['MAX_PARSE_TASKS_IN_QUEUE']
-DATA_SOURCE_DATA_EXPIRES = conf['tasks']['DATA_SOURCE_DATA_EXPIRES']
-PARSE_METRIC_EXPIRES = conf['tasks']['PARSE_METRIC_EXPIRES']
-CREATING_BATCHES_INTERVAL = conf['tasks']['CREATING_BATCHES_INTERVAL']
-FILLING_TASK_QUEUE_INTERVAL = conf['tasks']['FILLING_TASK_QUEUE_INTERVAL']
+MAX_TASKS = conf["tasks"]["MAX_PARSE_TASKS_IN_QUEUE"]
+DATA_SOURCE_DATA_EXPIRES = conf["tasks"]["DATA_SOURCE_DATA_EXPIRES"]
+PARSE_METRIC_EXPIRES = conf["tasks"]["PARSE_METRIC_EXPIRES"]
+CREATING_BATCHES_INTERVAL = conf["tasks"]["CREATING_BATCHES_INTERVAL"]
+FILLING_TASK_QUEUE_INTERVAL = conf["tasks"]["FILLING_TASK_QUEUE_INTERVAL"]
 
 
 def create_batches_until_now():
@@ -46,18 +42,18 @@ def create_batches_until_now():
     step = timedelta(seconds=DATA_GRANULATION)
 
     if last_batch is None:
-        time_from = now - \
-            timedelta(seconds=DATA_SOURCE_DATA_EXPIRES)
+        time_from = now - timedelta(seconds=DATA_SOURCE_DATA_EXPIRES)
     else:
         time_from = last_batch.time + step
 
-    session.add_all([
-        BatchStoryPeaks(time=batch_time, status=BatchStatus.EMPTY)
-        for batch_time in itertools.takewhile(
-            lambda t: t < now,
-            datetime_range(time_from, now, step)
-        )
-    ])
+    session.add_all(
+        [
+            BatchStoryPeaks(time=batch_time, status=BatchStatus.EMPTY)
+            for batch_time in itertools.takewhile(
+                lambda t: t < now, datetime_range(time_from, now, step)
+            )
+        ]
+    )
     session.commit()
 
 
@@ -66,8 +62,10 @@ def requeue_expired_batches():
     session = Session()
     expired_batches = (
         session.query(BatchStoryPeaks)
-        .filter(BatchStoryPeaks.put_into_queue < datetime.now() -
-                timedelta(seconds=PARSE_METRIC_EXPIRES))
+        .filter(
+            BatchStoryPeaks.put_into_queue
+            < datetime.now() - timedelta(seconds=PARSE_METRIC_EXPIRES)
+        )
         .all()
     )
 
@@ -113,22 +111,18 @@ def main():
     create_batches_until_now()
     fill_task_queue()
 
-    schedule.every(
-        DATA_GRANULATION
-    ).seconds.do(requeue_expired_batches)
+    schedule.every(DATA_GRANULATION).seconds.do(requeue_expired_batches)
 
-    schedule.every(
-        CREATING_BATCHES_INTERVAL
-    ).seconds.do(create_batches_until_now)
+    schedule.every(CREATING_BATCHES_INTERVAL).seconds.do(
+        create_batches_until_now
+    )
 
-    schedule.every(
-        FILLING_TASK_QUEUE_INTERVAL
-    ).seconds.do(fill_task_queue)
+    schedule.every(FILLING_TASK_QUEUE_INTERVAL).seconds.do(fill_task_queue)
 
     while True:
         schedule.run_pending()
         time.sleep(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

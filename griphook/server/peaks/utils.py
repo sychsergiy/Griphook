@@ -1,163 +1,115 @@
 import datetime
 
 from sqlalchemy import func
-from sqlalchemy.orm import Query
 
-from griphook.server.models import MetricPeak, BatchStoryPeaks, Service, ServicesGroup, Server
 from griphook.server import db
+from griphook.server.models import MetricPeak, BatchStoryPeaks
+from griphook.server.peaks.constants import (
+    RESPONSE_DATE_TIME_FORMAT,
+    REQUEST_DATE_TIME_FORMAT,
+)
+from griphook.server.peaks.peaks_filter import MetricPeakGroupFilter
 
 
 def round_time(since, until, step):
+    """
+    checking whether the step fits into the time delta without the remainder.
+    If it doesn't, extends the the time_until for delta to be fully divisible by the step.
+    """
     delta = until - since
-    modular = datetime.timedelta(seconds=delta.total_seconds()) % datetime.timedelta(seconds=step)
+    modular = datetime.timedelta(
+        seconds=delta.total_seconds()
+    ) % datetime.timedelta(seconds=step)
     if modular:
         until += datetime.timedelta(seconds=step) - modular
     return until
 
 
-class MetricPeakGroupFilter(object):
-    def __init__(self, session, query: Query = None):
-        self.session = session
-        self.query = query if query else self.session.query(MetricPeak)
-        self.service_group_joined = False
-        self.service_joined = False
-        self.server_joined = False
-        self.batch_story_joined = False
-
-    def __join_service(self):
-        if not self.service_joined:
-            self.query = self.query.join(Service)
-            self.service_joined = True
-
-    def __join_server(self):
-        if not self.server_joined:
-            if not self.service_joined:
-                self.__join_service()
-            self.query = self.query.join(Server)
-            self.service_joined = True
-
-    def __join_service_group(self):
-        if not self.service_group_joined:
-            if not self.service_joined:
-                self.__join_service()
-            self.query = self.query.join(ServicesGroup, MetricPeak.services_group_id == ServicesGroup.id)
-            self.service_group_joined = True
-
-    def __join_batch_story(self):
-        if not self.batch_story_joined:
-            self.query = self.query.join(BatchStoryPeaks)
-            self.batch_story_joined = True
-
-    def filter_by_server_title(self, *args: str):
-        self.__join_server()
-        self.query = self.query.filter(Server.title.in_(args))
-        return self
-
-    def filter_by_service_group_title(self, *args: str):
-        self.__join_service_group()
-        self.query = self.query.filter(ServicesGroup.title.in_(args))
-        return self
-
-    def filter_by_service_title(self, *args: str):
-        self.__join_service()
-        self.query = self.query.filter(Service.title.in_(args))
-        return self
-
-    def filter_by_time_period(self, since, until):
-        self.__join_batch_story()
-        self.query = self.query.filter(BatchStoryPeaks.time.between(since, until))
-        return self
-
-    def filter_by_metric_type(self, *args: str):
-        self.query = self.query.filter(MetricPeak.type.in_(args))
-        return self
-
-    def set_query_entities(self, *args):
-        self.query = self.query.with_entities(*args)
-        return self
-
-    def group_by(self, *args: str):
-        self.query = self.query.group_by(*args)
-        return self
-
-    def order_by(self, label: str):
-        self.query = self.query.order_by(label)
-        return self
-
-    def get_items(self):
-        return self.query.all()
-
-
 def get_shift(since, step):
+    """
+    UNIX timestamp divided by the step into intervals that synchronize with the time_from
+    """
     since_timestamp = since.replace(tzinfo=datetime.timezone.utc).timestamp()
     return since_timestamp % step
 
 
-def peaks_query(query_data):
-    server = query_data.get('server')
-    since = query_data.get('time_from')
-    until = query_data.get('time_until')
-    step = query_data.get('step')
-    metric_type = query_data.get('metric_type')
-    service = query_data.get('service')
-    service_group = query_data.get('service_group')
-    # todo: move to function params
-
-    until = round_time(since, until, step=step)
-    shift = get_shift(since, step)
-    group_time = (func.floor((func.extract('epoch', BatchStoryPeaks.time) - shift) / step)) * step
+def get_peaks_query_group_by_time_step(
+    target_type, target_id, step, metric_type, time_from, time_until
+):
+    time_until = round_time(time_from, time_until, step=step)
+    shift = get_shift(time_from, step)
+    group_time = (
+        func.floor((func.extract("epoch", BatchStoryPeaks.time) - shift) / step)
+    ) * step
     query_creator = MetricPeakGroupFilter(session=db.session)
     (
-        query_creator
-        .filter_by_metric_type(metric_type)
-        .filter_by_time_period(since=since, until=until)
-        .filter_by_server_title(server)
+        query_creator.filter_by_metric_type(metric_type)
+        .filter_by_time_period(time_from=time_from, time_until=time_until)
         .set_query_entities(
             func.max(MetricPeak.value).label("peaks"),
-            group_time.label('step'),
-            func.min(func.extract('epoch', BatchStoryPeaks.time)).label('time'),
-            MetricPeak.type.label('type')
+            group_time.label("step"),
+            func.min(func.extract("epoch", BatchStoryPeaks.time)).label("time"),
+            MetricPeak.type.label("type"),
         )
-        .group_by('step', 'type')
-        .order_by('time')
+        .group_by("step", "type")
+        .order_by("time")
     )
-    if service_group:
-        query_creator.filter_by_service_group_title(service_group)
-        if service:
-            query_creator.filter_by_service_title(service)
-    return query_creator.query
+    if target_type == "cluster":
+        query_creator.filter_by_cluster_id(target_id)
+    elif target_type == "server":
+        query_creator.filter_by_server_id(target_id)
+    elif target_type == "services_group":
+        query_creator.filter_by_service_group_id(target_id)
+    elif target_type == "service":
+        query_creator.filter_by_service_id(target_id)
+    return query_creator
 
 
 def peak_formatter(peak):
-    return (
-        datetime.datetime.fromtimestamp(
-            peak.time,
-            tz=datetime.timezone.utc
-        ).strftime('%Y-%m-%d %H')
-    )
+    return datetime.datetime.fromtimestamp(
+        peak.time, tz=datetime.timezone.utc
+    ).strftime(RESPONSE_DATE_TIME_FORMAT)
 
 
-def validate_peaks_query(args):
-    date_time_format = '%Y-%m-%d %H'
+def validate_peaks_query(validation_data):
+    valid_target_types = ("service", "services_group", "server", "cluster")
     data = dict()
     error_data = dict()
     try:
-        data['step'] = int(args.get('step'))
+        data["step"] = int(validation_data.get("step"))
     except TypeError:
-        error_data = {'Error': "Error step field is required"}
+        error_data = {"error": "Error step field is required"}
     except ValueError:
-        error_data = {'Error': "Error step format. Expected int"}
+        error_data = {"error": "Error step format. Expected int"}
     try:
-        data['time_from'] = datetime.datetime.strptime(args.get('time_from'), date_time_format)
-        data['time_until'] = datetime.datetime.strptime(args.get('time_until'), date_time_format)
+        data["time_from"] = datetime.datetime.strptime(
+            validation_data.get("time_from"), REQUEST_DATE_TIME_FORMAT
+        )
+        data["time_until"] = datetime.datetime.strptime(
+            validation_data.get("time_until"), REQUEST_DATE_TIME_FORMAT
+        )
     except TypeError:
-        error_data = {'Error': "since and until are required fields"}
+        error_data = {"error": "time_from and time_until are required fields"}
     except ValueError:
-        error_data = {'Error': "Error datetime (time_from or time_until) format. Expected {0}".format(date_time_format)}
-    data['service_group'] = args.get('services_group')
-    data['service'] = args.get('service')
-    data['metric_type'] = args.get('metric_type')
-    data['server'] = args.get('server')
-    if not data['metric_type'] or not data['server']:
-        error_data = {'Error': "metric_type and server are required fields"}
+        error_data = {
+            "error": "Error datetime (time_from or time_until) format. Expected {0}".format(
+                REQUEST_DATE_TIME_FORMAT
+            )
+        }
+    data["target_type"] = validation_data.get("target_type")
+
+    try:
+        data["target_id"] = int(validation_data.get("target_id"))
+    except ValueError:
+        error_data = {"error": "Error target_id format. Expected int"}
+    except TypeError:
+        error_data = {"error": "target_id is required field"}
+
+    data["metric_type"] = validation_data.get("metric_type")
+    if not data.get("metric_type"):
+        error_data = {"error": "metric_type is required field"}
+    elif not data.get("target_type") in valid_target_types:
+        error_data = {"error": "target_type is required field"}
+    elif not data.get("target_id"):
+        error_data = {"error": "target_id is required field"}
     return data, error_data
