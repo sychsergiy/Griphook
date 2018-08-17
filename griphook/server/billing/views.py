@@ -12,18 +12,12 @@ def get_filtered_billing_table_data():
 
         Incoming json:
         {
-            "services_groups": [
-                                "id" | integer
-                                ...
-                             ],
-            "team": "id" | integer,
-            "project": "id" | integer,
-            "cluster": "id" | integer,
-            "server": "id" | integer,
-            "time_from": "YY-MM-DD", | required
-            "time_until": "YY-MM-DD" | required
-
+            "target_type": string, | required
+            "target_ids": list of integers,
+            "time_from": string, | required
+            "time_until": string, | required
         }
+
 
         time_from and time_until are mandatory fields
 

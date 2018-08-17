@@ -8,12 +8,8 @@ from griphook.server.models import (MetricBilling, Team, Project, Cluster,
 def billing_table_query(data):
     time_from = data.get("time_from")
     time_until = data.get("time_until")
-    print(type(time_from))
-    cluster_id = data.get("cluster_id", None)
-    server_id = data.get("server_id", None)
-    services_groups_ids = data.get("services_groups_ids", None)
-    project_id = data.get("project_id", None)
-    team_id = data.get("team_id", None)
+    target_type = data.get("target_type")
+    target_ids = data.get("target_ids")
     query = (
         ServicesGroup.query
         .with_entities(
@@ -42,22 +38,24 @@ def billing_table_query(data):
             "services_group_title", "service_group_id", "team", "project"
         )
     )
-    if services_groups_ids:
-        query = query.filter(ServicesGroup.id.in_(services_groups_ids))
-    if team_id:
-        query = query.filter(Team.id == team_id)
-    if project_id:
+    if target_type == "all":
+        return query.all()
+    elif target_type == "services_groups":
+        query = query.filter(ServicesGroup.id.in_(target_ids))
+    elif target_type == "team":
+        query = query.filter(Team.id.in_(target_ids))
+    elif target_type == "project":
         query = query.join(Project, Project.id == ServicesGroup.project_id)
-        query = query.filter(Project.id == project_id)
-    if server_id or cluster_id:
+        query = query.filter(Project.id.id_(target_ids))
+    elif target_type == "server" or target_type == "cluster":
         query = (
-                query.join(Service, Service.services_group_id == MetricBilling.service_id)
-                     .join(Server, Service.server_id == Server.id)
-                )
-        if server_id:
-            query = query.filter(Server.id == server_id)
-        if cluster_id:
+            query.join(Service, Service.services_group_id == MetricBilling.service_id)
+                 .join(Server, Service.server_id == Server.id)
+        )
+        if target_type == "server":
+            query = query.filter(Server.id.in_(target_ids))
+        else:
             query = query.join(Cluster, Cluster.id == Server.cluster_id)
-            query = query.filter(Cluster.id == cluster_id)
+            query = query.filter(Cluster.id.in_(target_ids))
     result = query.all()
     return result
