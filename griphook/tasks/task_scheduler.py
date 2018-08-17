@@ -70,7 +70,8 @@ class TaskScheduler(object):
         expired_batches = (
             self._session.query(self._batch_model)
             .filter(self._batch_model.put_into_queue < datetime.now() -
-                    timedelta(seconds=PARSE_METRIC_EXPIRES))
+                    timedelta(seconds=PARSE_METRIC_EXPIRES),
+                    self._batch_model.status == BatchStatus.QUEUED)
             .all()
         )
 
@@ -78,7 +79,9 @@ class TaskScheduler(object):
 
     def _push_batches_into_queue(self, batches: Sequence[BatchStoryPeaks]):
         """Push batches into queue and set their status to BatchStatus.QUEUED."""
+        
         for batch in batches:
+            print(batch.time, batch.status)
             batch.put_into_queue = datetime.now()
             batch.status = BatchStatus.QUEUED
         self._session.commit()
