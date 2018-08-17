@@ -5,11 +5,16 @@ from celery.utils.log import get_task_logger
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.exc import IntegrityError
 
 from griphook.config import Config
 from griphook.api.data_source import DataSource
 
-from griphook.api.graphite import parser, formatters
+from griphook.api.graphite import (
+    parser as parsers, 
+    formatters,
+    functions as graphite_api_functions
+)
 from griphook.server.models import (
     BatchStoryPeaks,
     MetricTypes,
@@ -44,45 +49,69 @@ class ParsingTask(Task):
         logger.retry('Retry parse metrics')
 
 
-@app.task(base=ParsingTask, time_limit=conf['tasks']['PARSE_METRIC_EXPIRES'])
-def parse_metrics(batch_id: int):
-    """
-    Parse data from Cantal API and save it to specified in Session db.
-    This task should be executed only by one worker at the same time.
-    :TODO
-        Change task to parse data from different API's
-    """
+def base_parse_metrics(batch_model, batch_id, parser, target, format_func):
     session = Session()
-    cantal_source = DataSource(
-        parser=parser.GraphiteAPIParser(base_url=conf['api']['GRAPHITE_URL']),
-        data_formatter=formatters.format_cantal_data,
-    )
+    batch = session.query(batch_model).with_for_update().get(batch_id)
 
-    try:
-        batch = session.query(BatchStoryPeaks).with_for_update().get(batch_id)
+    if batch is not None and batch.status == BatchStatus.QUEUED:
+        time_from = int(batch.time.timestamp())
+        time_until = time_from + DATA_GRANULATION - 1
 
-        if batch.status != BatchStatus.STORED:
-            time_from = int(batch.time.timestamp())
-            time_until = time_from + DATA_GRANULATION - 1
+        # We parse metrics only for the past time
+        if time_until <= datetime.now().timestamp():
+            logger.info(
+                'Getting data from api <time_from=`{}` time_until=`{}` batch_model=`{}` batch_id=`{}`>'
+                .format(datetime.fromtimestamp(time_from), 
+                        datetime.fromtimestamp(time_until),
+                        batch_model.__class__.__name__,
+                        batch_id)
+            )
 
-            if time_until <= datetime.now().timestamp():
-                logger.info(
-                    'Getting data from api (time_from={}; time_until={})'
-                    .format(time_from, time_until)
-                )
-                data = cantal_source.read(time_from=time_from,
-                                          time_until=time_until)
+            data = format_func(parser.fetch(
+                time_from=time_from,
+                time_until=time_until,
+                target=target
+            ))
+            try:
                 data_count = save_metric_to_db(
                     session=session,
                     metrics=data,
                     batch=batch
                 )
+            except IntegrityError:
+                session.rollback()
+                logger.warning(
+                    'Database already had data for batch_id={}'.format(batch_id)
+                )
+                batch.status = BatchStatus.STORED
+            else:    
                 logger.info('Saved {} metrics'.format(data_count))
-    except Exception as e:
-        session.rollback()
-        raise e
-    else:
-        session.commit()
+        else:
+            logger.warning(
+                'Got broken batch - time_until > datetime.now (batch_id=`{}`)'
+                .format(batch_id)
+            )
+
+    session.commit()
+
+
+@app.task(base=ParsingTask, time_limit=conf['tasks']['PARSE_METRIC_EXPIRES'])
+def parse_peak_metrics(batch_id: int):
+    batch_model = BatchStoryPeaks
+    parser = parsers.GraphiteAPIParser(base_url=conf['api']['GRAPHITE_URL'])
+    target = parsers.GraphiteAPIParser.construct_target(
+        function=graphite_api_functions.summarize,
+        func_args=("1hour", "max", True)
+    )
+    format_func = formatters.format_cantal_data
+
+    base_parse_metrics(
+        batch_model=batch_model,
+        batch_id=batch_id,
+        parser=parser,
+        target=target,
+        format_func=format_func
+    )
 
 
 def save_metric_to_db(session: Session, metrics: formatters.Metric,

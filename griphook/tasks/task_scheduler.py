@@ -103,6 +103,7 @@ class TaskScheduler(object):
                 self._session.query(self._batch_model)
                 .filter(BatchStoryPeaks.status == BatchStatus.EMPTY)
                 .limit(lack_of_tasks)
+                .all()
             )
 
             self._push_batches_into_queue(batches)
@@ -130,7 +131,7 @@ class TaskScheduler(object):
 def main():
     peaks_parsing_scheduler = TaskScheduler(
         batch_model=BatchStoryPeaks,
-        task=tasks.parse_metrics
+        task=tasks.parse_peak_metrics
     )
     peaks_parsing_scheduler.fill_schedule(schedule)
 
