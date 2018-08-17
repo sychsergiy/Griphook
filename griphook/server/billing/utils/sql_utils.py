@@ -5,14 +5,15 @@ from griphook.server.models import (MetricBilling, Team, Project, Cluster,
                                     BatchStoryBilling, Service, ServicesGroup, Server)
 
 
-def billing_table_query(valid_json):
-    time_from = valid_json.get("time_from")
-    time_until = valid_json.get("time_until")
-    cluster_id = valid_json.get("cluster_id", None)
-    server_id = valid_json.get("server_id", None)
-    services_groups_ids = valid_json.get("services_groups_ids", None)
-    project_id = valid_json.get("project_id", None)
-    team_id = valid_json.get("team_id", None)
+def billing_table_query(data):
+    time_from = data.get("time_from")
+    time_until = data.get("time_until")
+    print(type(time_from))
+    cluster_id = data.get("cluster_id", None)
+    server_id = data.get("server_id", None)
+    services_groups_ids = data.get("services_groups_ids", None)
+    project_id = data.get("project_id", None)
+    team_id = data.get("team_id", None)
     query = (
         ServicesGroup.query
         .with_entities(
@@ -50,9 +51,9 @@ def billing_table_query(valid_json):
         query = query.filter(Project.id == project_id)
     if server_id or cluster_id:
         query = (
-                    query.join(Service, Service.services_group_id == MetricBilling.service_id)
-                         .join(Server, Service.server_id == Server.id)
-                 )
+                query.join(Service, Service.services_group_id == MetricBilling.service_id)
+                     .join(Server, Service.server_id == Server.id)
+                )
         if server_id:
             query = query.filter(Server.id == server_id)
         if cluster_id:
@@ -60,13 +61,3 @@ def billing_table_query(valid_json):
             query = query.filter(Cluster.id == cluster_id)
     result = query.all()
     return result
-
-
-
-
-
-
-
-
-
-

@@ -1,5 +1,3 @@
-import json
-
 from flask import request, jsonify
 
 from griphook.server.billing.utils.sql_utils import billing_table_query
@@ -8,7 +6,7 @@ from griphook.server.billing.validation.validators import validate_request_json
 from griphook.server.billing.validation import schema
 
 
-def get_billing_table_data():
+def get_filtered_billing_table_data():
     """
         Endpoint with average cpu and memory values for billing table.
 
@@ -27,7 +25,7 @@ def get_billing_table_data():
 
         }
 
-        "time_from" and "time_until" are mandatory fields
+        time_from and time_until are mandatory fields
 
         If there are no filters (except for time_from and time_until),
         return all service groups with average cpu and memory
@@ -57,4 +55,3 @@ def get_billing_table_data():
         formatted_output = [output_row_formatter(element) for element in result]
         response = jsonify(formatted_output)
     return response
-
