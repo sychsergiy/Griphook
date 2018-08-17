@@ -102,7 +102,7 @@ class TaskScheduler(object):
             lack_of_tasks = MAX_TASKS - queued_tasks_count
             batches = (
                 self._session.query(self._batch_model)
-                .filter(BatchStoryPeaks.status == BatchStatus.EMPTY)
+                .filter(self._batch_model.status == BatchStatus.EMPTY)
                 .limit(lack_of_tasks)
                 .all()
             )
