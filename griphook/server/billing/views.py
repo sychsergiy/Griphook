@@ -13,7 +13,7 @@ def get_filtered_billing_table_data():
         Incoming json:
         {
             "target_type": string, | required
-            "target_ids": list of integers,
+            "target_ids": list of integers, | can be empty
             "time_from": string, | required
             "time_until": string, | required
         }
