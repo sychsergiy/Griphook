@@ -48,4 +48,5 @@ def get_filtered_billing_table_data():
         result = billing_table_query(formatted_input_json)
         formatted_output = [output_row_formatter(element) for element in result]
         response = jsonify(formatted_output)
+    print(response.data)
     return response

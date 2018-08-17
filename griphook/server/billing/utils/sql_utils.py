@@ -10,6 +10,7 @@ def billing_table_query(data):
     time_until = data.get("time_until")
     target_type = data.get("target_type")
     target_ids = data.get("target_ids")
+    #TODO create left join for services_groups with team and project
     query = (
         ServicesGroup.query
         .with_entities(
@@ -29,8 +30,8 @@ def billing_table_query(data):
             ))
         )
         .join(MetricBilling, MetricBilling.services_group_id == ServicesGroup.id)
-        .join(Team, Team.id == ServicesGroup.team_id)
-        .join(Project, Project.id == ServicesGroup.project_id)
+        .outerjoin(Team, Team.id == ServicesGroup.team_id)
+        .outerjoin(Project, Project.id == ServicesGroup.project_id)
         .join(BatchStoryBilling, BatchStoryBilling.id == MetricBilling.batch_id)
         .filter(MetricBilling.type != 'system_cpu_percent')
         .filter(BatchStoryBilling.time.between(time_from, time_until))

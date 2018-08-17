@@ -34,7 +34,7 @@ def clusters(session):
 
 @pytest.fixture(scope="function")
 def teams(session):
-    teams = [Team(title="test1")]
+    teams = [Team(title="test1"), Team(title="test2")]
     session.add_all(teams)
     session.commit()
     return Team.query.with_entities(Team.id, Team.title)
@@ -63,8 +63,8 @@ def servers(session, clusters):
 def services_groups(session, teams, projects):
     team1, team2, *_ = teams
     project1, project2, *_ = projects
-    services_group1 = ServicesGroup(title="test1", project_id=project1, team_id=team1)
-    services_group2 = ServicesGroup(title="test2", project_id=project2, team_id=team2)
+    services_group1 = ServicesGroup(title="test1", project_id=project1.id, team_id=team1.id)
+    services_group2 = ServicesGroup(title="test2", project_id=project2.id, team_id=team2.id)
     session.add_all([services_group1, services_group2])
     session.commit()
     return ServicesGroup.query.with_entities(
@@ -113,42 +113,42 @@ def billing_batch_stories(session):
 
 
 @pytest.fixture(scope="function")
-def metrics(session, services, services_groups, batch_stories):
-    batches_story1, batches_story2, *_ = batch_stories
+def metrics(session, services, services_groups, billing_batch_stories):
+    billing_batch_story1, billing_batch_story2, *_ = billing_batch_stories
     service1, service2, service3, *_ = services
     services_group1, services_group2, *_ = services_groups
 
     metric1 = MetricBilling(
         value=1,
-        batch_id=batches_story1.id,
+        batch_id=billing_batch_story1.id,
         service_id=service1.id,
         services_group_id=services_group1.id,
         type="user_cpu_percent",
     )
     metric2 = MetricBilling(
         value=2,
-        batch_id=batches_story2.id,
+        batch_id=billing_batch_story2.id,
         service_id=service2.id,
         services_group_id=services_group2.id,
         type="user_cpu_percent",
     )
     metric3 = MetricBilling(
         value=30,
-        batch_id=batches_story2.id,
+        batch_id=billing_batch_story2.id,
         service_id=service3.id,
         services_group_id=services_group2.id,
         type="vsize",
     )
     metric4 = MetricBilling(
         value=4,
-        batch_id=batches_story1.id,
+        batch_id=billing_batch_story1.id,
         service_id=service3.id,
         services_group_id=services_group2.id,
         type="vsize",
     )
     session.add_all([metric1, metric2, metric3, metric4])
     session.commit()
-    return MetricBilling.query.with_entities(MetricBilling.id, MetricBilling.typem, MetricBilling.value)
+    return MetricBilling.query.with_entities(MetricBilling.id, MetricBilling.type, MetricBilling.value)
 
 
 @pytest.fixture(scope="function")
