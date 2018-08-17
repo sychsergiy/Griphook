@@ -1,6 +1,5 @@
 import pytest
 
-from griphook.server import create_app, db as _db
 from griphook.server.models import Cluster
 
 

@@ -2,8 +2,6 @@ import json
 
 from flask import url_for
 
-from griphook.server.billing.validation.validators import validate_request_json
-
 TIME_FORMAT = "%Y-%m-%d"
 
 
