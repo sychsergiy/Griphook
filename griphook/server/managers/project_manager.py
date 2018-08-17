@@ -1,12 +1,17 @@
 from sqlalchemy.sql import exists
 
-from griphook.server.models import MetricPeak, Project, ServicesGroup
 from griphook.server.managers.exceptions import ProjectManagerException
 from griphook.server.managers.base_manager import BaseManager
 from griphook.server.managers.constants import (
     EXC_SERVICES_GROUP_DOESNT_EXISTS,
     EXC_PROJECT_ALREADY_EXISTS,
     EXC_PROJECT_DOESNT_EXISTS,
+)
+from griphook.server.models import (
+    ServicesGroup,
+    MetricBilling,
+    MetricPeak,
+    Project
 )
 
 
@@ -16,8 +21,10 @@ class ProjectManager(BaseManager):
             raise ProjectManagerException(
                 EXC_PROJECT_ALREADY_EXISTS.format(title)
             )
-        self.session.add(Project(title=title))
+        project = Project(title=title)
+        self.session.add(project)
         self.session.commit()
+        return project
 
     def update(self, project_id, new_title):
         project = self.session.query(Project).filter_by(id=project_id).scalar()
@@ -64,14 +71,24 @@ class ProjectManager(BaseManager):
                 EXC_SERVICES_GROUP_DOESNT_EXISTS.format(services_group_id)
             )
         services_group.project_id = project_id
-
-        metrics = (
+        # update relationships for MetricPeak
+        metrics_peaks_query = (
             self.session.query(MetricPeak)
             .filter_by(services_group_id=services_group_id)
             .all()
         )
-        for metric in metrics:
-            metric.project_id = project_id
+        for metric_peaks in metrics_peaks_query:
+            metric_peaks.project_id = project_id
+        # update relationships for MetricBilling
+        metrics_billing_query = (
+            self.session.query(MetricBilling)
+            .filter_by(services_group_id=services_group_id)
+            .all()
+        )
+        for metric_billing in metrics_billing_query:
+            metric_billing.project_id = project_id
 
-        self.session.add(services_group, metrics)
+        self.session.add(services_group)
+        self.session.add_all(metrics_peaks_query)
+        self.session.add_all(metrics_billing_query)
         self.session.commit()

@@ -1,12 +1,17 @@
 from sqlalchemy.sql import exists
 
-from griphook.server.models import MetricPeak, Team, ServicesGroup
 from griphook.server.managers.exceptions import TeamManagerException
 from griphook.server.managers.base_manager import BaseManager
 from griphook.server.managers.constants import (
     EXC_SERVICES_GROUP_DOESNT_EXISTS,
     EXC_TEAM_ALREADY_EXISTS,
     EXC_TEAM_DOESNT_EXISTS,
+)
+from griphook.server.models import (
+    ServicesGroup,
+    MetricBilling,
+    MetricPeak,
+    Team
 )
 
 
@@ -59,15 +64,24 @@ class TeamManager(BaseManager):
                 EXC_SERVICES_GROUP_DOESNT_EXISTS.format(services_group_id)
             )
         services_group.team_id = team_id
-
-        metrics = (
+        # update relationships for MetricPeak
+        metrics_peaks_query = (
             self.session.query(MetricPeak)
             .filter_by(services_group_id=services_group_id)
             .all()
         )
+        for metric_peaks in metrics_peaks_query:
+            metric_peaks.team_id = team_id
+        # update relationships for MetricBilling
+        metrics_billing_query = (
+            self.session.query(MetricBilling)
+            .filter_by(services_group_id=services_group_id)
+            .all()
+        )
+        for metric_billing in metrics_billing_query:
+            metric_billing.team_id = team_id
 
-        for metric in metrics:
-            metric.team_id = team_id
-
-        self.session.add(services_group, metrics)
+        self.session.add(services_group)
+        self.session.add_all(metrics_peaks_query)
+        self.session.add_all(metrics_billing_query)
         self.session.commit()
