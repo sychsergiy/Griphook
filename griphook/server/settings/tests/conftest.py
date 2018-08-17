@@ -2,7 +2,7 @@ import pytest
 
 from griphook.server import db
 from griphook.server import create_app
-from griphook.server.models import Project, Team, Server, Cluster
+from griphook.server.models import Project, Team, Server, Cluster, ServicesGroup
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def create_project_settings_test_data(db_session):
         [
             Project(id=1, title='test_project_1'),
             Project(id=2, title='test_project_2'),
-            Project(id=3, title='test_project_3')
+            Project(id=3, title='test_project_3'),
         ]
     )
     db_session.commit()
@@ -64,6 +64,36 @@ def create_cluster_settings_test_data(db_session):
             Cluster(id=1, title='test_cluster_1'),
             Cluster(id=2, title='test_cluster_2'),
             Cluster(id=3, title='test_cluster_3', cpu_price=1.4, memory_price=2.7)
+        ]
+    )
+    db_session.commit()
+
+
+@pytest.fixture
+def create_services_group_test_data(db_session):
+    db_session.add_all(
+        [
+            ServicesGroup(id=1, title='test_services_group_1'),
+            ServicesGroup(id=2, title='test_services_group_2'),
+            ServicesGroup(id=3, title='test_services_group_3')
+        ]
+    )
+    db_session.commit()
+
+
+@pytest.fixture
+def create_project_services_group_test_data(db_session):
+    db_session.add_all(
+        [
+            Project(id=1, title='test_project_1'),
+            Project(id=2, title='test_project_2')
+        ]
+    )
+    db_session.commit()
+    db_session.add_all(
+        [
+            ServicesGroup(id=1, title='test_services_group_1', project_id=1),
+            ServicesGroup(id=2, title='test_services_group_2', project_id=2)
         ]
     )
     db_session.commit()

@@ -5,6 +5,7 @@ from flask import url_for
 from griphook.server.models import Project
 from griphook.server.settings.constants import EXC_FIELD_IS_REQUIRED
 from griphook.server.managers.constants import (
+    EXC_SERVICES_GROUP_DOESNT_EXISTS,
     EXC_PROJECT_ALREADY_EXISTS,
     EXC_PROJECT_DOESNT_EXISTS
 )
@@ -119,5 +120,91 @@ class TestProjectDeleteSettingsAPI:
         ]
         test_data = {'id': "wrong_id"}
         resp = client.delete(url_for('settings.project_delete'), data=json.dumps(test_data))
+        assert resp.status_code == 400
+        assert resp.json == {'error': test_error_text}
+
+
+class TestProjectAttachToServicesGroupSettingsAPI:
+    def test_attach_project(self, client, create_project_settings_test_data, create_services_group_test_data):
+        test_project_id = 1
+        test_services_group_id = 1
+        test_data = {'project_id': test_project_id, 'services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_attach'), data=json.dumps(test_data))
+        assert resp.status_code == 200
+        assert resp.json == {'success': True}
+
+    def test_attach_project_when_it_doesnt_exists(self, client, create_services_group_test_data):
+        test_project_id = 101
+        test_services_group_id = 1
+        test_data = {'project_id': test_project_id,'services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_attach'), data=json.dumps(test_data))
+        assert resp.status_code == 400
+        assert resp.json == {'error': EXC_PROJECT_DOESNT_EXISTS.format(test_project_id)}
+
+    def test_attach_project_when_services_group_doesnt_exists(self, client, create_project_settings_test_data):
+        test_project_id = 1
+        test_services_group_id = 201
+        test_data = {'project_id': test_project_id,'services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_attach'), data=json.dumps(test_data))
+        assert resp.status_code == 400
+        assert resp.json == {'error': EXC_SERVICES_GROUP_DOESNT_EXISTS.format(test_services_group_id)}
+
+    def test_attach_project_with_wrong_parameters(self, client):
+        test_project_id = 1
+        test_services_group_id = 1
+        test_data = {'wrong_parameter': test_project_id, 'services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_attach'), data=json.dumps(test_data))
+        assert resp.status_code == 400
+        assert resp.json == {'error': EXC_FIELD_IS_REQUIRED.format('project_id')}
+
+    def test_attach_project_with_not_valid_parameters(self, client):
+        test_error_text = [
+            {
+                "loc": ["project_id"],
+                "msg": "value is not a valid integer",
+                "type": "type_error.integer"
+            }
+        ]
+        test_project_id = "not_valid_parameter"
+        test_services_group_id = 1
+        test_data = {'project_id': test_project_id, 'services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_attach'), data=json.dumps(test_data))
+        assert resp.status_code == 400
+        assert resp.json == {'error': test_error_text}
+
+
+class TestProjectDetachFromServicesGroupSettingsAPI:
+    def test_detach_project(self, client, create_project_services_group_test_data):
+        test_services_group_id = 2
+        test_data = {'services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_detach'), data=json.dumps(test_data))
+        assert resp.status_code == 200
+        assert resp.json == {'success': True}
+
+    def test_detach_project_when_services_group_doesnt_exists(self, client, create_project_settings_test_data):
+        test_services_group_id = 2
+        test_data = {'services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_detach'), data=json.dumps(test_data))
+        assert resp.status_code == 400
+        assert resp.json == {'error': EXC_SERVICES_GROUP_DOESNT_EXISTS.format(test_services_group_id)}
+
+    def test_detach_project_with_wrong_parameters(self, client):
+        test_services_group_id = 2
+        test_data = {'wrong_services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_detach'), data=json.dumps(test_data))
+        assert resp.status_code == 400
+        assert resp.json == {'error': EXC_FIELD_IS_REQUIRED.format('services_group_id')}
+
+    def test_detach_project_with_not_valid_parameters(self, client):
+        test_error_text = [
+            {
+                "loc": ["services_group_id"],
+                "msg": "value is not a valid integer",
+                "type": "type_error.integer"
+            }
+        ]
+        test_services_group_id = "not_valid_parameter"
+        test_data = {'services_group_id': test_services_group_id}
+        resp = client.put(url_for('settings.project_detach'), data=json.dumps(test_data))
         assert resp.status_code == 400
         assert resp.json == {'error': test_error_text}
