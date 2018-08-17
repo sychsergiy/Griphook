@@ -93,5 +93,5 @@ def format_metrics_list_to_chart(metrics):
         chart["timeline"].append(
             metric.time.strftime(RESPONSE_DATE_TIME_FORMAT)
         )
-        chart["values"].append(metric.value)
+        chart["values"].append(round(metric.value, 1))
     return chart
