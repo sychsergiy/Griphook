@@ -1,6 +1,6 @@
 from griphook.server.filters.billing_queries import (
     get_all_projects_converted_to_dict,
-    get_all_teams_converted_to_dict
+    get_all_teams_converted_to_dict,
 )
 
 
