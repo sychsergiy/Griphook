@@ -1,6 +1,6 @@
 from flask import request, jsonify
 
-from griphook.server.billing.sql_utils import (
+from griphook.server.billing.sql_queries import (
     get_billing_table_metrics,
     get_services_group_metrics_chart,
     get_services_group_metrics_group_by_services
