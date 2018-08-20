@@ -26,9 +26,9 @@ def get_servers_hierarchy_part():
 def get_services_groups_hierarchy_part():
     services_groups_query = (
         ServicesGroup.query.join(Service)
-        .join(Server)
-        .group_by(ServicesGroup.title, ServicesGroup.id)
-        .with_entities(
+            .join(Server)
+            .group_by(ServicesGroup.title, ServicesGroup.id)
+            .with_entities(
             ServicesGroup.id,
             ServicesGroup.title,
             array_agg(Service.server_id).label("servers_ids"),
@@ -51,9 +51,9 @@ def get_services_groups_hierarchy_part():
 def get_services_hierarchy_part():
     services_query = (
         Service.query.join(ServicesGroup)
-        .join(Server)
-        .distinct()
-        .with_entities(
+            .join(Server)
+            .distinct()
+            .with_entities(
             Service.id,
             Service.title,
             Service.instance,

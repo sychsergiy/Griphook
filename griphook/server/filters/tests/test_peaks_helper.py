@@ -1,4 +1,4 @@
-from griphook.server.filters.helper import (
+from griphook.server.filters.peaks_queries import (
     get_clusters_hierarchy_part,
     get_servers_hierarchy_part,
 )
