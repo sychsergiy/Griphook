@@ -48,13 +48,11 @@ class GraphiteAPIParser(APIParser):
         return self.request(params=params)
 
     @classmethod
-    def construct_target(
-        cls,
-        path: Optional[DotPath] = None,
-        metrics: Optional[str] = None,
-        function: Optional[Function] = None,
-        *func_args: Union[BuiltInOrTarget, Argument]
-    ) -> str:
+    def construct_target(cls,
+                         path: Optional[DotPath] = None,
+                         metrics: Optional[str] = None,
+                         function: Optional[Function] = None,
+                         func_args: Union[BuiltInOrTarget, Argument] = ()) -> str:
         path = path or cls.__path
         metrics = metrics or str(cls.__metrics)
         function = function or cls.__default_function
