@@ -14,6 +14,8 @@ git+git://github.com/samuelcolvin/pydantic.git
 SQLAlchemy==1.2.10
 alembic==1.0.0
 click==6.7
+Cerberus==1.2
+
 
 Flask==1.0.2
 Flask-Migrate==2.2.0
