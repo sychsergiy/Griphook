@@ -1,4 +1,4 @@
-from griphook.server.models import Project, Team, Server, Cluster
+from griphook.server.models import Project, Team, Server, Cluster, ServicesGroup
 
 
 class DataBase:
@@ -21,3 +21,8 @@ class DataBase:
     def get_clusters(session):
         clusters_query = session.query(Cluster.id, Cluster.title).all()
         return clusters_query
+
+    @staticmethod
+    def get_services_group(session):
+        services_groups_query = session.query(ServicesGroup.id, ServicesGroup.title).all()
+        return services_groups_query

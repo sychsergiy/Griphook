@@ -33,6 +33,28 @@ from griphook.server.settings.constants import (
 )
 
 
+class GetServicesGroupsProjectsTeams(View):
+    methods = ['GET']
+
+    def dispatch_request(self):
+        services_groups_query = DataBase.get_services_group(db.session)
+        services_groups = [{"id": services_groups_id, "title": services_groups_title} for (services_groups_id, services_groups_title) in services_groups_query]
+
+        projects_query = DataBase.get_projects(db.session)
+        projects = [{"id": project_id, "title": project_title} for (project_id, project_title) in projects_query]
+
+        teams_query = DataBase.get_teams(db.session)
+        teams = [{"id": team_id, "title": team_title} for (team_id, team_title) in teams_query]
+
+        return jsonify(
+            {
+                'services_groups': services_groups,
+                'projects': projects,
+                'teams': teams
+            }
+        )
+
+
 class GetProjects(View):
     methods = ['GET']
 
