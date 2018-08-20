@@ -1,11 +1,11 @@
 from flask import request, jsonify
 
-from griphook.server.billing.utils.sql_utils import (
-    billing_table_query,
+from griphook.server.billing.sql_utils import (
+    get_billing_table_metrics,
     get_services_group_metrics_chart,
     get_services_group_metrics_group_by_services
 )
-from griphook.server.billing.utils.formatter import (
+from griphook.server.billing.formatter import (
     format_output_row_for_billing_table,
     format_metrics_list_for_general_table
 )
@@ -48,14 +48,14 @@ def get_filtered_billing_table_data():
 
     request_json = request.get_json() or {}
     valid, error_message, formatted_input_json = (
-        validators.validate_request_json_for_billing_table(schemas.SCHEMA_FOR_BILLING_TABLE, request_json)
+        validators.validate_request_json(schemas.SCHEMA_FOR_BILLING_TABLE, request_json)
     )
 
     if not valid:
         response = jsonify(error_message)
         response.status_code = 400
     else:
-        result = billing_table_query(formatted_input_json)
+        result = get_billing_table_metrics(formatted_input_json)
         formatted_output = [format_output_row_for_billing_table(element) for element in result]
         response = jsonify(formatted_output)
     return response
@@ -82,7 +82,7 @@ def get_billing_metric_values_by_services_group():
     """
     request_json = request.get_json()
     is_valid, error_data, valid_data = (
-        validators.validate_request_json_for_general_table(schemas.SCHEMA_FOR_GENERAL_TABLE, request_json)
+        validators.validate_request_json(schemas.SCHEMA_FOR_GENERAL_TABLE, request_json)
     )
     if is_valid:
         metrics = get_services_group_metrics_group_by_services(**valid_data)
@@ -125,7 +125,7 @@ def get_metric_chart_for_services_group():
     """
     request_json = request.get_json()
     is_valid, error_data, valid_data = (
-        validators.validate_request_json_for_general_table(schemas.SCHEMA_FOR_GENERAL_TABLE, request_json)
+        validators.validate_request_json(schemas.SCHEMA_FOR_GENERAL_TABLE, request_json)
     )
     if is_valid:
         cpu_metrics = get_services_group_metrics_chart(

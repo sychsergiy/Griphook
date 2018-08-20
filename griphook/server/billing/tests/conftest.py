@@ -5,7 +5,8 @@ from griphook.server import create_app, db as _db
 from griphook.server.models import (MetricBilling, Team, Project, Cluster,
                                     BatchStoryBilling, Service, ServicesGroup, Server)
 
-TIME_FORMAT = "%Y-%m-%d"
+
+from griphook.server.billing.constants import REQUEST_DATE_TIME_FORMAT
 
 
 @pytest.fixture
@@ -156,7 +157,7 @@ def billing_table_endpoint_request_data(billing_batch_stories, servers):
     data = {
         "target_type": "all",
         "target_ids": [],
-        "time_from": billing_batch_stories[0].time.strftime(TIME_FORMAT),
-        "time_until": billing_batch_stories[1].time.strftime(TIME_FORMAT),
+        "time_from": billing_batch_stories[0].time.strftime(REQUEST_DATE_TIME_FORMAT),
+        "time_until": billing_batch_stories[1].time.strftime(REQUEST_DATE_TIME_FORMAT),
     }
     return data
