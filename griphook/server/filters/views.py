@@ -9,7 +9,7 @@ from griphook.server.filters.peaks_queries import (
 
 from griphook.server.filters.billing_queries import (
     get_all_teams_converted_to_dict,
-    get_all_projects_converted_to_dict
+    get_all_projects_converted_to_dict,
 )
 
 
@@ -126,11 +126,9 @@ def get_billing_filters_hierarchy():
     response_data = {
         "teams": teams,
         "projects": projects,
-
         "clusters": clusters,
         "servers": servers,
         "services_groups": services_groups,
         "services": services,
-
     }
     return jsonify(response_data)
