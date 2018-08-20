@@ -2,8 +2,16 @@ from datetime import datetime, timedelta
 import pytest
 
 from griphook.server import create_app, db as _db
-from griphook.server.models import (MetricBilling, Team, Project, Cluster,
-                                    BatchStoryBilling, Service, ServicesGroup, Server)
+from griphook.server.models import (
+    MetricBilling,
+    Team,
+    Project,
+    Cluster,
+    BatchStoryBilling,
+    Service,
+    ServicesGroup,
+    Server,
+)
 
 
 from griphook.server.billing.constants import REQUEST_DATE_TIME_FORMAT
@@ -64,8 +72,12 @@ def servers(session, clusters):
 def services_groups(session, teams, projects):
     team1, team2, *_ = teams
     project1, project2, *_ = projects
-    services_group1 = ServicesGroup(title="test1", project_id=project1.id, team_id=team1.id)
-    services_group2 = ServicesGroup(title="test2", project_id=project2.id, team_id=team2.id)
+    services_group1 = ServicesGroup(
+        title="test1", project_id=project1.id, team_id=team1.id
+    )
+    services_group2 = ServicesGroup(
+        title="test2", project_id=project2.id, team_id=team2.id
+    )
     session.add_all([services_group1, services_group2])
     session.commit()
     return ServicesGroup.query.with_entities(
@@ -149,7 +161,9 @@ def metrics(session, services, services_groups, billing_batch_stories):
     )
     session.add_all([metric1, metric2, metric3, metric4])
     session.commit()
-    return MetricBilling.query.with_entities(MetricBilling.id, MetricBilling.type, MetricBilling.value)
+    return MetricBilling.query.with_entities(
+        MetricBilling.id, MetricBilling.type, MetricBilling.value
+    )
 
 
 @pytest.fixture(scope="function")
@@ -157,7 +171,11 @@ def billing_table_endpoint_request_data(billing_batch_stories, servers):
     data = {
         "target_type": "all",
         "target_ids": [],
-        "time_from": billing_batch_stories[0].time.strftime(REQUEST_DATE_TIME_FORMAT),
-        "time_until": billing_batch_stories[1].time.strftime(REQUEST_DATE_TIME_FORMAT),
+        "time_from": billing_batch_stories[0].time.strftime(
+            REQUEST_DATE_TIME_FORMAT
+        ),
+        "time_until": billing_batch_stories[1].time.strftime(
+            REQUEST_DATE_TIME_FORMAT
+        ),
     }
     return data
