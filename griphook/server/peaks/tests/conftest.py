@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 import pytest
 
-from griphook.server import create_app, db as _db
 from griphook.server.models import (
     Cluster,
     Server,
@@ -12,21 +11,7 @@ from griphook.server.models import (
 )
 from griphook.server.peaks.constants import REQUEST_DATE_TIME_FORMAT
 
-
-@pytest.fixture
-def app():
-    app = create_app()
-    app.config.from_object("griphook.server.config.TestingConfig")
-    return app
-
-
-@pytest.fixture
-def session(app):
-    session = _db.session
-    _db.drop_all()
-    _db.create_all()
-    session.commit()
-    yield session
+from griphook.tests.base_fixtures import session, app
 
 
 @pytest.fixture(scope="function")

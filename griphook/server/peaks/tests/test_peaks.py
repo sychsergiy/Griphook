@@ -10,9 +10,8 @@ from griphook.server.peaks.utils import validate_peaks_query
 
 
 def test_get_clusters_hierarchy_part(
-    app, servers, metrics, peaks_endpoint_request_data
+    client, servers, metrics, peaks_endpoint_request_data
 ):
-    client = app.test_client()
     url = url_for("peaks.peaks-api")
     server1, server2, *_ = servers
     peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP
@@ -38,8 +37,7 @@ def request_without_required_field(client, url, data, field):
     return response
 
 
-def test_validation_request_data(app, peaks_endpoint_request_data):
-    client = app.test_client()
+def test_validation_request_data(client, peaks_endpoint_request_data):
     url = url_for("peaks.peaks-api")
     peaks_endpoint_request_data["step"] = WEEK_TIME_STAMP
     for key in peaks_endpoint_request_data:
@@ -52,9 +50,8 @@ def test_validation_request_data(app, peaks_endpoint_request_data):
 
 
 def test_endpoint_response_data(
-    app, metrics, batch_stories, peaks_endpoint_request_data
+    client, metrics, batch_stories, peaks_endpoint_request_data
 ):
-    client = app.test_client()
     time1 = batch_stories[0].time
     time2 = batch_stories[1].time
     url = url_for("peaks.peaks-api")
