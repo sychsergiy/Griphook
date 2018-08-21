@@ -1,5 +1,6 @@
 class ManagerException(Exception):
-    pass
+    def __init__(self, error_text):
+        self.error_text = error_text
 
 
 class ProjectManagerException(ManagerException):
