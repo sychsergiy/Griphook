@@ -25,8 +25,7 @@ def request_without_required_field(client, url, data, field):
     return response
 
 
-def test_validation_request_data(app, billing_table_endpoint_request_data):
-    client = app.test_client()
+def test_validation_request_data(client, billing_table_endpoint_request_data):
     url = url_for("billing.get_filtered_billing_table_data")
     for key in billing_table_endpoint_request_data:
         response = request_without_required_field(
@@ -38,18 +37,8 @@ def test_validation_request_data(app, billing_table_endpoint_request_data):
 
 
 def test_billing_table_endpoint_response_data(
-    app,
-    clusters,
-    teams,
-    projects,
-    servers,
-    services_groups,
-    services,
-    billing_batch_stories,
-    metrics,
-    billing_table_endpoint_request_data,
+    client, metrics, billing_table_endpoint_request_data
 ):
-    client = app.test_client()
     url = url_for("billing.get_filtered_billing_table_data")
     response = client.post(
         url,
@@ -60,8 +49,7 @@ def test_billing_table_endpoint_response_data(
     assert response.status_code == 200
 
 
-def test_chart_api_endpoint(app, services_group_metric_request_data):
-    client = app.test_client()
+def test_chart_api_endpoint(client, services_group_metric_request_data):
     url = url_for("billing.services-group-chart_api")
     response = client.post(
         url,
@@ -73,9 +61,8 @@ def test_chart_api_endpoint(app, services_group_metric_request_data):
 
 
 def test_validation_request_data_chart_api_endpoint(
-    app, services_group_metric_request_data
+    client, services_group_metric_request_data
 ):
-    client = app.test_client()
     services_group_metric_request_data["services_group_id"] = "1"
     services_group_metric_request_data["time_from"] = "test"
     services_group_metric_request_data["time_until"] = "test"
@@ -93,9 +80,8 @@ def test_validation_request_data_chart_api_endpoint(
     assert response.status_code == 400
 
 
-def test_validation_empty_request_data_chart_api_endpoint(app):
+def test_validation_empty_request_data_chart_api_endpoint(client):
     error_msg = "required field"
-    client = app.test_client()
     url = url_for("billing.services-group-chart_api")
     response = client.post(
         url,
@@ -111,9 +97,8 @@ def test_validation_empty_request_data_chart_api_endpoint(app):
 
 
 def test_result_chart_data_api_endpoint(
-    app, services_group_metric_request_data, billing_batch_stories, metrics
+    client, services_group_metric_request_data, billing_batch_stories, metrics
 ):
-    client = app.test_client()
     url = url_for("billing.services-group-chart_api")
     response = client.post(
         url,
@@ -147,13 +132,8 @@ def test_metrics_query_grouped_by_services(
 
 
 def test_result_metrics_grouped_by_services_endpoint(
-    app,
-    services_group_metric_request_data,
-    billing_batch_stories,
-    metrics,
-    services_groups,
+    client, services_group_metric_request_data, metrics, services_groups
 ):
-    client = app.test_client()
     services_group_1, services_group_2, *_ = services_groups
     url = url_for("billing.metrics-api")
     response = client.post(
