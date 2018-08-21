@@ -12,7 +12,7 @@ from griphook.config import Config
 from griphook.api.graphite import (
     parser as parsers,
     formatters,
-    functions as graphite_api_functions
+    functions as graphite_api_functions,
 )
 from griphook.server.models import (
     BatchStoryPeaks,
@@ -32,6 +32,7 @@ from griphook.tasks.utils import (
 )
 
 import urllib3
+
 urllib3.disable_warnings()
 
 
@@ -44,8 +45,9 @@ SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)
 
 
-def base_parse_metrics(batch_model, batch_id, parser, target, format_func,
-                       metric_model):
+def base_parse_metrics(
+    batch_model, batch_id, parser, target, format_func, metric_model
+):
     session = Session()
     batch = session.query(batch_model).with_for_update().get(batch_id)
 
@@ -56,50 +58,52 @@ def base_parse_metrics(batch_model, batch_id, parser, target, format_func,
         # We parse metrics only for the past time
         if time_until <= datetime.now().timestamp():
             logger.info(
-                'Getting data from api <time_from=`{}` time_until=`{}` batch_model=`{}` batch_id=`{}`>'
-                .format(datetime.fromtimestamp(time_from),
-                        datetime.fromtimestamp(time_until),
-                        batch_model.__name__,
-                        batch_id)
+                "Getting data from api <time_from=`{}` time_until=`{}` batch_model=`{}` batch_id=`{}`>".format(
+                    datetime.fromtimestamp(time_from),
+                    datetime.fromtimestamp(time_until),
+                    batch_model.__name__,
+                    batch_id,
+                )
             )
 
-            data = format_func(parser.fetch(
-                time_from=time_from,
-                time_until=time_until,
-                target=target
-            ))
+            data = format_func(
+                parser.fetch(
+                    time_from=time_from, time_until=time_until, target=target
+                )
+            )
             try:
                 data_count = save_metric_to_db(
                     session=session,
                     metrics=data,
                     batch=batch,
-                    metric_model=metric_model
+                    metric_model=metric_model,
                 )
             except IntegrityError:
                 session.rollback()
                 logger.warning(
-                    'Database already had data for batch_id={}'.format(batch_id)
+                    "Database already had data for batch_id={}".format(batch_id)
                 )
                 batch.status = BatchStatus.STORED
             else:
-                logger.info('Saved {} metrics'.format(data_count))
+                logger.info("Saved {} metrics".format(data_count))
         else:
             logger.warning(
-                'Got broken batch - time_until > datetime.now (batch_id=`{}`)'
-                .format(batch_id)
+                "Got broken batch - time_until > datetime.now (batch_id=`{}`)".format(
+                    batch_id
+                )
             )
 
     session.commit()
 
 
-@app.task(time_limit=conf['tasks']['PARSE_METRIC_EXPIRES'])
+@app.task(time_limit=conf["tasks"]["PARSE_METRIC_EXPIRES"])
 def parse_peak_metrics(batch_id: int):
     batch_model = BatchStoryPeaks
     metric_model = MetricPeak
-    parser = parsers.GraphiteAPIParser(base_url=conf['api']['GRAPHITE_URL'])
+    parser = parsers.GraphiteAPIParser(base_url=conf["api"]["GRAPHITE_URL"])
     target = parsers.GraphiteAPIParser.construct_target(
         function=graphite_api_functions.summarize,
-        func_args=("1hour", "max", True)
+        func_args=("1hour", "max", True),
     )
     format_func = formatters.format_cantal_data
 
@@ -109,18 +113,18 @@ def parse_peak_metrics(batch_id: int):
         parser=parser,
         target=target,
         format_func=format_func,
-        metric_model=metric_model
+        metric_model=metric_model,
     )
 
 
-@app.task(time_limit=conf['tasks']['PARSE_METRIC_EXPIRES'])
+@app.task(time_limit=conf["tasks"]["PARSE_METRIC_EXPIRES"])
 def parse_average_metrics(batch_id: int):
     batch_model = BatchStoryBilling
     metric_model = MetricBilling
-    parser = parsers.GraphiteAPIParser(base_url=conf['api']['GRAPHITE_URL'])
+    parser = parsers.GraphiteAPIParser(base_url=conf["api"]["GRAPHITE_URL"])
     target = parsers.GraphiteAPIParser.construct_target(
         function=graphite_api_functions.summarize,
-        func_args=("1hour", "avg", True)
+        func_args=("1hour", "avg", True),
     )
     format_func = formatters.format_cantal_data
 
@@ -130,7 +134,7 @@ def parse_average_metrics(batch_id: int):
         parser=parser,
         target=target,
         format_func=format_func,
-        metric_model=metric_model
+        metric_model=metric_model,
     )
 
 
@@ -170,12 +174,14 @@ def save_metric_to_db(session, metrics, batch, metric_model) -> int:
             server_id=server.id,
         )
 
-        session.add(metric_model(
-            batch_id=batch.id,
-            value=metric_tuple.value,
-            type=type_,
-            service_id=service.id,
-            services_group_id=services_group.id
-        ))
+        session.add(
+            metric_model(
+                batch_id=batch.id,
+                value=metric_tuple.value,
+                type=type_,
+                service_id=service.id,
+                services_group_id=services_group.id,
+            )
+        )
     batch.status = BatchStatus.STORED
     return counter

@@ -1,6 +1,9 @@
 from datetime import datetime
 
-from griphook.server.billing.constants import RESPONSE_DATE_TIME_FORMAT, REQUEST_DATE_TIME_FORMAT
+from griphook.server.billing.constants import (
+    RESPONSE_DATE_TIME_FORMAT,
+    REQUEST_DATE_TIME_FORMAT,
+)
 
 
 def string_to_date_time(time_in_string):
@@ -14,7 +17,7 @@ def format_output_row_for_billing_table(row):
         "team": row.team,
         "project": row.project,
         "cpu_sum": row.cpu_sum,
-        "memory_sum": row.memory_sum
+        "memory_sum": row.memory_sum,
     }
 
 
