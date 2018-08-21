@@ -74,9 +74,15 @@ def create_project_team_test_data(db_session):
             MetricBilling(id=2, value=159787, services_group_id=2),
             MetricBilling(id=3, value=156446, services_group_id=2),
             MetricBilling(id=4, value=132468, services_group_id=2),
-            MetricBilling(id=5, value=798754, services_group_id=4, project_id=2),
-            MetricBilling(id=6, value=798631, services_group_id=4, project_id=2),
-            MetricBilling(id=7, value=798464, services_group_id=4, project_id=2),
+            MetricBilling(
+                id=5, value=798754, services_group_id=4, project_id=2
+            ),
+            MetricBilling(
+                id=6, value=798631, services_group_id=4, project_id=2
+            ),
+            MetricBilling(
+                id=7, value=798464, services_group_id=4, project_id=2
+            ),
         ]
     )
     db_session.commit()

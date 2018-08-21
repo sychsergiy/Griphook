@@ -13,7 +13,7 @@ from griphook.server.models import (
     ServicesGroup,
     MetricBilling,
     MetricPeak,
-    Project
+    Project,
 )
 
 
@@ -85,8 +85,7 @@ class TestAttachProject:
         test_project_id = 1
         test_services_group_id = 2
         ProjectManager(db_session).attach_to_services_group(
-            project_id=test_project_id,
-            services_group_id=test_services_group_id
+            project_id=test_project_id, services_group_id=test_services_group_id
         )
         services_group_project_id = (
             db_session.query(ServicesGroup.project_id)
@@ -143,8 +142,7 @@ class TestAttachProject:
         test_project_id = 1
         test_services_group_id = 3
         ProjectManager(db_session).attach_to_services_group(
-            project_id=test_project_id,
-            services_group_id=test_services_group_id
+            project_id=test_project_id, services_group_id=test_services_group_id
         )
         services_group_project_id = (
             db_session.query(ServicesGroup.project_id)

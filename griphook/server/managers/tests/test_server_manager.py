@@ -74,8 +74,7 @@ class TestSetMemoryPrice:
         test_new_memory_price = 5.2
         with pytest.raises(ServerManagerException) as excinfo:
             ServerManager(db_session).set_memory_price(
-                server_id=test_server_id,
-                new_memory_price=test_new_memory_price
+                server_id=test_server_id, new_memory_price=test_new_memory_price
             )
         assert EXC_SERVER_DOESNT_EXISTS.format(test_server_id) in str(
             excinfo.value

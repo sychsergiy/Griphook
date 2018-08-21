@@ -13,7 +13,7 @@ from griphook.server.models import (
     ServicesGroup,
     MetricBilling,
     MetricPeak,
-    Team
+    Team,
 )
 
 
