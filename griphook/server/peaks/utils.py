@@ -4,6 +4,10 @@ from sqlalchemy import func
 
 from griphook.server import db
 from griphook.server.models import MetricPeak, BatchStoryPeaks
+from griphook.server.peaks.constants import (
+    RESPONSE_DATE_TIME_FORMAT,
+    REQUEST_DATE_TIME_FORMAT,
+)
 from griphook.server.peaks.peaks_filter import MetricPeakGroupFilter
 
 
@@ -22,7 +26,6 @@ def round_time(since, until, step):
 
 
 def get_shift(since, step):
-
     """
     UNIX timestamp divided by the step into intervals that synchronize with the time_from
     """
@@ -65,12 +68,11 @@ def get_peaks_query_group_by_time_step(
 def peak_formatter(peak):
     return datetime.datetime.fromtimestamp(
         peak.time, tz=datetime.timezone.utc
-    ).strftime("%Y-%m-%d %H")
+    ).strftime(RESPONSE_DATE_TIME_FORMAT)
 
 
 def validate_peaks_query(validation_data):
     valid_target_types = ("service", "services_group", "server", "cluster")
-    date_time_format = "%Y-%m-%d %H"
     data = dict()
     error_data = dict()
     try:
@@ -81,26 +83,33 @@ def validate_peaks_query(validation_data):
         error_data = {"error": "Error step format. Expected int"}
     try:
         data["time_from"] = datetime.datetime.strptime(
-            validation_data.get("time_from"), date_time_format
+            validation_data.get("time_from"), REQUEST_DATE_TIME_FORMAT
         )
         data["time_until"] = datetime.datetime.strptime(
-            validation_data.get("time_until"), date_time_format
+            validation_data.get("time_until"), REQUEST_DATE_TIME_FORMAT
         )
     except TypeError:
         error_data = {"error": "time_from and time_until are required fields"}
     except ValueError:
         error_data = {
             "error": "Error datetime (time_from or time_until) format. Expected {0}".format(
-                date_time_format
+                REQUEST_DATE_TIME_FORMAT
             )
         }
     data["target_type"] = validation_data.get("target_type")
-    data["target_id"] = validation_data.get("target_id")
+
+    try:
+        data["target_id"] = int(validation_data.get("target_id"))
+    except ValueError:
+        error_data = {"error": "Error target_id format. Expected int"}
+    except TypeError:
+        error_data = {"error": "target_id is required field"}
+
     data["metric_type"] = validation_data.get("metric_type")
-    if not data["metric_type"]:
+    if not data.get("metric_type"):
         error_data = {"error": "metric_type is required field"}
-    elif not data["target_type"] in valid_target_types:
+    elif not data.get("target_type") in valid_target_types:
         error_data = {"error": "target_type is required field"}
-    elif not data["target_id"]:
+    elif not data.get("target_id"):
         error_data = {"error": "target_id is required field"}
     return data, error_data
