@@ -19,6 +19,8 @@ services:
     celery_worker:
       restart: always
       build: .
+      volumes:
+        - ./:/etc/grip
       depends_on:
         rabbit:
           condition: service_healthy
@@ -34,6 +36,8 @@ services:
     task_scheduler:
       restart: always
       build: .
+      volumes:
+        - ./:/etc/grip
       depends_on:
         rabbit:
           condition: service_healthy
@@ -65,10 +69,13 @@ services:
           test: "exit 0"
 
     web:
+      restart: always
       image: web
       build: .
       ports:
         - 5002:5000
+      volumes:
+        - ./:/etc/grip
       environment:
         - APP_NAME=griphook
         - FLASK_DEBUG=1
