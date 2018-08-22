@@ -1,3 +1,4 @@
+from flask import current_app as app
 from sqlalchemy import func, case
 from sqlalchemy.sql import label
 
@@ -13,23 +14,24 @@ from griphook.server.models import (
 )
 
 from griphook.server.billing.constants import (
-    ALLOWED_TARGET_TYPES_FOR_BILLING_TABLE,
+    ALLOWED_TARGET_TYPES,
     ALLOWED_METRIC_TYPES,
 )
 
 
-def case_factory(metrics_type):
+def case_builder(metrics_type):
     condition = MetricBilling.type == metrics_type
-    return case([(condition, MetricBilling.value)], else_=0)
+    return func.sum(case([(condition, MetricBilling.value)], else_=0))
 
 
-def get_billing_table_metrics(data):
-    time_from = data.get("time_from")
-    time_until = data.get("time_until")
-    target_type = data.get("target_type")
-    target_ids = data.get("target_ids")
+def get_billing_table_data(filters):
+    time_from = filters.get("time_from")
+    time_until = filters.get("time_until")
+    target_type = filters.get("target_type")
+    target_ids = filters.get("target_ids")
+    page = filters.get("page")
+    metrics_per_page = app.config["BILLING_TABLE_METRICS_PER_PAGE"]
     # TODO create left join for services_groups with team and project
-
     query = (
         ServicesGroup.query.with_entities(
             label("services_group_title", ServicesGroup.title),
@@ -38,13 +40,10 @@ def get_billing_table_metrics(data):
             label("project", Project.title),
             label(
                 "cpu_sum",
-                func.sum(
-                    case_factory(ALLOWED_METRIC_TYPES.get("user_cpu_percent"))
-                ),
+                case_builder(ALLOWED_METRIC_TYPES.get("user_cpu_percent")),
             ),
             label(
-                "memory_sum",
-                func.sum(case_factory(ALLOWED_METRIC_TYPES.get("vsize"))),
+                "memory_sum", case_builder(ALLOWED_METRIC_TYPES.get("vsize"))
             ),
         )
         .join(
@@ -59,39 +58,37 @@ def get_billing_table_metrics(data):
         .filter(BatchStoryBilling.time.between(time_from, time_until))
         .group_by("services_group_title", "service_group_id", "team", "project")
     )
-    if target_type == ALLOWED_TARGET_TYPES_FOR_BILLING_TABLE.get("all"):
-        return query.all()
-    elif target_type == ALLOWED_TARGET_TYPES_FOR_BILLING_TABLE.get(
-        "services_groups"
-    ):
+    if target_type == ALLOWED_TARGET_TYPES.get("all"):
+        pass
+    elif target_type == ALLOWED_TARGET_TYPES.get("services_groups"):
         query = query.filter(ServicesGroup.id.in_(target_ids))
-    elif target_type == ALLOWED_TARGET_TYPES_FOR_BILLING_TABLE.get("team"):
+    elif target_type == ALLOWED_TARGET_TYPES.get("team"):
         query = query.filter(Team.id.in_(target_ids))
-    elif target_type == ALLOWED_TARGET_TYPES_FOR_BILLING_TABLE.get("project"):
+    elif target_type == ALLOWED_TARGET_TYPES.get("project"):
         query = query.join(Project, Project.id == ServicesGroup.project_id)
         query = query.filter(Project.id.id_(target_ids))
-    elif target_type == ALLOWED_TARGET_TYPES_FOR_BILLING_TABLE.get(
+    elif target_type == ALLOWED_TARGET_TYPES.get(
         "server"
-    ) or target_type == ALLOWED_TARGET_TYPES_FOR_BILLING_TABLE.get("cluster"):
+    ) or target_type == ALLOWED_TARGET_TYPES.get("cluster"):
         query = query.join(
             Service, Service.services_group_id == MetricBilling.service_id
         ).join(Server, Service.server_id == Server.id)
-        if target_type == ALLOWED_TARGET_TYPES_FOR_BILLING_TABLE.get("server"):
+        if target_type == ALLOWED_TARGET_TYPES.get("server"):
             query = query.filter(Server.id.in_(target_ids))
         else:
             query = query.join(Cluster, Cluster.id == Server.cluster_id)
             query = query.filter(Cluster.id.in_(target_ids))
-    result = query.all()
+    result = query.paginate(per_page=metrics_per_page, page=page)
     return result
 
 
-def get_services_group_metrics_group_by_services(
+def get_services_group_data_group_by_services(
     services_group_id, time_from, time_until
 ):
     cpu = func.sum(
-        case_factory(ALLOWED_METRIC_TYPES.get("user_cpu_percent"))
+        case_builder(ALLOWED_METRIC_TYPES.get("user_cpu_percent"))
     ).label("cpu")
-    memory = func.sum(case_factory(ALLOWED_METRIC_TYPES.get("vsize"))).label(
+    memory = func.sum(case_builder(ALLOWED_METRIC_TYPES.get("vsize"))).label(
         "memory"
     )
     query = (
@@ -116,7 +113,7 @@ def get_services_group_metrics_group_by_services(
     return query.all()
 
 
-def get_services_group_metrics_chart(
+def get_services_group_data_chart(
     services_group_id, time_from, time_until, metric_type
 ):
     query = (

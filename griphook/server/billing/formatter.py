@@ -10,7 +10,7 @@ def string_to_date_time(time_in_string):
     return datetime.strptime(time_in_string, REQUEST_DATE_TIME_FORMAT)
 
 
-def format_output_row_for_billing_table(row):
+def format_row_for_billing_table(row):
     return {
         "services_group_id": row.service_group_id,
         "services_group_title": row.services_group_title,
