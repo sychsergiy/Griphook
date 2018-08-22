@@ -2,6 +2,7 @@ from enum import Enum, unique
 from datetime import datetime
 
 from griphook.server import db
+from griphook.server import bcrypt
 
 
 class Cluster(db.Model):
@@ -193,6 +194,20 @@ class MetricBilling(db.Model):
             name="metric_billing_ut_1",
         ),
     )
+
+
+# Auth models
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+
+    def __init__(self, username, password, *args, **kwargs):
+        self.username = username
+        self.password = bcrypt.generate_password_hash(password).decode()
+        super(User, self).__init__(*args, **kwargs)
 
 
 def get_or_create(session, model, defaults=None, **kwargs):
