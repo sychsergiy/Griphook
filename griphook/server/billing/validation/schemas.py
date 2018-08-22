@@ -2,7 +2,11 @@ from griphook.server.billing.formatter import string_to_date_time
 from griphook.server.billing.constants import ALLOWED_TARGET_TYPES
 
 SCHEMA_FOR_BILLING_TABLE = {
-    "page": {"type": "integer", "default": 1},
+    "page": {
+        "type": "integer",
+        "required": True,
+        "min": 1,
+    },
     "target_type": {
         "type": "string",
         "allowed": tuple(ALLOWED_TARGET_TYPES.values()),

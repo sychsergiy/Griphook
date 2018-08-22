@@ -177,5 +177,6 @@ def billing_table_endpoint_request_data(billing_batch_stories, servers):
         "time_until": billing_batch_stories[1].time.strftime(
             REQUEST_DATE_TIME_FORMAT
         ),
+        "page": 1,
     }
     return data

@@ -46,7 +46,7 @@ def test_validation_request_data(app, peaks_endpoint_request_data):
         response = request_without_required_field(
             client, url, peaks_endpoint_request_data, key
         )
-        error_msg = json.loads(response.data.decode("utf-8")).get("error")
+        error_msg = response.json.get("error")
         assert response.status_code == 400
         assert error_msg
 
@@ -66,7 +66,7 @@ def test_endpoint_response_data(
         content_type="application/json",
     )
     assert response.status_code == 200
-    resp_data = json.loads(response.data.decode("utf-8"))["data"]
+    resp_data = response.json.get("data")
     assert len(resp_data["timeline"]) == 2
     assert resp_data["timeline"][0] == time1.strftime(RESPONSE_DATE_TIME_FORMAT)
     assert resp_data["timeline"][1] == time2.strftime(RESPONSE_DATE_TIME_FORMAT)
@@ -83,7 +83,7 @@ def test_endpoint_response_data(
         content_type="application/json",
     )
     assert response.status_code == 200
-    resp_data = json.loads(response.data.decode("utf-8"))["data"]
+    resp_data = response.json.get("data")
     assert len(resp_data["timeline"]) == 1
     assert resp_data["values"][0] == 4
     assert resp_data["timeline"][0] == time1.strftime(RESPONSE_DATE_TIME_FORMAT)

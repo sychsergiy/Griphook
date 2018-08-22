@@ -19,7 +19,7 @@ def get_filtered_billing_table_data():
 
         Incoming json:
         {
-            "page": integer
+            "page": integer,
             "target_type": string, | required
             "target_ids": list of integers, | can be empty
             "time_from": string, | required
@@ -36,7 +36,7 @@ def get_filtered_billing_table_data():
         {
             "table_data":
                 [
-                    "metrics": {
+                    {
                         "services_group_id": "id" | integer
                         "services_group": "title" | string,
                         "team": "title" | string,

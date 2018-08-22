@@ -49,3 +49,6 @@ def test_billing_table_endpoint_response_data(
         content_type="application/json",
     )
     assert response.status_code == 200
+    resp_data = response.json.get("table_data")
+    assert len(resp_data) == 2
+
