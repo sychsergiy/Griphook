@@ -8,9 +8,11 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
 
 # instantiate the extensions
 toolbar = DebugToolbarExtension()
+bcrypt = Bcrypt()
 db = SQLAlchemy()
 migrate = Migrate()
 cors = CORS()
@@ -25,9 +27,7 @@ def create_app(script_info=None):
     )
 
     # set config
-    app_settings = os.getenv(
-        "APP_SETTINGS", "griphook.server.config.DevelopmentConfig"
-    )
+    app_settings = os.getenv("APP_SETTINGS", "griphook.server.config.DevelopmentConfig")
     app.config.from_object(app_settings)
 
     # set up extensions
@@ -56,6 +56,10 @@ def create_app(script_info=None):
     from griphook.server.average_load import average_load_blueprint
 
     app.register_blueprint(average_load_blueprint, url_prefix="/average_load")
+
+    from griphook.server.auth import auth_blueprint
+
+    app.register_blueprint(auth_blueprint, url_prefix="/auth")
 
     # set up error handlers
     @app.errorhandler(404)
