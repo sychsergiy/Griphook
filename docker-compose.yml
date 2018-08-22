@@ -1,21 +1,5 @@
 version: "2.1"
 services:
-#    celery_beat:
-#        restart: always
-#        build: .
-#        depends_on:
-#            rabbit:
-#                condition: service_healthy
-#            postgres:
-#                condition: service_healthy
-#        depends_on:
-#            celery_worker:
-#                condition: service_healthy
-#        environment:
-#            - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
-#            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
-#        command: celery -A griphook.tasks.tasks beat
-#
     celery_worker:
       restart: always
       build: .
@@ -71,9 +55,10 @@ services:
     web:
       restart: always
       image: web
+      network_mode: "host"
       build: .
       ports:
-        - 5002:5000
+        - 5001:5000
       volumes:
         - ./:/etc/grip
       environment:
