@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import pytest
+import random
 
 from griphook.server import create_app, db as _db
 from griphook.server.models import (
@@ -35,7 +36,7 @@ def session(app):
 
 @pytest.fixture(scope="function")
 def clusters(session):
-    clusters = [Cluster(title="test" + str(i)) for i in range(1, 21)]
+    clusters = [Cluster(title="cluster_" + str(i)) for i in range(1, 21)]
     session.add_all(clusters)
     session.commit()
     return Cluster.query.with_entities(Cluster.id, Cluster.title)
@@ -43,7 +44,7 @@ def clusters(session):
 
 @pytest.fixture(scope="function")
 def teams(session):
-    teams = [Team(title="test" + str(i)) for i in range(1, 21)]
+    teams = [Team(title="team_" + str(i)) for i in range(1, 21)]
     session.add_all(teams)
     session.commit()
     return Team.query.with_entities(Team.id, Team.title)
@@ -51,7 +52,7 @@ def teams(session):
 
 @pytest.fixture(scope="function")
 def projects(session):
-    projects = [Project(title="test" + str(i)) for i in range(1, 21)]
+    projects = [Project(title="project_" + str(i)) for i in range(1, 21)]
     session.add_all(projects)
     session.commit()
     return Project.query.with_entities(Project.id, Project.title)
@@ -61,7 +62,7 @@ def projects(session):
 def servers(session, clusters):
     servers = []
     for i, cluster in enumerate(clusters, start=1):
-        servers.append(Server(title="test" + str(i), cluster_id=cluster.id))
+        servers.append(Server(title="server_" + str(i), cluster_id=cluster.id))
     session.add_all(servers)
     session.commit()
     return Server.query.with_entities(Server.id, Server.title)
@@ -73,7 +74,7 @@ def services_groups(session, teams, projects):
     for i, t in enumerate(zip(projects, teams), start=1):
         services_groups.append(
             ServicesGroup(
-                title="test" + str(i), project_id=t[0].id, team_id=t[1].id
+                title="services_group_" + str(i), project_id=t[0].id, team_id=t[1].id
             )
         )
     session.add_all(services_groups)
@@ -85,27 +86,18 @@ def services_groups(session, teams, projects):
 
 @pytest.fixture(scope="function")
 def services(session, servers, services_groups):
-    services_group1, services_group2, *_ = services_groups
-    server1, server2, *_ = servers
-    service1 = Service(
-        title="service1",
-        instance="test",
-        server_id=server1.id,
-        services_group_id=services_group1.id,
-    )
-    service2 = Service(
-        title="service2",
-        instance="test",
-        server_id=server1.id,
-        services_group_id=services_group2.id,
-    )
-    service3 = Service(
-        title="service3",
-        instance="test",
-        server_id=server2.id,
-        services_group_id=services_group2.id,
-    )
-    session.add_all([service1, service2, service3])
+    services = []
+    for i, t in enumerate(zip(servers, services_groups), start=1):
+        print()
+        services.append(
+            Service(
+                title="service_" + str(i),
+                instance="test_instance",
+                server_id=t[0].id,
+                services_group_id=t[1].id
+            )
+        )
+    session.add_all(services)
     session.commit()
     return Service.query.with_entities(Service.id, Service.title)
 
@@ -125,39 +117,28 @@ def billing_batch_stories(session):
 
 @pytest.fixture(scope="function")
 def metrics(session, services, services_groups, billing_batch_stories):
-    billing_batch_story1, billing_batch_story2, *_ = billing_batch_stories
-    service1, service2, service3, *_ = services
-    services_group1, services_group2, *_ = services_groups
+    billing_batch_story1, billing_batch_story2 = billing_batch_stories
+    batch_stories = [billing_batch_story1, billing_batch_story2] * 40
 
-    metric1 = MetricBilling(
-        value=1,
-        batch_id=billing_batch_story1.id,
-        service_id=service1.id,
-        services_group_id=services_group1.id,
-        type="user_cpu_percent",
-    )
-    metric2 = MetricBilling(
-        value=2,
-        batch_id=billing_batch_story2.id,
-        service_id=service2.id,
-        services_group_id=services_group2.id,
-        type="user_cpu_percent",
-    )
-    metric3 = MetricBilling(
-        value=30,
-        batch_id=billing_batch_story2.id,
-        service_id=service3.id,
-        services_group_id=services_group2.id,
-        type="vsize",
-    )
-    metric4 = MetricBilling(
-        value=4,
-        batch_id=billing_batch_story1.id,
-        service_id=service3.id,
-        services_group_id=services_group2.id,
-        type="vsize",
-    )
-    session.add_all([metric1, metric2, metric3, metric4])
+    metrics = []
+    for i in zip(services, services_groups):
+        metrics.append(MetricBilling(
+            value=random.randint(1, 30),
+            batch_id=batch_stories.pop().id,
+            service_id=i[0].id,
+            services_group_id=i[1].id,
+            type="user_cpu_percent"
+        ))
+
+    for i in zip(services, services_groups):
+        metrics.append(MetricBilling(
+            value=random.randint(1, 30),
+            batch_id=batch_stories.pop().id,
+            service_id=i[0].id,
+            services_group_id=i[1].id,
+            type="vsize"
+        ))
+    session.add_all(metrics)
     session.commit()
     return MetricBilling.query.with_entities(
         MetricBilling.id, MetricBilling.type, MetricBilling.value

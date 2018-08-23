@@ -30,6 +30,7 @@ def test_validation_request_data(app, billing_table_endpoint_request_data):
 
 def test_billing_table_endpoint_response_data(
     app,
+    client,
     clusters,
     teams,
     projects,
@@ -40,7 +41,6 @@ def test_billing_table_endpoint_response_data(
     metrics,
     billing_table_endpoint_request_data,
 ):
-    client = app.test_client()
     url = url_for("billing.get-filtered-billing-table-data")
     response = client.post(
         url,
@@ -50,4 +50,4 @@ def test_billing_table_endpoint_response_data(
     )
     assert response.status_code == 200
     resp_data = response.json.get("table_data")
-    assert len(resp_data) == 2
+    assert len(resp_data) == 5
