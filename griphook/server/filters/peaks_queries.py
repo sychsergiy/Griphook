@@ -5,9 +5,7 @@ from sqlalchemy.sql.functions import array_agg
 
 def get_clusters_hierarchy_part():
     clusters_query = Cluster.query.with_entities(Cluster.id, Cluster.title)
-    clusters = tuple(
-        {"id": id_, "title": title} for (id_, title) in clusters_query
-    )
+    clusters = tuple({"id": id_, "title": title} for (id_, title) in clusters_query)
     return clusters
 
 
@@ -15,7 +13,6 @@ def get_servers_hierarchy_part():
     servers_query = Server.query.with_entities(
         Server.id, Server.title, Server.cluster_id
     )
-
     servers = tuple(
         {"id": id_, "title": server, "cluster_id": cluster_id}
         for (id_, server, cluster_id) in servers_query
@@ -35,7 +32,6 @@ def get_services_groups_hierarchy_part():
             array_agg(Server.cluster_id).label("clusters_ids"),
         )
     )
-
     services_groups = tuple(
         {
             "id": id_,
@@ -62,7 +58,6 @@ def get_services_hierarchy_part():
             Server.cluster_id,
         )
     )
-    # todo: Is it really necessary to use distinct?
 
     services = tuple(
         {
@@ -73,13 +68,6 @@ def get_services_hierarchy_part():
             "group_id": group_id,
             "cluster_id": cluster_id,
         }
-        for (
-            id_,
-            service,
-            instance,
-            server_id,
-            group_id,
-            cluster_id,
-        ) in services_query
+        for (id_, service, instance, server_id, group_id, cluster_id) in services_query
     )
     return services

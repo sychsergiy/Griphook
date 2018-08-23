@@ -13,27 +13,12 @@ from griphook.server.models import (
     Project,
 )
 from griphook.server.billing.constants import REQUEST_DATE_TIME_FORMAT
+from griphook.server.models import (MetricBilling, Team, Project, Cluster,
+                                    BatchStoryBilling, Service, ServicesGroup, Server)
 
+from griphook.tests.base_fixtures import session, app
 
-@pytest.fixture
-def app():
-    app = create_app()
-    app.config.from_object("griphook.server.config.TestingConfig")
-    return app
-
-
-@pytest.fixture
-def client(app):
-    return app.test_client()
-
-
-@pytest.fixture
-def session(app):
-    session = _db.session
-    _db.drop_all()
-    _db.create_all()
-    session.commit()
-    yield session
+TIME_FORMAT = "%Y-%m-%d"
 
 
 @pytest.fixture(scope="function")
