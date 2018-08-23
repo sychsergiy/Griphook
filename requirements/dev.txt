@@ -1,6 +1,5 @@
 -r common.txt
 
-Flask-DebugToolbar==0.10.1
 Flask-Testing==0.7.1
 pytest==3.6.3
 pytest-flask==0.10.0
