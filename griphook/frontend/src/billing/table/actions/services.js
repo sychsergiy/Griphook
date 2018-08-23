@@ -24,7 +24,7 @@ export const fetchGroupServicesData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch("/billing/get_service_group_metrics", data)
+  return fetch("/api/billing/get_service_group_metrics", data)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

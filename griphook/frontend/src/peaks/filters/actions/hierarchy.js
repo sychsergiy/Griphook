@@ -17,7 +17,7 @@ export const fetchFiltersHierarchyFailure = error => ({
 export const fetchFiltersHierarchy = () => {
   return dispatch => {
     dispatch(fetchFiltersHierarchyBegin());
-    return fetch("/filters/peaks_hierarchy")
+    return fetch("/api/filters/peaks_hierarchy")
       .then(handleErrors)
       .then(response => response.json())
       .then(json => {

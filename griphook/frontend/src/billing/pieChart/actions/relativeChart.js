@@ -24,7 +24,7 @@ export const fetchBillingPieChartRelativeData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch("/billing/get_pie_chart_relative_data", requesData)
+  return fetch("/api/billing/get_pie_chart_relative_data", requesData)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {
