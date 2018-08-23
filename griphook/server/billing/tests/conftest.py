@@ -35,7 +35,7 @@ def session(app):
 
 @pytest.fixture(scope="function")
 def clusters(session):
-    clusters = [Cluster(title="test1")]
+    clusters = [Cluster(title="test"+str(i)) for i in range(1, 21)]
     session.add_all(clusters)
     session.commit()
     return Cluster.query.with_entities(Cluster.id, Cluster.title)
@@ -43,7 +43,7 @@ def clusters(session):
 
 @pytest.fixture(scope="function")
 def teams(session):
-    teams = [Team(title="test1"), Team(title="test2")]
+    teams = [Team(title="test"+str(i)) for i in range(1, 21)]
     session.add_all(teams)
     session.commit()
     return Team.query.with_entities(Team.id, Team.title)
@@ -51,34 +51,30 @@ def teams(session):
 
 @pytest.fixture(scope="function")
 def projects(session):
-    project1 = Project(title="test1")
-    project2 = Project(title="test2")
-    session.add_all([project1, project2])
+    projects = [Project(title="test"+str(i)) for i in range(1, 21)]
+    session.add_all(projects)
     session.commit()
     return Project.query.with_entities(Project.id, Project.title)
 
 
 @pytest.fixture(scope="function")
 def servers(session, clusters):
-    cluster1, *_ = clusters
-    server1 = Server(title="test1", cluster_id=cluster1.id)
-    server2 = Server(title="test2", cluster_id=cluster1.id)
-    session.add_all([server1, server2])
+    servers = []
+    for i, cluster in enumerate(clusters, start=1):
+        servers.append(Server(title="test"+str(i), cluster_id=cluster.id))
+    session.add_all(servers)
     session.commit()
     return Server.query.with_entities(Server.id, Server.title)
 
 
 @pytest.fixture(scope="function")
 def services_groups(session, teams, projects):
-    team1, team2, *_ = teams
-    project1, project2, *_ = projects
-    services_group1 = ServicesGroup(
-        title="test1", project_id=project1.id, team_id=team1.id
-    )
-    services_group2 = ServicesGroup(
-        title="test2", project_id=project2.id, team_id=team2.id
-    )
-    session.add_all([services_group1, services_group2])
+    services_groups = []
+    for i, t in enumerate(zip(projects, teams), start=1):
+        services_groups.append(ServicesGroup(
+            title="test"+str(i), project_id=t[0].id, team_id=t[1].id
+        ))
+    session.add_all(services_groups)
     session.commit()
     return ServicesGroup.query.with_entities(
         ServicesGroup.id, ServicesGroup.title
