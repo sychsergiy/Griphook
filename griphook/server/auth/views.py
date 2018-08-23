@@ -38,4 +38,7 @@ class LoginView(MethodView):
             return "Wrong password", 401
 
         # Create JWT and return it
-        return jsonify({"access_token": create_access_token(identity=admin.id)}), 200
+        return (
+            jsonify({"access_token": create_access_token(identity=admin.id)}),
+            200,
+        )
