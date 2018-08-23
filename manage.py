@@ -1,9 +1,11 @@
 import subprocess
+from getpass import getpass
 
 from flask.cli import FlaskGroup
 
 from griphook.server import create_app, db
-from griphook.server import models
+from griphook.server.auth.exceptions import AdminExists
+from griphook.server.auth.utils import create_admin, get_admin
 
 # from griphook.tasks import task_scheduler
 
@@ -57,9 +59,40 @@ def create_data():
 @cli.command()
 def flake():
     """Runs flake8 on the griphook."""
-    exit_code = subprocess.run(['flake8', 'griphook']).returncode
+    exit_code = subprocess.run(["flake8", "griphook"]).returncode
     exit(exit_code)
 
 
-if __name__ == '__main__':
+@cli.group(chain=True)
+def admin():
+    pass
+
+
+@admin.command()
+def create():
+    try:
+        create_admin(password=getpass())
+    except AdminExists:
+        print("Admin already exists")
+
+
+@admin.command()
+def set_password():
+    """
+    Check if user exist and there is only one User,
+    if none - create one.
+    """
+    admin = get_admin()
+    if not admin:
+        print("Admin not exists")
+        return
+
+    try:
+        admin.password = getpass()
+    except ValueError as e:
+        print(e)
+    db.session.commit()
+
+
+if __name__ == "__main__":
     cli()
