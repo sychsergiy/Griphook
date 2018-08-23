@@ -33,8 +33,7 @@ def servers(session, clusters):
 
 
 @pytest.fixture(scope="function")
-def services_groups(session, clusters):
-    cluster1, *_ = clusters
+def services_groups(session):
     services_group1 = ServicesGroup(title="test1")
     services_group2 = ServicesGroup(title="test2")
     session.add_all([services_group1, services_group2])
