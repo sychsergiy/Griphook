@@ -33,8 +33,7 @@ export const fetchBillingTableData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  const url = new URL("http://localhost:5000/billing/get_filtered_table_data");
-  return fetch(url, data)
+  return fetch("/billing/get_filtered_table_data", data)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

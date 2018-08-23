@@ -16,7 +16,6 @@ export const fetchPeaksChartDataFailure = error => ({
 
 export const fetchPeaksChartData = options => dispatch => {
   dispatch(fetchPeaksChartDataBegin());
-  const url = new URL("http://localhost:5000/peaks/get_chart");
   let data = {
     method: "POST",
     headers: {
@@ -25,7 +24,7 @@ export const fetchPeaksChartData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch(url, data)
+  return fetch("/peaks/get_chart", data)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

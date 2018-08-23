@@ -16,7 +16,7 @@ export const fetchBillingFiltersHierarchyFailure = error => ({
 
 export const fetchBillingFiltersHierarchy = () => dispatch => {
   dispatch(fetchBillingFiltersHierarchyBegin());
-  return fetch("http://localhost:5000/filters/billing_hierarchy")
+  return fetch("/filters/billing_hierarchy")
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

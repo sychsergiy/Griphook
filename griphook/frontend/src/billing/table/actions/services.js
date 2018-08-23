@@ -24,10 +24,7 @@ export const fetchGroupServicesData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  const url = new URL(
-    "http://localhost:5000/billing/get_service_group_metrics"
-  );
-  return fetch(url, data)
+  return fetch("/billing/get_service_group_metrics", data)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

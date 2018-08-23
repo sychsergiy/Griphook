@@ -24,10 +24,7 @@ export const fetchBillingPieChartAbsoluteData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  const url = new URL(
-    "http://localhost:5000/billing/get_pie_chart_absolute_data"
-  );
-  return fetch(url, requesData)
+  return fetch("/billing/get_pie_chart_absolute_data", requesData)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

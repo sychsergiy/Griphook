@@ -24,8 +24,7 @@ export const fetchGroupChartData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  const url = new URL("http://localhost:5000/billing/get_services_group_chart");
-  return fetch(url, requesData)
+  return fetch("/billing/get_services_group_chart", requesData)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

@@ -16,7 +16,6 @@ export const fetchAverageLoadChartDataFailure = error => ({
 
 export const fetchAverageLoadChartData = options => dispatch => {
   dispatch(fetchAverageLoadChartDataBegin());
-  const url = new URL("http://localhost:5000/average_load/chart_data");
   let data = {
     method: "POST",
     headers: {
@@ -25,7 +24,7 @@ export const fetchAverageLoadChartData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch(url, data)
+  return fetch("/average_load/chart_data", data)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {
