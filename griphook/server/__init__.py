@@ -9,10 +9,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
 
 # instantiate the extensions
 toolbar = DebugToolbarExtension()
 bcrypt = Bcrypt()
+jwt = JWTManager()
 db = SQLAlchemy()
 migrate = Migrate()
 cors = CORS()
@@ -25,7 +27,6 @@ def create_app(script_info=None):
         template_folder="../client/templates",
         static_folder="../client/static",
     )
-
     # set config
     app_settings = os.getenv("APP_SETTINGS", "griphook.server.config.DevelopmentConfig")
     app.config.from_object(app_settings)
@@ -35,7 +36,8 @@ def create_app(script_info=None):
     db.init_app(app)
     migrate.init_app(app, db)
     cors.init_app(app)
-
+    jwt.init_app(app)
+    bcrypt.init_app(app)
     # register blueprints
     from griphook.server.billing import billing_blueprint
 
