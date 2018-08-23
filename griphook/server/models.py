@@ -1,8 +1,9 @@
-from enum import Enum, unique
 from datetime import datetime
+from enum import Enum, unique
 
-from griphook.server import db
-from griphook.server import bcrypt
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from griphook.server import bcrypt, db
 
 
 class Cluster(db.Model):
@@ -59,7 +60,9 @@ class ServicesGroup(db.Model):
         db.Integer, db.ForeignKey(column="projects.id", name="project_fk")
     )
 
-    team_id = db.Column(db.Integer, db.ForeignKey(column="teams.id", name="team_fk"))
+    team_id = db.Column(
+        db.Integer, db.ForeignKey(column="teams.id", name="team_fk")
+    )
 
 
 class Service(db.Model):
@@ -74,7 +77,8 @@ class Service(db.Model):
     )
 
     services_group_id = db.Column(
-        db.Integer, db.ForeignKey(column="services_groups.id", name="services_group_fk")
+        db.Integer,
+        db.ForeignKey(column="services_groups.id", name="services_group_fk"),
     )
 
     __table_args__ = (
@@ -118,7 +122,9 @@ class MetricPeak(db.Model):
 
     batch_id = db.Column(
         db.Integer,
-        db.ForeignKey(column="batches_story_peaks.id", name="batch_story_peaks_fk"),
+        db.ForeignKey(
+            column="batches_story_peaks.id", name="batch_story_peaks_fk"
+        ),
     )
 
     service_id = db.Column(
@@ -134,7 +140,9 @@ class MetricPeak(db.Model):
         db.Integer, db.ForeignKey(column="projects.id", name="projects_fk")
     )
 
-    team_id = db.Column(db.Integer, db.ForeignKey(column="teams.id", name="teams_fk"))
+    team_id = db.Column(
+        db.Integer, db.ForeignKey(column="teams.id", name="teams_fk")
+    )
 
     __table_args__ = (
         db.UniqueConstraint(
@@ -156,7 +164,9 @@ class MetricBilling(db.Model):
 
     batch_id = db.Column(
         db.Integer,
-        db.ForeignKey(column="batches_story_billing.id", name="batch_story_billing_fk"),
+        db.ForeignKey(
+            column="batches_story_billing.id", name="batch_story_billing_fk"
+        ),
     )
 
     service_id = db.Column(
@@ -172,7 +182,9 @@ class MetricBilling(db.Model):
         db.Integer, db.ForeignKey(column="projects.id", name="projects_fk")
     )
 
-    team_id = db.Column(db.Integer, db.ForeignKey(column="teams.id", name="teams_fk"))
+    team_id = db.Column(
+        db.Integer, db.ForeignKey(column="teams.id", name="teams_fk")
+    )
 
     __table_args__ = (
         db.UniqueConstraint(
@@ -185,21 +197,36 @@ class MetricBilling(db.Model):
     )
 
 
+
 # Auth models
-class User(db.Model):
-    __tablename__ = "users"
+class Admin(db.Model):
+    __tablename__ = "admins"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    _password = db.Column("password", db.String(255), nullable=False)
 
-    def __init__(self, username, password, *args, **kwargs):
-        self.username = username
-        self.password = bcrypt.generate_password_hash(password).decode()
-        super(User, self).__init__(*args, **kwargs)
+    def __init__(self, password, *args, **kwargs):
+        self.password = password
+        super(Admin, self).__init__(*args, **kwargs)
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, new_password):
+        new_password = self.validate_password(new_password)
+        self._password = bcrypt.generate_password_hash(new_password).decode()
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
+
+    def validate_password(self, password):
+        if not password:
+            raise ValueError("Password should be set!")
+        if len(password) < 6:
+            raise ValueError("Password length should be more than 6 characters")
+        return password
 
 
 def get_or_create(session, model, defaults=None, **kwargs):
