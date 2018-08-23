@@ -1,0 +1,128 @@
+.filter-wrapper li.list-group-item:hover {
+    cursor: pointer;
+}
+
+.filter-wrapper li.list-group-item:not(.active):hover {
+    background-color: #eceff0;
+}
+
+ul.list-group.compact li {
+    padding: 7px;
+}
+
+i.add-filter-rule:hover, i.remove-filter-rule:hover {
+    cursor: pointer;
+    color: #3498DB;
+}
+
+.filter-group {
+    width: 340px;
+}
+
+
+.services-group-table-outer {
+    min-height: 400px;
+}
+
+i.show-collapse-data:hover, i.hide-collapse-data:hover {
+    cursor: pointer;
+    color: #3498DB;
+}
+
+tr.collapsable-row.hidden td {
+    padding: 0;
+}
+
+/* Collapsed content settings */
+tr.collapsable-row .collapsed-content {
+    max-height: 2000px;
+    transition: all 1s;
+    overflow: hidden;
+}
+
+tr.collapsable-row.loading .collapsed-content,
+tr.collapsable-row.hidden .collapsed-content {
+    max-height: 0;
+    visibility: hidden;
+}
+/* END Collapsed content settings */
+
+
+/* Collapse loader settings */
+.collapsed-loader-outer {
+    overflow: hidden;
+    transition: height 1s;
+}
+
+tr.collapsable-row.loading .collapsed-loader-outer {
+    height: 64px;
+}
+
+tr.collapsable-row:not(.loading) .collapsed-loader-outer {
+    height: 0;
+}
+/* END Collapse loader settings */
+
+
+@media (max-width: 767.98px) { 
+    .filter-group {
+        width: 100%;
+    }
+}
+
+.collapsed-loader {
+    display: block;
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+  .collapsed-loader div {
+    position: absolute;
+    top: 27px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #2c3e50;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  }
+  .collapsed-loader div:nth-child(1) {
+    left: 6px;
+    animation: collapsed-loader1 0.6s infinite;
+  }
+  .collapsed-loader div:nth-child(2) {
+    left: 6px;
+    animation: collapsed-loader2 0.6s infinite;
+  }
+  .collapsed-loader div:nth-child(3) {
+    left: 26px;
+    animation: collapsed-loader2 0.6s infinite;
+  }
+  .collapsed-loader div:nth-child(4) {
+    left: 45px;
+    animation: collapsed-loader3 0.6s infinite;
+  }
+  @keyframes collapsed-loader1 {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes collapsed-loader3 {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0);
+    }
+  }
+  @keyframes collapsed-loader2 {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(19px, 0);
+    }
+  }
+  

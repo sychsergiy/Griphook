@@ -1,0 +1,12 @@
+version: "2"
+services:
+  frontend:
+      restart: always
+      network_mode: "host"
+      image: frontend
+      build: Griphook-Frontend
+      ports:
+        - 81:81
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        # - ./dist:/etc/nginx/dist/static/
