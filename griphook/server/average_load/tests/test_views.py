@@ -28,7 +28,7 @@ class TestAverageLoadChartDataView(object):
         assert response.status_code == 200
 
     def test_400_status_code_when_not_enough_request_arguments(
-            self, request_data, session
+        self, request_data, session
     ):
         request_data.pop("metric_type")
         response = self.client.post(
@@ -57,7 +57,9 @@ class TestAverageLoadChartDataView(object):
         )
         assert response.status_code == 200
 
-    def test_404_status_code_when_target_not_founded(self, session, request_data):
+    def test_404_status_code_when_target_not_founded(
+        self, session, request_data
+    ):
         request_data["target_type"] = "service"
         request_data["target_id"] = 10000
         response = self.client.post(

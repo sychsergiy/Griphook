@@ -8,8 +8,8 @@ from griphook.server.filters.peaks_queries import (
 )
 
 from griphook.server.filters.billing_queries import (
-    get_all_teams_converted_to_dict,
-    get_all_projects_converted_to_dict,
+    get_teams_hierarchy_part,
+    get_projects_hierarchy_part,
 )
 
 
@@ -70,7 +70,7 @@ def get_billing_filters_hierarchy():
     Endpoint to get full hierarchy of ...
     in following format:
     {
-      "teams    ": [
+      "teams": [
         {
           "id": "id",
           "title": "title"
@@ -115,9 +115,8 @@ def get_billing_filters_hierarchy():
       ]
     }
     """
-    teams = get_all_teams_converted_to_dict()
-    projects = get_all_projects_converted_to_dict()
-
+    teams = get_teams_hierarchy_part()
+    projects = get_projects_hierarchy_part()
     clusters = get_clusters_hierarchy_part()
     servers = get_servers_hierarchy_part()
     services_groups = get_services_groups_hierarchy_part()

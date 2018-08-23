@@ -9,11 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from griphook.config import Config
 from griphook.server.models import BatchStoryPeaks, BatchStoryBilling
-from griphook.tasks.utils import (
-    BatchStatus,
-    DATA_GRANULATION,
-    datetime_range
-)
+from griphook.tasks.utils import BatchStatus, DATA_GRANULATION, datetime_range
 from griphook.tasks import tasks
 
 
@@ -29,7 +25,6 @@ FILLING_TASK_QUEUE_INTERVAL = conf["tasks"]["FILLING_TASK_QUEUE_INTERVAL"]
 
 
 class TaskScheduler(object):
-
     def __init__(self, batch_model, task):
         self._session = Session()
         self._batch_model = batch_model
@@ -51,27 +46,29 @@ class TaskScheduler(object):
         step = timedelta(seconds=DATA_GRANULATION)
 
         if last_batch is None:
-            time_from = now - \
-                timedelta(seconds=DATA_SOURCE_DATA_EXPIRES)
+            time_from = now - timedelta(seconds=DATA_SOURCE_DATA_EXPIRES)
         else:
             time_from = last_batch.time + step
 
-        self._session.add_all([
-            self._batch_model(time=batch_time, status=BatchStatus.EMPTY)
-            for batch_time in itertools.takewhile(
-                lambda t: t < now,
-                datetime_range(time_from, now, step)
-            )
-        ])
+        self._session.add_all(
+            [
+                self._batch_model(time=batch_time, status=BatchStatus.EMPTY)
+                for batch_time in itertools.takewhile(
+                    lambda t: t < now, datetime_range(time_from, now, step)
+                )
+            ]
+        )
         self._session.commit()
 
     def requeue_expired_batches(self):
         """Put expired batches to the tasks queue again"""
         expired_batches = (
             self._session.query(self._batch_model)
-            .filter(self._batch_model.put_into_queue < datetime.now() -
-                    timedelta(seconds=PARSE_METRIC_EXPIRES),
-                    self._batch_model.status == BatchStatus.QUEUED)
+            .filter(
+                self._batch_model.put_into_queue
+                < datetime.now() - timedelta(seconds=PARSE_METRIC_EXPIRES),
+                self._batch_model.status == BatchStatus.QUEUED,
+            )
             .all()
         )
 
@@ -116,29 +113,27 @@ class TaskScheduler(object):
             self.create_batches_until_now()
             self.fill_task_queue()
 
-        schedule.every(
-            DATA_GRANULATION
-        ).seconds.do(self.requeue_expired_batches)
+        schedule.every(DATA_GRANULATION).seconds.do(
+            self.requeue_expired_batches
+        )
 
-        schedule.every(
-            CREATING_BATCHES_INTERVAL
-        ).seconds.do(self.create_batches_until_now)
+        schedule.every(CREATING_BATCHES_INTERVAL).seconds.do(
+            self.create_batches_until_now
+        )
 
-        schedule.every(
-            FILLING_TASK_QUEUE_INTERVAL
-        ).seconds.do(self.fill_task_queue)
+        schedule.every(FILLING_TASK_QUEUE_INTERVAL).seconds.do(
+            self.fill_task_queue
+        )
 
 
 def main():
     peaks_parsing_scheduler = TaskScheduler(
-        batch_model=BatchStoryPeaks,
-        task=tasks.parse_peak_metrics
+        batch_model=BatchStoryPeaks, task=tasks.parse_peak_metrics
     )
     peaks_parsing_scheduler.fill_schedule(schedule)
 
     average_parsing_scheduler = TaskScheduler(
-        batch_model=BatchStoryBilling,
-        task=tasks.parse_average_metrics
+        batch_model=BatchStoryBilling, task=tasks.parse_average_metrics
     )
     average_parsing_scheduler.fill_schedule(schedule)
 
