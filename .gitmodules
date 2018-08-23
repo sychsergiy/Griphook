@@ -1,0 +1,3 @@
+[submodule "client/Griphook-Frontend"]
+	path = client/Griphook-Frontend
+	url = http://gaia.olympus.evo:30241/EVO2018-Vlad-team/Griphook-Frontend
