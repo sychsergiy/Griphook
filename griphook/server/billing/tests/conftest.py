@@ -35,7 +35,7 @@ def session(app):
 
 @pytest.fixture(scope="function")
 def clusters(session):
-    clusters = [Cluster(title="test"+str(i)) for i in range(1, 21)]
+    clusters = [Cluster(title="test" + str(i)) for i in range(1, 21)]
     session.add_all(clusters)
     session.commit()
     return Cluster.query.with_entities(Cluster.id, Cluster.title)
@@ -43,7 +43,7 @@ def clusters(session):
 
 @pytest.fixture(scope="function")
 def teams(session):
-    teams = [Team(title="test"+str(i)) for i in range(1, 21)]
+    teams = [Team(title="test" + str(i)) for i in range(1, 21)]
     session.add_all(teams)
     session.commit()
     return Team.query.with_entities(Team.id, Team.title)
@@ -51,7 +51,7 @@ def teams(session):
 
 @pytest.fixture(scope="function")
 def projects(session):
-    projects = [Project(title="test"+str(i)) for i in range(1, 21)]
+    projects = [Project(title="test" + str(i)) for i in range(1, 21)]
     session.add_all(projects)
     session.commit()
     return Project.query.with_entities(Project.id, Project.title)
@@ -61,7 +61,7 @@ def projects(session):
 def servers(session, clusters):
     servers = []
     for i, cluster in enumerate(clusters, start=1):
-        servers.append(Server(title="test"+str(i), cluster_id=cluster.id))
+        servers.append(Server(title="test" + str(i), cluster_id=cluster.id))
     session.add_all(servers)
     session.commit()
     return Server.query.with_entities(Server.id, Server.title)
@@ -71,9 +71,11 @@ def servers(session, clusters):
 def services_groups(session, teams, projects):
     services_groups = []
     for i, t in enumerate(zip(projects, teams), start=1):
-        services_groups.append(ServicesGroup(
-            title="test"+str(i), project_id=t[0].id, team_id=t[1].id
-        ))
+        services_groups.append(
+            ServicesGroup(
+                title="test" + str(i), project_id=t[0].id, team_id=t[1].id
+            )
+        )
     session.add_all(services_groups)
     session.commit()
     return ServicesGroup.query.with_entities(
