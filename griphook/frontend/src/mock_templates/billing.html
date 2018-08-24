@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+        crossorigin="anonymous">
+
+    <link rel="stylesheet" href="css/billing.css">
+    <title>Hello, world!</title>
+</head>
+
+<body class="mb-5">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-coins mr-2"></i>
+            Griphook
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Billing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Peaks</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-wrench mr-1"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="d-flex flex-wrap flex-md-nowrap">
+            <!-- MAIN CONTAINER ROW -->
+            <div class="filter-group flex-grow-0 flex-shrink-0 mx-md-1 mx-lg-4">
+                <div class="row">
+
+                    <!-- FILTER -->
+                    <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+                        <div class="card border-primary mt-2 ">
+                            <!-- PROJECT FILTER -->
+                            <h5 class="card-title text-center mt-2">
+                                <i class="fas fa-project-diagram"></i>
+                                Projects
+                            </h5>
+                            <div class="search-input px-3 mb-3">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </div>
+                            <ul class="list-group list-group-flush compact">
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <ul class="list-group list-group-flush compact mt-3">
+                                <li class="list-group-item">
+                                    Cras justo odio
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item active-filter active">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <div class="pagination mx-auto my-2">
+                                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                                <span class="page-number px-4">2</span>
+                                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+                            </div>
+                        </div>
+                        <!-- END PROJECT FILTER -->
+                    </div>
+
+                    <!-- FILTER -->
+                    <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+                        <div class="card border-primary mt-2">
+                            <!-- TEAM FILTER -->
+                            <h5 class="card-title text-center mt-2">
+                                <i class="fas fa-people-carry mr-2"></i>
+                                Teams
+                            </h5>
+                            <div class="search-input px-3 mb-3">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </div>
+                            <ul class="list-group list-group-flush compact">
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <ul class="list-group list-group-flush compact mt-3">
+                                <li class="list-group-item">
+                                    Cras justo odio
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <div class="pagination mx-auto my-2">
+                                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                                <span class="page-number px-4">2</span>
+                                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+                            </div>
+                        </div>
+                        <!-- END TEAM FILTER -->
+                    </div>
+
+                    <!-- FILTER -->
+                    <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+                        <div class="card border-primary mt-2">
+                            <!-- CLUSTER FILTER -->
+                            <h5 class="card-title text-center mt-2">
+                                <i class="fas fa-th-large"></i>
+                                Clusters
+                            </h5>
+                            <div class="search-input px-3 mb-3">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </div>
+                            <ul class="list-group list-group-flush compact">
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <ul class="list-group list-group-flush compact mt-3">
+                                <li class="list-group-item">
+                                    Cras justo odio
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <div class="pagination mx-auto my-2">
+                                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                                <span class="page-number px-4">2</span>
+                                <button class="btn btn btn-outline-primary btn-sm disabled" disabled="">Next</button>
+                            </div>
+                        </div>
+                        <!-- END CLUSTER FILTER -->
+                    </div>
+
+                    <!-- FILTER -->
+                    <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+                        <div class="card border-primary mt-2">
+                            <!-- SERVER FILTER -->
+                            <h5 class="card-title text-center mt-2">
+                                <i class="fas fa-server"></i>
+                                Servers
+                            </h5>
+                            <div class="search-input px-3 mb-3">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </div>
+                            <ul class="list-group list-group-flush compact">
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <ul class="list-group list-group-flush compact mt-3">
+                                <li class="list-group-item">
+                                    Cras justo odio
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <div class="pagination mx-auto my-2">
+                                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                                <span class="page-number px-4">2</span>
+                                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+                            </div>
+                        </div>
+                        <!-- END SERVER FILTER -->
+                    </div>
+
+                    <!-- FILTER -->
+                    <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+                        <div class="card border-primary mt-2">
+                            <!-- SERVICE GROUP FILTER -->
+                            <h5 class="card-title text-center mt-2">
+                                <i class="fas fa-object-group"></i>
+                                Service group
+                            </h5>
+                            <div class="search-input px-3 mb-3">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </div>
+                            <ul class="list-group list-group-flush compact">
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <ul class="list-group list-group-flush compact mt-3">
+                                <li class="list-group-item">
+                                    Cras justo odio
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Dapibus ac facilisis in
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                                <li class="list-group-item">
+                                    Vestibulum at eros
+                                    <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                                </li>
+                            </ul>
+
+                            <div class="pagination mx-auto my-2">
+                                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                                <span class="page-number px-4">2</span>
+                                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+                            </div>
+                        </div>
+                        <!-- END SERVICE GROUP FILTER -->
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="flex-grow-1 mx-md-1 mx-lg-4">
+                <div class="time-filter mt-2 mb-5">
+                    <div class="card border-primary mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-around flex-wrap">
+                                <div class="">
+                                    <div class="form-group">
+                                        <label for="start-date-input">Start date</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend d-md-none d-lg-flex">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt text-primary"></i>
+                                                </span>
+                                            </div>
+                                            <input type="datetime-local" class="form-control" id="start-date-input" placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="">
+                                    <div class="form-group">
+                                        <label for="end-date-input">End date</label>
+                                        <div class="input-group">
+                                            <input type="datetime-local" class="form-control" id="end-date-input" placeholder="">
+                                            <div class="input-group-append d-md-none d-lg-flex">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt text-primary"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pie-charts mt-2 mb-5">
+                    <div class="card border-primary mb-3">
+                        <h5 class="card-header">
+                            <i class="fas fa-chart-pie mr-2"></i>                            
+                            Pie Charts
+                        </h5>
+                        <div class="card-body">
+                            <div class="metric-type-filter mb-5 d-flex flex-row">
+                                <div class="custom-control custom-radio mx-3">
+                                    <input type="radio" id="customRadio1" class="custom-control-input" name="customRadio1" checked="">
+                                    <label class="custom-control-label" for="customRadio1">CPU</label>
+                                </div>
+                                <div class="custom-control custom-radio mx-3">
+                                    <input type="radio" id="customRadio2" class="custom-control-input" name="customRadio1">
+                                    <label class="custom-control-label" for="customRadio2">Memory</label>
+                                </div> 
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="d-flex justify-content-around flex-wrap">
+                                <div class="row">
+                                    <div class="col-12 col-sm-11 col-md-10 mx-auto">
+                                        <img class="w-100" src="temp/pie_chart1.png">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 col-sm-11 col-md-10 mx-auto">
+                                        <img class="w-100" src="temp/pie_chart2.png">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive services-group-table-outer border rounded border-primary">
+                    <table class="table">
+                        <thead>
+                            <tr >
+                                <th scope="col">
+                                    <span class="px-2">#</span>
+                                </th>
+                                <th scope="col">Services group</th>
+                                <th scope="col">Project</th>
+                                <th scope="col">Team</th>
+                                <th scope="col">CPU</th>
+                                <th scope="col">
+                                    <span class="pr-5 mr-5">Memory</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-info">
+                                <th scope="row">
+                                    <i class="fas fa-minus hide-collapse-data py-1 px-2"></i>
+                                </th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                                <td>22.035</td>
+                                <td>2 043 534 213 Kb.</td>
+                            </tr>
+                            <!-- Add/Remove classes to change row status -->
+                            <!-- .hidden -> hide row -->
+                            <!-- .loading -> show loader -->
+                            <!-- Only .collapsable-row -> show custom content inside div.collapsed-content -->
+                            <tr class="collapsable-row">
+                                <td colspan="6">
+                                    <div class="collapsed-block">
+                                        <div class="collapsed-loader-outer">
+                                            <div class="collapsed-loader mx-auto">
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                            </div>
+                                        </div>
+                                        <div class="collapsed-content col-12 col-lg-10 mx-auto">
+                                            <!-- Put your custom content Here -->
+                                            <div class="child-services">
+                                                <table class="table table-sm">
+                                                    <caption>Child services</caption>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">#</th>
+                                                            <th scope="col">Service</th>
+                                                            <th scope="col">CPU</th>
+                                                            <th scope="col">Memory</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th scope="row">1</th>
+                                                            <td>Mark</td>
+                                                            <td>10.456</td>
+                                                            <td>1 097 765 Kb.</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">2</th>
+                                                            <td>Jacob</td>
+                                                            <td>13.533</td>
+                                                            <td>123 053 Kb.</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">3</th>
+                                                            <td>Some-service</td>
+                                                            <td>0.533</td>
+                                                            <td>539 042 Kb.</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div class="metric-type-filter mt-5 mb-2 d-flex flex-row">
+                                                <div class="custom-control custom-radio mx-3">
+                                                    <input type="radio" id="customRadio3" class="custom-control-input" name="customRadio2" checked="">
+                                                    <label class="custom-control-label" for="customRadio3">CPU</label>
+                                                </div>
+                                                <div class="custom-control custom-radio mx-3">
+                                                    <input type="radio" id="customRadio4" class="custom-control-input" name="customRadio2">
+                                                    <label class="custom-control-label" for="customRadio4">Memory</label>
+                                                </div> 
+                                            </div>
+
+                                            <img class="w-100" src="temp/peak_chart.png">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <i class="fas fa-plus show-collapse-data py-1 px-2"></i>
+                                </th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                                <td>54.132</td>
+                                <td>5 567 532 063 Kb.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <i class="fas fa-plus show-collapse-data py-1 px-2"></i>
+                                </th>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>@twitter</td>
+                                <td>55.231</td>
+                                <td>32 524 212 Kb.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <i class="fas fa-plus show-collapse-data py-1 px-2"></i>
+                                </th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                                <td>54.132</td>
+                                <td>5 567 532 063 Kb.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <i class="fas fa-plus show-collapse-data py-1 px-2"></i>
+                                </th>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>@twitter</td>
+                                <td>55.231</td>
+                                <td>32 524 212 Kb.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <i class="fas fa-plus show-collapse-data py-1 px-2"></i>
+                                </th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                                <td>54.132</td>
+                                <td>5 567 532 063 Kb.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <i class="fas fa-plus show-collapse-data py-1 px-2"></i>
+                                </th>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>@twitter</td>
+                                <td>55.231</td>
+                                <td>32 524 212 Kb.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <i class="fas fa-plus show-collapse-data py-1 px-2"></i>
+                                </th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                                <td>54.132</td>
+                                <td>5 567 532 063 Kb.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="pagination mx-auto mt-4">
+                        <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                        <span class="page-number pl-4 pr-2">2</span>
+                        ...
+                        <span class="max-page-number pl-2 pr-4">10</span>
+                        <button class="btn btn btn-outline-primary btn-sm">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MAIN CONTAINER ROW -->
+    </div>
+
+</body>
+
+</html>
