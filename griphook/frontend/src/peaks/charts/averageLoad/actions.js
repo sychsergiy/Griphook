@@ -24,7 +24,7 @@ export const fetchAverageLoadChartData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch("/average_load/chart_data", data)
+  return fetch("/api/average_load/chart_data", data)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

@@ -24,7 +24,7 @@ export const fetchBillingPieChartAbsoluteData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch("/billing/get_pie_chart_absolute_data", requesData)
+  return fetch("/api/billing/get_pie_chart_absolute_data", requesData)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

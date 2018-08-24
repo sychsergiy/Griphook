@@ -24,7 +24,7 @@ export const fetchPeaksChartData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch("/peaks/get_chart", data)
+  return fetch("/api/peaks/get_chart", data)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

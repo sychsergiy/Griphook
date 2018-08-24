@@ -33,7 +33,7 @@ export const fetchBillingTableData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch("/billing/get_filtered_table_data", data)
+  return fetch("/api/billing/get_filtered_table_data", data)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {

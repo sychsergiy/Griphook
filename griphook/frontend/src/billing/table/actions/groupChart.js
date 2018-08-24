@@ -24,7 +24,7 @@ export const fetchGroupChartData = options => dispatch => {
     },
     body: JSON.stringify(options)
   };
-  return fetch("/billing/get_services_group_chart", requesData)
+  return fetch("/api/billing/get_services_group_chart", requesData)
     .then(handleErrors)
     .then(response => response.json())
     .then(json => {
