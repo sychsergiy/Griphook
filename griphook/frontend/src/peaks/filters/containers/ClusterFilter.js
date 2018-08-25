@@ -30,7 +30,7 @@ const mapStateToProps = state => {
     visibleItems: visibleClusters,
     selectedItems: selectedClusters,
     allItems: allClusters,
-    blockTitle: "Cluster",
+    blockTitle: "Clusters",
 
     selectedTargetID: state.peaks.chartsOptions.targetID,
     selectedTargetType: state.peaks.chartsOptions.targetType,

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import 'react-datepicker/dist/react-datepicker.css';
+
 import ChartsOptionsPeackerComponent from "./components/chartsOptionsPeacker";
 
 import {
