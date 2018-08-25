@@ -3,14 +3,14 @@ import { connect } from "react-redux";
 
 import { selectPeaksTarget } from "../../options/actions";
 
-import { getFilteredServers } from "../serversHelper";
+import { separateSelectedItems } from "../../../common/filtersHelper/common";
+import { getFilteredServers } from "../../../common/filtersHelper/servers";
 
 import {
   selectServerFilter,
   unSelectServerFilter
 } from "../actions/selections";
 
-import { separateSelectedItems } from "../common";
 import { peaksTargetTypes } from "../../../common/constants";
 
 import FilterContainer from "./FilterContainer";

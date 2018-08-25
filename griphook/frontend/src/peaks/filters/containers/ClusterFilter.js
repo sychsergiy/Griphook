@@ -8,7 +8,7 @@ import {
   unSelectClusterFilter
 } from "../actions/selections";
 
-import { separateSelectedItems } from "../common";
+import { separateSelectedItems } from "../../../common/filtersHelper/common";
 
 import { peaksTargetTypes } from "../../../common/constants";
 

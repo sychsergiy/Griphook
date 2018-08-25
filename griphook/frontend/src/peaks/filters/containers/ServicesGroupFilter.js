@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { getFilteredServicesGroups } from "../servicesGroupsHelper";
+import { separateSelectedItems } from "../../../common/filtersHelper/common";
+import { getFilteredServicesGroups } from "../../../common/filtersHelper/servicesGroups";
 
 import { selectPeaksTarget } from "../../options/actions";
 
@@ -10,7 +11,6 @@ import {
   unSelectServicesGroupFilter
 } from "../actions/selections";
 
-import { separateSelectedItems } from "../common";
 import { peaksTargetTypes } from "../../../common/constants";
 
 import FilterContainer from "./FilterContainer";
@@ -47,7 +47,7 @@ const mapDispatchToProps = dispatch => ({
   selectTarget: targetID => {
     dispatch(selectPeaksTarget(targetID, peaksTargetTypes.servicesGroup));
   }
-  });
+});
 
 const ServicesGroupFilterContainer = connect(
   mapStateToProps,

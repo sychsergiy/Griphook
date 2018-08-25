@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { getFilteredServices } from "../servicesHelper";
+import { getFilteredServices } from "../../../common/filtersHelper/services";
 
 import { selectPeaksTarget } from "../../options/actions";
 

@@ -68,7 +68,6 @@ export const FilterBlockComponent = props => {
         </ul> */}
 
         <ul className="list-group list-group-flush compact mt-3">
-          {console.log(props)}
           {props.page.items.map(item => (
             <FilterBlockItemComponent
               key={item.id}
