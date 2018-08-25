@@ -7,6 +7,8 @@ import BillingPage from "./billing/index";
 
 import HeaderComponent from "./common/headerComponent";
 
+import "./main.css";
+
 class App extends Component {
   render() {
     return (

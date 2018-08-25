@@ -9,7 +9,7 @@ class BillingPage extends Component {
   render() {
     return (
       <div className="container-fluid">
-        <div className="row">
+        <div className="d-flex flex-wrap flex-md-nowrap">
           <BillingFiltersContainer />
           <div className="col-xl-9 col-lg-8 col-sm-12">
             <MetricOptionsPeaker />

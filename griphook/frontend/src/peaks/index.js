@@ -5,8 +5,6 @@ import ChartsComponent from "./charts/index";
 
 import PeaksFiltersContainer from "./filters/index";
 
-import "./main.css";
-
 const PeaksPage = props => (
   <div className="container-fluid">
     <div className="d-flex flex-wrap flex-md-nowrap">

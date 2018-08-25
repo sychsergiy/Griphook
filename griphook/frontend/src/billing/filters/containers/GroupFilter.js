@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { setServicesGroupsFilterPageNumber } from "../actions/pagination";
 import {
   setTargetOption,
   addGroupToTargetIDs,
@@ -59,7 +58,6 @@ class ServicesGroupFilterContainer extends Component {
 const mapStateToProps = state => ({
   allItems: state.billing.filters.hierarchy.servicesGroups,
   visibleItems: state.billing.filters.hierarchy.servicesGroups,
-  pageNumber: state.billing.filters.pagination.servicesGroupsPageNumber,
   currentTargetType: billingTargetTypes.group,
   selectedTargetType: state.billing.options.targetType,
   selectedTargetIDs: state.billing.options.targetIDs,
@@ -67,10 +65,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setPageNumber: pageNumber => {
-    dispatch(setServicesGroupsFilterPageNumber(pageNumber));
-  },
-
   selectGroup: groupID => {
     dispatch(addGroupToTargetIDs(groupID));
   },

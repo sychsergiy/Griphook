@@ -8,9 +8,13 @@ import { FilterBlockComponent } from "../components/filterBlock";
 export default class BaseFilterContainer extends Component {
   constructor(props) {
     super();
+    this.state = {
+      pageNumber: 1,
+      searchQuery: ""
+    };
+
     this.onSearchInputChange = this.onSearchInputChange.bind(this);
-    this.incrementPageNumber = this.incrementPageNumber.bind(this);
-    this.decrementPageNumber = this.decrementPageNumber.bind(this);
+    this.setPageNumber = this.setPageNumber.bind(this);
   }
 
   onSearchInputChange(event) {
@@ -21,12 +25,8 @@ export default class BaseFilterContainer extends Component {
     console.log(findedItems);
   }
 
-  incrementPageNumber() {
-    this.props.setPageNumber(this.props.pageNumber + 1);
-  }
-
-  decrementPageNumber() {
-    this.props.setPageNumber(this.props.pageNumber - 1);
+  setPageNumber(pageNumber) {
+    this.setState({ pageNumber });
   }
 
   getSelectedItemIDs() {
@@ -38,27 +38,19 @@ export default class BaseFilterContainer extends Component {
 
   render() {
     let page = paginator(this.props.visibleItems).getPage(
-      this.props.pageNumber
+      this.state.pageNumber
     );
 
     return (
-      <div>
-        <FilterBlockComponent
-          items={page.items}
-          blockTitle={this.props.blockTitle}
-          onSearchInputChange={this.onSearchInputChange}
-          onItemClick={this.props.selectTarget}
-          selectedItemIDs={this.getSelectedItemIDs()}
-          multiselect={this.props.multiselect}
-        />
-        {page.previousPageExists ? (
-          <div onClick={this.decrementPageNumber}>Previous Page</div>
-        ) : null}
-
-        {page.nextPageExists ? (
-          <div onClick={this.incrementPageNumber}>Next Page</div>
-        ) : null}
-      </div>
+      <FilterBlockComponent
+        page={page}
+        setPageNumber={this.setPageNumber}
+        blockTitle={this.props.blockTitle}
+        onSearchInputChange={this.onSearchInputChange}
+        onItemClick={this.props.selectTarget}
+        selectedItemIDs={this.getSelectedItemIDs()}
+        multiselect={this.props.multiselect}
+      />
     );
   }
 }

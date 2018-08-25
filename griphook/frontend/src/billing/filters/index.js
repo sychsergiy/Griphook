@@ -16,12 +16,14 @@ class BillingFiltersContainer extends Component {
 
   render() {
     return (
-      <div>
-        <ProjectFilterContainer />
-        <TeamFilterContainer />
-        <ClusterFilterContainer />
-        <ServerFilterContainer />
-        <GroupFilterContainer />
+      <div className="filter-group flex-grow-0 flex-shrink-0 mx-md-1 mx-lg-4">
+        <div className="row">
+          <ProjectFilterContainer />
+          <TeamFilterContainer />
+          <ClusterFilterContainer />
+          <ServerFilterContainer />
+          <GroupFilterContainer />
+        </div>
       </div>
     );
   }
