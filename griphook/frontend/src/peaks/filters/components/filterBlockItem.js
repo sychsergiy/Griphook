@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React  from "react";
 
 const FilterBlockItemComponent = props => {
   const selectedTargetClass = "list-group-item active-filter active";

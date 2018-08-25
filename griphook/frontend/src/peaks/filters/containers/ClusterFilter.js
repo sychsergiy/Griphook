@@ -1,11 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
 import { selectPeaksTarget } from "../../options/actions";
 
 import {
   selectClusterFilter,
-  unselectClusterFilter
+  unSelectClusterFilter
 } from "../actions/selections";
 
 import { separateSelectedItems } from "../common";
@@ -43,8 +43,8 @@ const mapDispatchToProps = dispatch => ({
   selectFilterItem: clusterID => {
     dispatch(selectClusterFilter(clusterID));
   },
-  unselectFilterItem: clusterID => {
-    dispatch(unselectClusterFilter(clusterID));
+  unSelectFilterItem: clusterID => {
+    dispatch(unSelectClusterFilter(clusterID));
   },
 
   selectTarget: targetID => {

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
 import { selectPeaksTarget } from "../../options/actions";
@@ -7,7 +7,7 @@ import { getFilteredServers } from "../serversHelper";
 
 import {
   selectServerFilter,
-  unselectServerFilter
+  unSelectServerFilter
 } from "../actions/selections";
 
 import { separateSelectedItems } from "../common";
@@ -38,8 +38,8 @@ const mapDispatchToProps = dispatch => ({
   selectFilterItem: serverID => {
     dispatch(selectServerFilter(serverID));
   },
-  unselectFilterItem: serverID => {
-    dispatch(unselectServerFilter(serverID));
+  unSelectFilterItem: serverID => {
+    dispatch(unSelectServerFilter(serverID));
   },
   selectTarget: targetID => {
     dispatch(selectPeaksTarget(targetID, peaksTargetTypes.server));

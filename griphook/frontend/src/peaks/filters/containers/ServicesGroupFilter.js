@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
 import { getFilteredServicesGroups } from "../servicesGroupsHelper";
@@ -7,7 +7,7 @@ import { selectPeaksTarget } from "../../options/actions";
 
 import {
   selectServicesGroupFilter,
-  unselectServicesGroupFilter
+  unSelectServicesGroupFilter
 } from "../actions/selections";
 
 import { separateSelectedItems } from "../common";
@@ -40,14 +40,14 @@ const mapDispatchToProps = dispatch => ({
   selectFilterItem: servicesGroupID => {
     dispatch(selectServicesGroupFilter(servicesGroupID));
   },
-  unselectFilterItem: servicesGroupID => {
-    dispatch(unselectServicesGroupFilter(servicesGroupID));
+  unSelectFilterItem: servicesGroupID => {
+    dispatch(unSelectServicesGroupFilter(servicesGroupID));
   },
 
   selectTarget: targetID => {
     dispatch(selectPeaksTarget(targetID, peaksTargetTypes.servicesGroup));
   }
-});
+  });
 
 const ServicesGroupFilterContainer = connect(
   mapStateToProps,

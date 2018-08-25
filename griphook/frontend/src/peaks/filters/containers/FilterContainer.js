@@ -48,7 +48,7 @@ class FilterContainer extends Component {
         selectedItems={this.props.selectedItems}
         onItemClick={this.props.selectTarget}
         onSelectFilterItem={this.props.selectFilterItem}
-        onUnselectFilterItem={this.props.unselectFilterItem}
+        onUnselectFilterItem={this.props.unSelectFilterItem}
         onSearchInputChange={this.onSearchInputChange}
         blockTitle={this.props.blockTitle}
         blockTitleIconClass={this.props.blockTitleIconClass}

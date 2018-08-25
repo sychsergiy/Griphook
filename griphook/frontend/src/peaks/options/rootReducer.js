@@ -2,7 +2,7 @@ import * as types from "./actionTypes";
 
 import moment from "moment";
 
-import { metricTypes, INTERVALS } from "../../common/constants";
+import { INTERVALS } from "../../common/constants";
 
 const chartsOptionsInitialState = {
   timeFrom: moment().subtract(3, "months"),

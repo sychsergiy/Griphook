@@ -27,12 +27,12 @@ class ServicesGroupFilterContainer extends Component {
         // add id to targetIDs
         this.props.selectGroup(groupID);
       } else {
-        // cancel unselecting last targetID,
+        // cancel unSelecting last targetID,
         // because server will return bad request
         // need to set targetType equals "all"
         if (this.props.selectedTargetIDs.length !== 1) {
           // remove from target_ids
-          this.props.unselectGroup(groupID);
+          this.props.unSelectGroup(groupID);
         }
       }
     }
@@ -74,7 +74,7 @@ const mapDispatchToProps = dispatch => ({
   selectGroup: groupID => {
     dispatch(addGroupToTargetIDs(groupID));
   },
-  unselectGroup: groupID => {
+  unSelectGroup: groupID => {
     dispatch(removeGroupFromTargetIDs(groupID));
   },
 

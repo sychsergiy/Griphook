@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 
 import { INTERVALS } from "../../../common/constants";
 
-const TimeStepPeackerComponent = props => (
+const TimeStepPickerComponent = props => (
   <select
     value={props.currentTimeStep}
     onChange={props.onTimeStepChange}
@@ -16,4 +16,4 @@ const TimeStepPeackerComponent = props => (
   </select>
 );
 
-export default TimeStepPeackerComponent;
+export default TimeStepPickerComponent;

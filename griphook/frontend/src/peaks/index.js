@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React from "react";
 
-import ChartOptionsPeackerContainer from "./options/index";
+import ChartOptionsPickerContainer from "./options/index";
 import ChartsComponent from "./charts/index";
 
 import PeaksFiltersContainer from "./filters/index";
@@ -17,7 +17,7 @@ const PeaksPage = props => (
           <div className="card border-primary">
             <div className="card-body">
               <h4 className="card-title text-center">Time filter</h4>
-              <ChartOptionsPeackerContainer />
+              <ChartOptionsPickerContainer />
             </div>
           </div>
         </div>
