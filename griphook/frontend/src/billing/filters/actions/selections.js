@@ -19,13 +19,3 @@ export const unSelectServerFilter = serverID => ({
   type: types.UNSELECT_BILLING_SERVER_FILTER,
   serverID
 });
-
-export const selectServicesGroupFilter = servicesGroupID => ({
-  type: types.SELECT_BILLING_SERVICES_GROUP_FILTER,
-  servicesGroupID
-});
-
-export const unSelectServicesGroupFilter = servicesGroupID => ({
-  type: types.UNSELECT_BILLING_SERVICES_GROUP_FILTER,
-  servicesGroupID
-});

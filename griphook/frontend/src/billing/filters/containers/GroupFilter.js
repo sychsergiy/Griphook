@@ -7,6 +7,9 @@ import {
   removeGroupFromTargetIDs
 } from "../../options/actions";
 
+import { getFilteredServicesGroups } from "../../../common/filtersHelper/servicesGroups";
+import { separateSelectedItems } from "../../../common/filtersHelper/common";
+
 import { billingTargetTypes } from "../../../common/constants";
 
 import BaseFilterContainer from "./BaseFilter";
@@ -29,6 +32,7 @@ class ServicesGroupFilterContainer extends Component {
         // cancel unSelecting last targetID,
         // because server will return bad request
         // need to set targetType equals "all"
+        // TODO: Set targeType all
         if (this.props.selectedTargetIDs.length !== 1) {
           // remove from target_ids
           this.props.unSelectGroup(groupID);
@@ -47,22 +51,33 @@ class ServicesGroupFilterContainer extends Component {
         selectedTargetType={this.props.selectedTargetType}
         selectedTargetIDs={this.props.selectedTargetIDs}
         blockTitle={this.props.blockTitle}
-        setPageNumber={this.props.setPageNumber}
         selectTarget={this.toggleFilterItem}
         multiselect={true}
+        selectedItems={this.props.selectedItems}
+        hideIcon={true}
       />
     );
   }
 }
 
-const mapStateToProps = state => ({
-  allItems: state.billing.filters.hierarchy.servicesGroups,
-  visibleItems: state.billing.filters.hierarchy.servicesGroups,
-  currentTargetType: billingTargetTypes.group,
-  selectedTargetType: state.billing.options.targetType,
-  selectedTargetIDs: state.billing.options.targetIDs,
-  blockTitle: "Services Groups"
-});
+const mapStateToProps = state => {
+  let [selectedGroups, unSelectedGroups] = separateSelectedItems(
+    state.billing.filters.hierarchy.servicesGroups,
+    state.billing.filters.selections.servicesGroups
+  );
+  let filteredGroups = getFilteredServicesGroups(
+    state.billing.filters.selections,
+    unSelectedGroups
+  );
+  return {
+    selectedItems: selectedGroups,
+    visibleItems: filteredGroups, // paginator
+    currentTargetType: billingTargetTypes.group,
+    selectedTargetType: state.billing.options.targetType,
+    selectedTargetIDs: state.billing.options.targetIDs,
+    blockTitle: "Services Groups"
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
   selectGroup: groupID => {
@@ -71,7 +86,6 @@ const mapDispatchToProps = dispatch => ({
   unSelectGroup: groupID => {
     dispatch(removeGroupFromTargetIDs(groupID));
   },
-
   selectTarget: targetID => {
     dispatch(setTargetOption(targetID, billingTargetTypes.group));
   }

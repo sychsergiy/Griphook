@@ -37,22 +37,6 @@ export function selections(state = selectedInitialState, action) {
           ...state.servers.slice(indexOfServerToRemove + 1)
         ]
       };
-    case types.SELECT_BILLING_SERVICES_GROUP_FILTER:
-      return {
-        ...state,
-        servicesGroups: [...state.servicesGroups, action.servicesGroupID]
-      };
-    case types.UNSELECT_BILLING_SERVICES_GROUP_FILTER:
-      const indexOfGroupToRemove = state.servicesGroups.indexOf(
-        action.servicesGroupID
-      );
-      return {
-        ...state,
-        servicesGroups: [
-          ...state.servicesGroups.slice(0, indexOfGroupToRemove),
-          ...state.servicesGroups.slice(indexOfGroupToRemove + 1)
-        ]
-      };
     default:
       return state;
   }

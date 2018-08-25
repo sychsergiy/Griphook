@@ -35,11 +35,11 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  selectFilterItem: clusterID => {
-    dispatch(selectServerFilter(clusterID));
+  selectFilterItem: serverID => {
+    dispatch(selectServerFilter(serverID));
   },
-  unSelectFilterItem: clusterID => {
-    dispatch(unSelectServerFilter(clusterID));
+  unSelectFilterItem: serverID => {
+    dispatch(unSelectServerFilter(serverID));
   },
   selectTarget: targetID => {
     dispatch(setTargetOption(targetID, billingTargetTypes.server));

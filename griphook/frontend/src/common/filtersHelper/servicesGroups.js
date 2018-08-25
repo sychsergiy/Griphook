@@ -1,6 +1,7 @@
 import { isEmpty } from "./common";
 
 export function getFilteredServicesGroups(selections, ServicesGroups) {
+  // TODO: this function must take cluster and servers as arugments
   let filteredServicesGroups = servicesGroupFilter(ServicesGroups)
     .filterByClusters(selections.clusters)
     .filterByServers(selections.servers)

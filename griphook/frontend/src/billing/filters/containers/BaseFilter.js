@@ -53,6 +53,7 @@ export default class BaseFilterContainer extends Component {
         onSelectFilterItem={this.props.selectFilterItem}
         onUnselectFilterItem={this.props.unSelectFilterItem}
         multiselect={this.props.multiselect}
+        hideIcon={this.props.hideIcon}
       />
     );
   }
