@@ -10,7 +10,6 @@ import { peaksTargetTypes } from "../../../common/constants";
 import FilterContainer from "./FilterContainer";
 
 const mapStateToProps = state => ({
-  allItems: state.peaks.filters.hierarchy.services,
   visibleItems: getFilteredServices(
     state.peaks.filters.selections,
     state.peaks.filters.hierarchy.services

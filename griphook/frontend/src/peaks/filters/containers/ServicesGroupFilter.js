@@ -16,16 +16,14 @@ import { peaksTargetTypes } from "../../../common/constants";
 import FilterContainer from "./FilterContainer";
 
 const mapStateToProps = state => {
-  let allGroups = state.peaks.filters.hierarchy.servicesGroups;
   let selections = state.peaks.filters.selections;
   let [selectedGroups, visibleGroups] = separateSelectedItems(
-    allGroups,
+    state.peaks.filters.hierarchy.servicesGroups,
     selections.servicesGroups
   );
 
   let filteredGroups = getFilteredServicesGroups(selections, visibleGroups);
   return {
-    allItems: allGroups,
     selectedItems: selectedGroups,
     visibleItems: filteredGroups,
     blockTitle: "Services Groups",

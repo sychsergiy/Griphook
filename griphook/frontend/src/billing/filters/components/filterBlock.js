@@ -1,32 +1,6 @@
 import React, { Component } from "react";
 
 import { SearchInputComponent } from "./searchInput";
-
-export const FilterBlockComponentOld = props => {
-  const type = props.multiselect ? "checkbox" : "radio";
-  return (
-    <div className="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
-      <div className="card border-primary mt-2 ">
-        <h5 className="filter-title">{props.blockTitle}</h5>
-        <SearchInputComponent onSearchInputChange={props.onSearchInputChange} />
-        <ul className="search-list list-group">
-          {props.items.map(item => (
-            <li key={item.id} className="list-group-item search-list-item">
-              <input
-                type={type}
-                value={item.id}
-                onChange={e => props.onItemClick(parseInt(e.target.value))}
-                checked={props.selectedItemIDs.includes(item.id)}
-              />
-              <label> {item.title} </label>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-};
-
 import FilterBlockItemComponent from "./filterBlockItem";
 
 {
@@ -54,26 +28,26 @@ export const FilterBlockComponent = props => {
             placeholder="Search..."
           />
         </div>
-        {/* <ul className="list-group list-group-flush compact">
+        <ul className="list-group list-group-flush compact">
           {props.selectedItems.map(item => (
             <FilterBlockItemComponent
               key={item.id}
               item={item}
-              isTargetSelected={props.checkIsTargetSelected(item.id)}
-              onItemClick={props.onItemClick}
+              isTargetSelected={props.selectedTargetIDs.includes(item.id)}
+              onTargetClick={props.onTargetClick}
               onIconClick={props.onUnselectFilterItem}
               isItemSelected={true}
             />
           ))}
-        </ul> */}
+        </ul>
 
         <ul className="list-group list-group-flush compact mt-3">
           {props.page.items.map(item => (
             <FilterBlockItemComponent
               key={item.id}
               item={item}
-              isTargetSelected={props.selectedItemIDs.includes(item.id)}
-              onItemClick={props.onItemClick}
+              isTargetSelected={props.selectedTargetIDs.includes(item.id)}
+              onTargetClick={props.onTargetClick}
               onIconClick={props.onSelectFilterItem}
               isItemSelected={false}
               hideIcon={props.hideIcon}

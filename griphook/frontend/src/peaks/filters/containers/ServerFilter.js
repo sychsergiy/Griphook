@@ -16,20 +16,18 @@ import { peaksTargetTypes } from "../../../common/constants";
 import FilterContainer from "./FilterContainer";
 
 const mapStateToProps = state => {
-  let allServers = state.peaks.filters.hierarchy.servers;
   let selections = state.peaks.filters.selections;
   let [selectedServers, visibleServers] = separateSelectedItems(
-    allServers,
+    state.peaks.filters.hierarchy.servers,
     selections.servers
   );
   let filteredServers = getFilteredServers(selections, visibleServers);
   return {
-    allItems: allServers,
     selectedItems: selectedServers,
-    visibleItems: filteredServers,
     blockTitle: "Servers",
     selectedTargetID: state.peaks.chartsOptions.targetID,
     selectedTargetType: state.peaks.chartsOptions.targetType,
+    visibleItems: filteredServers,
     currentTargetType: peaksTargetTypes.server,
     blockTitleIconClass: "fas fa-server mr-2"
   };

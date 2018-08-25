@@ -15,9 +15,8 @@ import { peaksTargetTypes } from "../../../common/constants";
 import FilterContainer from "./FilterContainer";
 
 const mapStateToProps = state => {
-  let allClusters = state.peaks.filters.hierarchy.clusters;
   let [selectedClusters, visibleClusters] = separateSelectedItems(
-    allClusters,
+    state.peaks.filters.hierarchy.clusters,
     state.peaks.filters.selections.clusters
   );
   // Target - item for displaying charts
@@ -29,7 +28,6 @@ const mapStateToProps = state => {
   return {
     visibleItems: visibleClusters,
     selectedItems: selectedClusters,
-    allItems: allClusters,
     blockTitle: "Clusters",
 
     selectedTargetID: state.peaks.chartsOptions.targetID,

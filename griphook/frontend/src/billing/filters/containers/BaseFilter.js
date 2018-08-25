@@ -29,7 +29,7 @@ export default class BaseFilterContainer extends Component {
     this.setState({ pageNumber });
   }
 
-  getSelectedItemIDs() {
+  getSelectedTargetIDs() {
     // check IDs only if target_type equals to current
     if (this.props.currentTargetType === this.props.selectedTargetType) {
       return this.props.selectedTargetIDs;
@@ -47,8 +47,11 @@ export default class BaseFilterContainer extends Component {
         setPageNumber={this.setPageNumber}
         blockTitle={this.props.blockTitle}
         onSearchInputChange={this.onSearchInputChange}
-        onItemClick={this.props.selectTarget}
-        selectedItemIDs={this.getSelectedItemIDs()}
+        onTargetClick={this.props.selectTarget}
+        selectedTargetIDs={this.getSelectedTargetIDs()}
+        selectedItems={this.props.selectedItems}
+        onSelectFilterItem={this.props.selectFilterItem}
+        onUnselectFilterItem={this.props.unSelectFilterItem}
         multiselect={this.props.multiselect}
       />
     );
