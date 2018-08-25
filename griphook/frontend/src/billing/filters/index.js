@@ -21,7 +21,7 @@ class BillingFiltersContainer extends Component {
           {/* <ProjectFilterContainer /> */}
           {/* <TeamFilterContainer /> */}
           <ClusterFilterContainer />
-          {/* <ServerFilterContainer /> */}
+          <ServerFilterContainer />
           {/* <GroupFilterContainer /> */}
         </div>
       </div>
