@@ -5,6 +5,8 @@ import MetricOptionsPeaker from "./options/index";
 import PieChartContainer from "./pieChart/index";
 import BillingTable from "./table/index";
 
+import "./main.css";
+
 class BillingPage extends Component {
   render() {
     return (
@@ -30,10 +32,7 @@ class BillingPage extends Component {
                 <PieChartContainer />
               </div>
             </div>
-
-            <div className="col-xl-9 col-lg-8 col-sm-12">
-              <BillingTable />
-            </div>
+            <BillingTable />
           </div>
         </div>
       </div>

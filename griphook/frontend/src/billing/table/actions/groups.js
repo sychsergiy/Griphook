@@ -13,9 +13,9 @@ export const fetchBillingTableDataBegin = () => ({
   type: types.FETCH_BILLING_TABLE_DATA_BEGIN
 });
 
-export const fetchBillingTableDataSuccess = items => ({
+export const fetchBillingTableDataSuccess = data => ({
   type: types.FETCH_BILLING_TABLE_DATA_SUCCESS,
-  items
+  data
 });
 
 export const fetchBillingTableDataFailure = error => ({

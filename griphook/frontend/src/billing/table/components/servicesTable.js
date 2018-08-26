@@ -9,17 +9,19 @@ const TableRow = props => (
 );
 
 const ServicesTableComponent = props => (
-  <div id="services-table">
-    <div className="container-fluid">
-      <div className="row services-table-header">
-        <div className="col-md-3 offset-md-3">Service</div>
-        <div className="col-md-3">CPU</div>
-        <div className="col-md-3">Memory</div>
+  <div className="collapsed-content col-12 col-lg-10 mx-auto">
+    <div id="services-table">
+      <div className="container-fluid">
+        <div className="row services-table-header">
+          <div className="col-md-3 offset-md-3">Service</div>
+          <div className="col-md-3">CPU</div>
+          <div className="col-md-3">Memory</div>
+        </div>
+        {props.services.map(service => (
+          <TableRow item={service} key={service.service_id} />
+        ))}
+        <div className="col-md-12">Chart here</div>
       </div>
-      {props.services.map(service => (
-        <TableRow item={service} key={service.service_id} />
-      ))}
-      <div className="col-md-12">Chart here</div>
     </div>
   </div>
 );

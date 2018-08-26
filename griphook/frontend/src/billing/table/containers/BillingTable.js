@@ -50,6 +50,7 @@ class BillingTableContainer extends Component {
 
 const mapStateToProps = state => ({
   requestOptions: {
+    page: 1,
     time_from: state.billing.options.timeFrom.format("YYYY-MM-DD"),
     time_until: state.billing.options.timeUntil.format("YYYY-MM-DD"),
     target_ids: state.billing.options.targetIDs,
