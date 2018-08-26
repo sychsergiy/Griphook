@@ -19,10 +19,7 @@ export default class BaseFilterContainer extends Component {
 
   onSearchInputChange(event) {
     const searchQuery = event.target.value;
-    let findedItems = this.props.allItems.filter(item =>
-      item.title.includes(searchQuery)
-    );
-    console.log(findedItems);
+    this.setState({ searchQuery });
   }
 
   setPageNumber(pageNumber) {
@@ -37,9 +34,14 @@ export default class BaseFilterContainer extends Component {
   }
 
   render() {
-    let page = paginator(this.props.visibleItems).getPage(
-      this.state.pageNumber
-    );
+    let visibleItems;
+    if (this.state.searchQuery) {
+      visibleItems = this.props.visibleItems.filter(item =>
+        item.title.includes(this.state.searchQuery)
+      );
+    } else visibleItems = this.props.visibleItems;
+
+    let page = paginator(visibleItems).getPage(this.state.pageNumber);
 
     return (
       <FilterBlockComponent
