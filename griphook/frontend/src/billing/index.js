@@ -21,8 +21,17 @@ class BillingPage extends Component {
               </div>
             </div>
 
+            <div class="pie-charts mt-2 mb-5">
+              <div class="card border-primary mb-3">
+                <h5 class="card-header">
+                  <i class="fas fa-chart-pie mr-2" />
+                  Pie Charts
+                </h5>
+                <PieChartContainer />
+              </div>
+            </div>
+
             <div className="col-xl-9 col-lg-8 col-sm-12">
-              <PieChartContainer />
               <BillingTable />
             </div>
           </div>
