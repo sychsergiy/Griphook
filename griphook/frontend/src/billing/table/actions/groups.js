@@ -23,6 +23,11 @@ export const fetchBillingTableDataFailure = error => ({
   error
 });
 
+export const setBillingTablePageNumber = pageNumber => ({
+  type: types.SET_BILLING_TABLE_PAGE_NUMBER,
+  pageNumber
+});
+
 export const fetchBillingTableData = options => dispatch => {
   dispatch(fetchBillingTableDataBegin());
   const data = {

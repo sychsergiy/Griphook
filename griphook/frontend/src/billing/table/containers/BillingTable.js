@@ -50,7 +50,7 @@ class BillingTableContainer extends Component {
 
 const mapStateToProps = state => ({
   requestOptions: {
-    page: 1,
+    page: state.billing.table.groups.pageNumber,
     time_from: state.billing.options.timeFrom.format("YYYY-MM-DD"),
     time_until: state.billing.options.timeUntil.format("YYYY-MM-DD"),
     target_ids: state.billing.options.targetIDs,
@@ -59,7 +59,7 @@ const mapStateToProps = state => ({
 
   loading: state.billing.table.groups.loading,
   error: state.billing.table.groups.error,
-  servicesGroups: state.billing.table.groups.items,
+  servicesGroups: state.billing.table.groups.pageItems,
   selectedGroupID: state.billing.table.groups.selectedItemID
 });
 const mapDispatchToProps = dispatch => ({
