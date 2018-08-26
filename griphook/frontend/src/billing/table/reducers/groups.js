@@ -17,7 +17,6 @@ export function groups(state = billingTableInitialState, action) {
       };
 
     case types.FETCH_BILLING_TABLE_DATA_SUCCESS:
-      console.log(action);
       return {
         ...state,
         loading: false,

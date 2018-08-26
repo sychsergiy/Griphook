@@ -31,7 +31,7 @@ export const fetchGroupServicesData = options => dispatch => {
       dispatch(fetchGroupServicesDataSuccess(json));
       return json;
     })
-    .catch(error => dispatch(fetchhGroupServicesDataFailure(error)));
+    .catch(error => dispatch(fetchGroupServicesDataFailure(error)));
 };
 
 function handleErrors(response) {
