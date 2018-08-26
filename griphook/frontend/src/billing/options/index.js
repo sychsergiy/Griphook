@@ -6,14 +6,14 @@ import TimeUntilPeacker from "./containers/TimeUntilPeacker";
 class MetricOptionsPeaker extends Component {
   render() {
     return (
-      <div class="d-flex justify-content-around flex-wrap">
-        <div class="">
-          <div class="form-group">
+      <div className="d-flex justify-content-around flex-wrap">
+        <div className="">
+          <div className="form-group">
             <label>Start date</label>
-            <div class="input-group">
-              <div class="input-group-prepend d-md-none d-lg-flex">
-                <span class="input-group-text">
-                  <i class="far fa-calendar-alt text-primary" />
+            <div className="input-group">
+              <div className="input-group-prepend d-md-none d-lg-flex">
+                <span className="input-group-text">
+                  <i className="far fa-calendar-alt text-primary" />
                 </span>
               </div>
               <TimeFromPeacker />
@@ -21,14 +21,14 @@ class MetricOptionsPeaker extends Component {
           </div>
         </div>
 
-        <div class="">
-          <div class="form-group">
-            <label for="end-date-input">End date</label>
-            <div class="input-group">
+        <div className="">
+          <div className="form-group">
+            <label>End date</label>
+            <div className="input-group">
               <TimeUntilPeacker />
-              <div class="input-group-append d-md-none d-lg-flex">
-                <span class="input-group-text">
-                  <i class="far fa-calendar-alt text-primary" />
+              <div className="input-group-append d-md-none d-lg-flex">
+                <span className="input-group-text">
+                  <i className="far fa-calendar-alt text-primary" />
                 </span>
               </div>
             </div>

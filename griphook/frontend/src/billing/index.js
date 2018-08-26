@@ -12,19 +12,19 @@ class BillingPage extends Component {
         <div className="d-flex flex-wrap flex-md-nowrap">
           <BillingFiltersContainer />
 
-          <div class="flex-grow-1 mx-md-1 mx-lg-4">
-            <div class="time-filter mt-2 mb-5">
-              <div class="card border-primary mb-3">
-                <div class="card-body">
+          <div className="flex-grow-1 mx-md-1 mx-lg-4">
+            <div className="time-filter mt-2 mb-5">
+              <div className="card border-primary mb-3">
+                <div className="card-body">
                   <MetricOptionsPeaker />
                 </div>
               </div>
             </div>
 
-            <div class="pie-charts mt-2 mb-5">
-              <div class="card border-primary mb-3">
-                <h5 class="card-header">
-                  <i class="fas fa-chart-pie mr-2" />
+            <div className="pie-charts mt-2 mb-5">
+              <div className="card border-primary mb-3">
+                <h5 className="card-header">
+                  <i className="fas fa-chart-pie mr-2" />
                   Pie Charts
                 </h5>
                 <PieChartContainer />
