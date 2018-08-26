@@ -1,5 +1,6 @@
-import DatePicker from "react-datepicker";
 import { connect } from "react-redux";
+
+import DatePicker from "react-datepicker";
 
 import { setTimeFromOption } from "../actions";
 

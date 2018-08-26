@@ -11,10 +11,20 @@ class BillingPage extends Component {
       <div className="container-fluid">
         <div className="d-flex flex-wrap flex-md-nowrap">
           <BillingFiltersContainer />
-          <div className="col-xl-9 col-lg-8 col-sm-12">
-            <MetricOptionsPeaker />
-            <PieChartContainer />
-            <BillingTable />
+
+          <div class="flex-grow-1 mx-md-1 mx-lg-4">
+            <div class="time-filter mt-2 mb-5">
+              <div class="card border-primary mb-3">
+                <div class="card-body">
+                  <MetricOptionsPeaker />
+                </div>
+              </div>
+            </div>
+
+            <div className="col-xl-9 col-lg-8 col-sm-12">
+              <PieChartContainer />
+              <BillingTable />
+            </div>
           </div>
         </div>
       </div>
