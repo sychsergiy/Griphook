@@ -10,7 +10,7 @@ from griphook.server.managers.constants import (
 
 class TestGetClusterSettingsAPI:
     def test_get_clusters(self, client, create_cluster_settings_test_data):
-        resp = client.get(url_for('settings_cluster.clusters_get_all'))
+        resp = client.get(url_for('settings_cluster.clusters-get-all'))
         assert resp.status_code == 200
         assert len(resp.json.get('clusters')) == 3
 
@@ -20,7 +20,7 @@ class TestClusterUpdateCPUPriceSettingsAPI:
         test_cluster_id = 2
         test_cpu_price = 5.2
         test_data = {'id': test_cluster_id, 'cpu_price': test_cpu_price}
-        resp = client.put(url_for('settings_cluster.cluster_update_cpu_price'), data=json.dumps(test_data))
+        resp = client.put(url_for('settings_cluster.cluster-update-cpu-price'), data=json.dumps(test_data))
         assert resp.status_code == 200
         assert resp.json == {'success': True}
 
@@ -28,7 +28,7 @@ class TestClusterUpdateCPUPriceSettingsAPI:
         test_cluster_id = 101
         test_cpu_price = 5.2
         test_data = {'id': test_cluster_id, 'cpu_price': test_cpu_price}
-        resp = client.put(url_for('settings_cluster.cluster_update_cpu_price'), data=json.dumps(test_data))
+        resp = client.put(url_for('settings_cluster.cluster-update-cpu-price'), data=json.dumps(test_data))
         assert resp.status_code == 400
         assert resp.json == {'error': EXC_CLUSTER_DOESNT_EXISTS.format(test_cluster_id)}
 
@@ -36,7 +36,7 @@ class TestClusterUpdateCPUPriceSettingsAPI:
         test_cluster_id = 2
         test_cpu_price = 5.2
         test_data = {'id': test_cluster_id, 'wrong_cpu_price': test_cpu_price}
-        resp = client.put(url_for('settings_cluster.cluster_update_cpu_price'), data=json.dumps(test_data))
+        resp = client.put(url_for('settings_cluster.cluster-update-cpu-price'), data=json.dumps(test_data))
         assert resp.status_code == 400
         assert resp.json == {'error': EXC_FIELD_IS_REQUIRED.format('cpu_price')}
 
@@ -56,7 +56,7 @@ class TestClusterUpdateCPUPriceSettingsAPI:
         test_cluster_id = 2
         test_wrong_cpu_price = 'wrong_cpu_price_value' # should be float or int
         test_data = {'id': test_cluster_id, 'cpu_price': test_wrong_cpu_price}
-        resp = client.put(url_for('settings_cluster.cluster_update_cpu_price'), data=json.dumps(test_data))
+        resp = client.put(url_for('settings_cluster.cluster-update-cpu-price'), data=json.dumps(test_data))
         assert resp.status_code == 400
         assert resp.json == {'error': test_error_text}
 
@@ -66,7 +66,7 @@ class TestClusterUpdateMemoryPriceSettingsAPI:
         test_cluster_id = 3
         test_memory_price = 2.2
         test_data = {'id': test_cluster_id, 'memory_price': test_memory_price}
-        resp = client.put(url_for('settings_cluster.cluster_update_memory_price'), data=json.dumps(test_data))
+        resp = client.put(url_for('settings_cluster.cluster-update-memory-price'), data=json.dumps(test_data))
         assert resp.status_code == 200
         assert resp.json == {'success': True}
 
@@ -74,7 +74,7 @@ class TestClusterUpdateMemoryPriceSettingsAPI:
         test_cluster_id = 101
         test_memory_price = 5.2
         test_data = {'id': test_cluster_id, 'memory_price': test_memory_price}
-        resp = client.put(url_for('settings_cluster.cluster_update_memory_price'), data=json.dumps(test_data))
+        resp = client.put(url_for('settings_cluster.cluster-update-memory-price'), data=json.dumps(test_data))
         assert resp.status_code == 400
         assert resp.json == {
             'error': EXC_CLUSTER_DOESNT_EXISTS.format(test_cluster_id)}
@@ -83,7 +83,7 @@ class TestClusterUpdateMemoryPriceSettingsAPI:
         test_cluster_id = 3
         test_memory_price = 5.2
         test_data = {'id': test_cluster_id, 'wrong_memory_price': test_memory_price}
-        resp = client.put(url_for('settings_cluster.cluster_update_memory_price'), data=json.dumps(test_data))
+        resp = client.put(url_for('settings_cluster.cluster-update-memory-price'), data=json.dumps(test_data))
         assert resp.status_code == 400
         assert resp.json == {'error': EXC_FIELD_IS_REQUIRED.format('memory_price')}
 
@@ -103,6 +103,6 @@ class TestClusterUpdateMemoryPriceSettingsAPI:
         test_cluster_id = 2
         test_wrong_memory_price = 'wrong_memory_price_value'  # should be float or int
         test_data = {'id': test_cluster_id, 'memory_price': test_wrong_memory_price}
-        resp = client.put(url_for('settings_cluster.cluster_update_memory_price'), data=json.dumps(test_data))
+        resp = client.put(url_for('settings_cluster.cluster-update-memory-price'), data=json.dumps(test_data))
         assert resp.status_code == 400
         assert resp.json == {'error': test_error_text}
