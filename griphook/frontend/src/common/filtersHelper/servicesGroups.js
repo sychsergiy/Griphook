@@ -39,10 +39,20 @@ export function servicesGroupFilter(initialServicesGroups) {
     return this;
   }
 
+  function filterByTeams(selectedTeams) {
+    if (!isEmpty(selectedTeams)) {
+      currentServicesGroups = currentServicesGroups.filter(servicesGroup =>
+        isServicesGroupInTeam(servicesGroup, selectedTeams)
+      );
+    }
+    return this;
+  }
+
   return {
     filterByServers,
     filterByClusters,
     filterByProjects,
+    filterByTeams,
     getItems: () => currentServicesGroups
   };
 }
@@ -66,6 +76,14 @@ function isServicesGroupInServer(servicesGroup, selectedClusters) {
 function isServicesGroupInProject(servicesGroup, selectedProjects) {
   for (let groupID of servicesGroup.projects_ids) {
     if (selectedProjects.includes(groupID)) {
+      return true;
+    }
+  }
+}
+
+function isServicesGroupInTeam(servicesGroup, selectedTeams) {
+  for (let groupID of servicesGroup.teams_ids) {
+    if (selectedTeams.includes(groupID)) {
       return true;
     }
   }

@@ -20,6 +20,7 @@ function getFilteredServicesGroups(selections, ServicesGroups) {
     .filterByClusters(selections.clusters)
     .filterByServers(selections.servers)
     .filterByProjects(selections.projects)
+    .filterByTeams(selections.teams)
     .getItems();
   return filteredServicesGroups;
 }
