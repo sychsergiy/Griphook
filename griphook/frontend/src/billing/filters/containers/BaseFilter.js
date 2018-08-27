@@ -8,28 +8,25 @@ import { FilterBlockComponent } from "../components/filterBlock";
 export default class BaseFilterContainer extends Component {
   constructor(props) {
     super();
+    this.state = {
+      pageNumber: 1,
+      searchQuery: ""
+    };
+
     this.onSearchInputChange = this.onSearchInputChange.bind(this);
-    this.incrementPageNumber = this.incrementPageNumber.bind(this);
-    this.decrementPageNumber = this.decrementPageNumber.bind(this);
+    this.setPageNumber = this.setPageNumber.bind(this);
   }
 
   onSearchInputChange(event) {
     const searchQuery = event.target.value;
-    let findedItems = this.props.allItems.filter(item =>
-      item.title.includes(searchQuery)
-    );
-    console.log(findedItems);
+    this.setState({ searchQuery });
   }
 
-  incrementPageNumber() {
-    this.props.setPageNumber(this.props.pageNumber + 1);
+  setPageNumber(pageNumber) {
+    this.setState({ pageNumber });
   }
 
-  decrementPageNumber() {
-    this.props.setPageNumber(this.props.pageNumber - 1);
-  }
-
-  getSelectedItemIDs() {
+  getSelectedTargetIDs() {
     // check IDs only if target_type equals to current
     if (this.props.currentTargetType === this.props.selectedTargetType) {
       return this.props.selectedTargetIDs;
@@ -37,28 +34,29 @@ export default class BaseFilterContainer extends Component {
   }
 
   render() {
-    let page = paginator(this.props.visibleItems).getPage(
-      this.props.pageNumber
-    );
+    let visibleItems;
+    if (this.state.searchQuery) {
+      visibleItems = this.props.visibleItems.filter(item =>
+        item.title.includes(this.state.searchQuery)
+      );
+    } else visibleItems = this.props.visibleItems;
+
+    let page = paginator(visibleItems).getPage(this.state.pageNumber);
 
     return (
-      <div>
-        <FilterBlockComponent
-          items={page.items}
-          blockTitle={this.props.blockTitle}
-          onSearchInputChange={this.onSearchInputChange}
-          onItemClick={this.props.selectTarget}
-          selectedItemIDs={this.getSelectedItemIDs()}
-          multiselect={this.props.multiselect}
-        />
-        {page.previousPageExists ? (
-          <div onClick={this.decrementPageNumber}>Previous Page</div>
-        ) : null}
-
-        {page.nextPageExists ? (
-          <div onClick={this.incrementPageNumber}>Next Page</div>
-        ) : null}
-      </div>
+      <FilterBlockComponent
+        page={page}
+        setPageNumber={this.setPageNumber}
+        blockTitle={this.props.blockTitle}
+        onSearchInputChange={this.onSearchInputChange}
+        onTargetClick={this.props.selectTarget}
+        selectedTargetIDs={this.getSelectedTargetIDs()}
+        selectedItems={this.props.selectedItems}
+        onSelectFilterItem={this.props.selectFilterItem}
+        onUnselectFilterItem={this.props.unSelectFilterItem}
+        multiselect={this.props.multiselect}
+        hideIcon={this.props.hideIcon}
+      />
     );
   }
 }

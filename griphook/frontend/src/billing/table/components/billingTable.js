@@ -1,31 +1,43 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 import BillingTableRowComponent from "./billingTableRow";
 
+import BillingTablePaginationContainer from "../containers/Pagination";
+
 const BillingTableComponent = props => {
   return (
-    <div id="billing-table">
-      <div className="container-fluid">
-        <div className="row billing-table-header">
-          <div className="col-md-4">ServicesGroup</div>
-          <div className="col-md-3">Project</div>
-          <div className="col-md-3">Team</div>
-          <div className="col-md-1">CPU</div>
-          <div className="col-md-1">Memory</div>
-        </div>
-
-        {props.groups.map((item, index) => {
-          return (
-            <BillingTableRowComponent
-              key={item.services_group_id}
-              item={item}
-              onExpandButtonClick={props.onExpandButtonClick}
-              selectedGroupID={props.selectedGroupID}
-            />
-          );
-        })}
+    <Fragment>
+      <div className="table-responsive services-group-table-outer border rounded border-primary">
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">
+                <span className="px-2">#</span>
+              </th>
+              <th scope="col">Services group</th>
+              <th scope="col">Project</th>
+              <th scope="col">Team</th>
+              <th scope="col">CPU</th>
+              <th scope="col">
+                <span className="pr-5 mr-5">Memory</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {props.groups.map(item => (
+              <BillingTableRowComponent
+                key={item.services_group_id}
+                isSelected={props.selectedGroupID === item.services_group_id}
+                item={item}
+                onExpandButtonClick={props.onExpandButtonClick}
+                selectedGroupID={props.selectedGroupID}
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
-    </div>
+      <BillingTablePaginationContainer />
+    </Fragment>
   );
 };
 

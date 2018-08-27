@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
-import { getFilteredServices } from "../servicesHelper";
+import { getFilteredServices } from "../../../common/filtersHelper/services";
 
 import { selectPeaksTarget } from "../../options/actions";
 
@@ -10,7 +10,6 @@ import { peaksTargetTypes } from "../../../common/constants";
 import FilterContainer from "./FilterContainer";
 
 const mapStateToProps = state => ({
-  allItems: state.peaks.filters.hierarchy.services,
   visibleItems: getFilteredServices(
     state.peaks.filters.selections,
     state.peaks.filters.hierarchy.services

@@ -1,10 +1,10 @@
-import React, { Fragment, Component } from "react";
+import React, { Fragment } from "react";
 
 import PeaksChartContainer from "./peaks/index";
 import AverageLoadChartContainer from "./averageLoad/index";
 
-import AverageLoadChartMetricTypeContainer from "./averageLoad/MetricTypePeacker";
-import PeaksChartMetricTypeContainer from "./peaks/MetricTypePeacker";
+import AverageLoadChartMetricTypeContainer from "./averageLoad/MetricTypePicker";
+import PeaksChartMetricTypeContainer from "./peaks/MetricTypePicker";
 
 // TODO: component for chart block wrapper
 // TODO: refactor this component

@@ -1,26 +1,40 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { setClustersPageNumber } from "../actions/pagination";
 import { setTargetOption } from "../../options/actions";
+
+import {
+  selectClusterFilter,
+  unSelectClusterFilter
+} from "../actions/selections";
+
+import { separateSelectedItems } from "../../../common/filtersHelper/common";
 
 import { billingTargetTypes } from "../../../common/constants";
 
 import BaseFilterContainer from "./BaseFilter";
 
-const mapStateToProps = state => ({
-  allItems: state.billing.filters.hierarchy.clusters, // for search
-  visibleItems: state.billing.filters.hierarchy.clusters, // paginator
-  pageNumber: state.billing.filters.pagination.clustersPageNumber,
-  currentTargetType: billingTargetTypes.cluster,
-  selectedTargetType: state.billing.options.targetType,
-  selectedTargetIDs: state.billing.options.targetIDs,
-  blockTitle: "Clusters"
-});
+const mapStateToProps = state => {
+  let [selectedClusters, unSelectedClusters] = separateSelectedItems(
+    state.billing.filters.hierarchy.clusters,
+    state.billing.filters.selections.clusters
+  );
+  return {
+    selectedItems: selectedClusters,
+    visibleItems: unSelectedClusters, // paginator
+    currentTargetType: billingTargetTypes.cluster,
+    selectedTargetType: state.billing.options.targetType,
+    selectedTargetIDs: state.billing.options.targetIDs,
+    blockTitle: "Clusters"
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
-  setPageNumber: pageNumber => {
-    dispatch(setClustersPageNumber(pageNumber));
+  selectFilterItem: clusterID => {
+    dispatch(selectClusterFilter(clusterID));
+  },
+  unSelectFilterItem: clusterID => {
+    dispatch(unSelectClusterFilter(clusterID));
   },
   selectTarget: targetID => {
     dispatch(setTargetOption(targetID, billingTargetTypes.cluster));

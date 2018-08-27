@@ -1,31 +1,29 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
-import { getFilteredServicesGroups } from "../servicesGroupsHelper";
+import { separateSelectedItems } from "../../../common/filtersHelper/common";
+import { getFilteredServicesGroups } from "../../../common/filtersHelper/servicesGroups";
 
 import { selectPeaksTarget } from "../../options/actions";
 
 import {
   selectServicesGroupFilter,
-  unselectServicesGroupFilter
+  unSelectServicesGroupFilter
 } from "../actions/selections";
 
-import { separateSelectedItems } from "../common";
 import { peaksTargetTypes } from "../../../common/constants";
 
 import FilterContainer from "./FilterContainer";
 
 const mapStateToProps = state => {
-  let allGroups = state.peaks.filters.hierarchy.servicesGroups;
   let selections = state.peaks.filters.selections;
   let [selectedGroups, visibleGroups] = separateSelectedItems(
-    allGroups,
+    state.peaks.filters.hierarchy.servicesGroups,
     selections.servicesGroups
   );
 
   let filteredGroups = getFilteredServicesGroups(selections, visibleGroups);
   return {
-    allItems: allGroups,
     selectedItems: selectedGroups,
     visibleItems: filteredGroups,
     blockTitle: "Services Groups",
@@ -40,8 +38,8 @@ const mapDispatchToProps = dispatch => ({
   selectFilterItem: servicesGroupID => {
     dispatch(selectServicesGroupFilter(servicesGroupID));
   },
-  unselectFilterItem: servicesGroupID => {
-    dispatch(unselectServicesGroupFilter(servicesGroupID));
+  unSelectFilterItem: servicesGroupID => {
+    dispatch(unSelectServicesGroupFilter(servicesGroupID));
   },
 
   selectTarget: targetID => {

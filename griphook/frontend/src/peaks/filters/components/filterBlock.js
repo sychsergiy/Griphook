@@ -1,7 +1,4 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-
-import { SearchInputComponent } from "./searchInput";
+import React from "react";
 
 import FilterBlockItemComponent from "./filterBlockItem";
 
@@ -15,8 +12,6 @@ import FilterBlockItemComponent from "./filterBlockItem";
 }
 
 export const FilterBlockComponent = props => {
-  const selectedTargetClass = "list-group-item active-filter active";
-  const unSelectedTargetClass = "list-group-item";
   return (
     <div className="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
       <div className="card border-primary mt-2 ">

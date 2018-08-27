@@ -4,8 +4,7 @@ module.exports = {
     entry: "./src/index.js",
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "bundle.js",
-        publicPath: '/',
+        filename: "bundle.js"
     },
     module: {
         rules: [
@@ -14,18 +13,12 @@ module.exports = {
                 exclude: /node_modules/,
                 use: {
                     loader: "babel-loader"
-                },
-
+                }
             },
             {
                 test: /\.css$/,
-                use: [
-                    {
-                        loader: 'css-loader'
-                    },
-                ]
+                use: ['style-loader', 'css-loader']
             }
-
         ]
-    },
+    }
 };

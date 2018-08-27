@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 
 const FilterBlockItemComponent = props => {
   const selectedTargetClass = "list-group-item active-filter active";
@@ -15,7 +15,7 @@ const FilterBlockItemComponent = props => {
         props.isTargetSelected ? selectedTargetClass : unSelectedTargetClass
       }
     >
-      <span onClick={() => props.onItemClick(props.item.id)}>
+      <span onClick={() => props.onTargetClick(props.item.id)}>
         {props.item.title}
       </span>
 

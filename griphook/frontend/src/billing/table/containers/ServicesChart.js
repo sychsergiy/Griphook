@@ -1,21 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { Line } from "react-chartjs-2";
+import ServicesChartComponent from "../components/servicesChart";
 
 import { fetchGroupChartData } from "../actions/groupChart";
 
-const metricTypes = {
-  cpu: "cpu",
-  memory: "Memory"
-};
+import { metricTypes } from "../../../common/constants";
 
 class ServicesChartContainer extends Component {
   constructor(props) {
     super();
-    this.setMemoryMetricType = this.setMemoryMetricType.bind(this);
-    this.setCpuMetricType = this.setCpuMetricType.bind(this);
-
+    this.setMetricType = this.setMetricType.bind(this);
     this.state = {
       metricType: metricTypes.memory
     };
@@ -25,12 +20,12 @@ class ServicesChartContainer extends Component {
     this.props.fetchChartData(this.props.requestOptions);
   }
 
-  constructChartData(chartData, label) {
+  constructChartData(chartData) {
     let constructedData = {
       labels: chartData.timeline,
       datasets: [
         {
-          label: label,
+          label: this.state.metricType,
           data: chartData.values,
           fill: false,
           pointRadius: 0,
@@ -41,15 +36,9 @@ class ServicesChartContainer extends Component {
     };
     return constructedData;
   }
-  setCpuMetricType() {
-    this.setState({
-      metricType: metricTypes.cpu
-    });
-  }
-  setMemoryMetricType() {
-    this.setState({
-      metricType: metricTypes.memory
-    });
+
+  setMetricType(metricType) {
+    this.setState({ metricType });
   }
 
   render() {
@@ -60,42 +49,22 @@ class ServicesChartContainer extends Component {
     if (this.props.error) {
       return this.props.error.toString();
     }
+
     let { cpu, memory } = this.props.chartData;
-    let chartOptions = {
-      scales: {
-        xAxes: [
-          {
-            type: "time",
-            distribution: "series"
-          }
-        ]
-      }
-    };
 
-    let chart = null;
+    // TODO: separete chart data fetch for each metric type
+    let chartData = {};
     if (this.state.metricType === metricTypes.memory) {
-      chart = memory ? (
-        <Line
-          data={this.constructChartData(memory, "Memory")}
-          options={chartOptions}
-        />
-      ) : null;
+      chartData = memory ? this.constructChartData(memory) : {};
     } else if (this.state.metricType === metricTypes.cpu) {
-      chart = cpu ? (
-        <Line
-          data={this.constructChartData(cpu, "CPU")}
-          options={chartOptions}
-        />
-      ) : null;
+      chartData = cpu ? this.constructChartData(cpu) : {};
     }
-
     return (
-      <div>
-        <button onClick={this.setCpuMetricType}>Cpu</button>
-        <button onClick={this.setMemoryMetricType}>Memory</button>
-
-        {chart}
-      </div>
+      <ServicesChartComponent
+        setMetricType={this.setMetricType}
+        metricType={this.state.metricType}
+        chartData={chartData}
+      />
     );
   }
 }

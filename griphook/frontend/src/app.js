@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 
 import PeaksPage from "./peaks/index";
@@ -7,6 +6,8 @@ import AdminPage from "./admin/index";
 import BillingPage from "./billing/index";
 
 import HeaderComponent from "./common/headerComponent";
+
+import "./main.css";
 
 class App extends Component {
   render() {

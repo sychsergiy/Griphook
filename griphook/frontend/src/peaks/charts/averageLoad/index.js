@@ -13,7 +13,7 @@ class AverageLoadChartContainer extends Component {
       !isEquivalent(nextProps.requestOptions, this.props.requestOptions) &&
       nextProps.requestOptions.target_id; // target ID must be not null
     if (isRefetchNeeded) {
-      this.props.fetchChartdata(nextProps.requestOptions);
+      this.props.fetchChartData(nextProps.requestOptions);
     }
   }
 
@@ -65,7 +65,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchChartdata: options => {
+  fetchChartData: options => {
     dispatch(fetchAverageLoadChartData(options));
   }
 });

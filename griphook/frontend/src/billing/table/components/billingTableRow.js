@@ -1,41 +1,55 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 import ServicesChartContainer from "../containers/ServicesChart";
 import ServicesTableContainer from "../containers/ServicesTable";
 
-const BillingTableRowComponent = props => {
-  const isSelected = props.selectedGroupID === props.item.services_group_id;
-  const icon = isSelected ? "-" : "+";
-  return (
-    <div className="row">
-      <div className="col-md-4">
-        <button
-          onClick={() => {
-            props.onExpandButtonClick(props.item.services_group_id);
-          }}
-          type="button"
-          className="btn btn-sm btn-light"
-        >
-          {icon}
-        </button>
-        {props.item.services_group_title}
+const CollapsedRowBoxComponent = props => (
+  <tr className="collapsable-row">
+    <td colSpan="6">
+      <div className="collapsed-block">
+        {/* // TODO: add loader */}
+        {/* <div className="collapse-loader-outer">
+          <div className="collapsed-loader mx-auto">
+            <div />
+            <div />
+            <div />
+            <div />
+          </div>
+        </div> */}
+        <div className="collapsed-content col-12 col-lg-10 mx-auto">
+          <div className="child-services">
+            <ServicesTableContainer />
+          </div>
+        </div>
+        <ServicesChartContainer />
       </div>
-      <div className="col-md-3">{props.item.team}</div>
-      <div className="col-md-3">{props.item.project}</div>
-      <div className="col-md-1">{props.item.cpu_sum}</div>
-      <div className="col-md-1">{props.item.memory_sum}</div>
+    </td>
+  </tr>
+);
 
-      {isSelected ? (
-        <div className="col-md-12">
-          <ServicesTableContainer />
-        </div>
-      ) : null}
-      {isSelected ? (
-        <div className="col-md-12">
-          <ServicesChartContainer />
-        </div>
-      ) : null}
-    </div>
+const BillingTableRowComponent = props => {
+  const iconClass = props.isSelected ? "fa-minus hide" : "fa-plus show";
+  const rowClass = props.isSelected ? "table-info" : "";
+  return (
+    <Fragment>
+      <tr className={rowClass}>
+        <th scope="row">
+          <i
+            className={`fas ${iconClass}-collapse-data py-1 px-2`}
+            onClick={e =>
+              props.onExpandButtonClick(props.item.services_group_id)
+            }
+          />
+        </th>
+        <td>{props.item.services_group_title}</td>
+        <td>{props.item.team}</td>
+        <td>{props.item.project}</td>
+        <td>{props.item.cpu_sum}</td>
+        <td>{props.item.memory_sum}</td>
+      </tr>
+
+      {props.isSelected ? <CollapsedRowBoxComponent /> : null}
+    </Fragment>
   );
 };
 

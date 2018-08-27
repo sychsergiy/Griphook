@@ -1,23 +1,22 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
 import { selectPeaksTarget } from "../../options/actions";
 
 import {
   selectClusterFilter,
-  unselectClusterFilter
+  unSelectClusterFilter
 } from "../actions/selections";
 
-import { separateSelectedItems } from "../common";
+import { separateSelectedItems } from "../../../common/filtersHelper/common";
 
 import { peaksTargetTypes } from "../../../common/constants";
 
 import FilterContainer from "./FilterContainer";
 
 const mapStateToProps = state => {
-  let allClusters = state.peaks.filters.hierarchy.clusters;
   let [selectedClusters, visibleClusters] = separateSelectedItems(
-    allClusters,
+    state.peaks.filters.hierarchy.clusters,
     state.peaks.filters.selections.clusters
   );
   // Target - item for displaying charts
@@ -29,8 +28,7 @@ const mapStateToProps = state => {
   return {
     visibleItems: visibleClusters,
     selectedItems: selectedClusters,
-    allItems: allClusters,
-    blockTitle: "Cluster",
+    blockTitle: "Clusters",
 
     selectedTargetID: state.peaks.chartsOptions.targetID,
     selectedTargetType: state.peaks.chartsOptions.targetType,
@@ -43,8 +41,8 @@ const mapDispatchToProps = dispatch => ({
   selectFilterItem: clusterID => {
     dispatch(selectClusterFilter(clusterID));
   },
-  unselectFilterItem: clusterID => {
-    dispatch(unselectClusterFilter(clusterID));
+  unSelectFilterItem: clusterID => {
+    dispatch(unSelectClusterFilter(clusterID));
   },
 
   selectTarget: targetID => {

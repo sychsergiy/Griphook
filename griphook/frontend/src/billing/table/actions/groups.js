@@ -13,14 +13,19 @@ export const fetchBillingTableDataBegin = () => ({
   type: types.FETCH_BILLING_TABLE_DATA_BEGIN
 });
 
-export const fetchBillingTableDataSuccess = items => ({
+export const fetchBillingTableDataSuccess = data => ({
   type: types.FETCH_BILLING_TABLE_DATA_SUCCESS,
-  items
+  data
 });
 
 export const fetchBillingTableDataFailure = error => ({
   type: types.FETCH_BILLING_TABLE_DATA_FAILURE,
   error
+});
+
+export const setBillingTablePageNumber = pageNumber => ({
+  type: types.SET_BILLING_TABLE_PAGE_NUMBER,
+  pageNumber
 });
 
 export const fetchBillingTableData = options => dispatch => {

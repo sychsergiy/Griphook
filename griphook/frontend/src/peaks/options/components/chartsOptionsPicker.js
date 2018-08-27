@@ -1,10 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 
 import DatePicker from "react-datepicker";
 
-import TimeStepPeackerComponent from "./timeStepPeacker";
+import TimeStepPickerComponent from "./timeStepPicker";
 
-const ChartsOptionsPeackerComponent = props => (
+const ChartsOptionsPickerComponent = props => (
   <div className="row">
     <div className="col-12 col-sm-8 offset-sm-2 offset-md-0 col-md-4">
       <div className="form-group">
@@ -27,7 +27,7 @@ const ChartsOptionsPeackerComponent = props => (
     <div className="col-12 col-sm-8 offset-sm-2 offset-md-0 col-md-4 px-lg-5">
       <div className="form-group">
         <label>Step</label>
-        <TimeStepPeackerComponent
+        <TimeStepPickerComponent
           currentTimeStep={props.currentTimeStep}
           onTimeStepChange={e => props.onTimeStepChange(e.target.value)}
         />
@@ -53,4 +53,4 @@ const ChartsOptionsPeackerComponent = props => (
   </div>
 );
 
-export default ChartsOptionsPeackerComponent;
+export default ChartsOptionsPickerComponent;

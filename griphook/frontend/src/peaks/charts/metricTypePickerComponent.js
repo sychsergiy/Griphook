@@ -2,7 +2,7 @@ import React from "react";
 
 import { metricTypes } from "../../common/constants";
 
-const MetricTypePeackerComponent = props => (
+const MetricTypePickerComponent = props => (
   <div className="form-group float-right">
     <div
       className="custom-control custom-radio"
@@ -37,4 +37,4 @@ const MetricTypePeackerComponent = props => (
   </div>
 );
 
-export default MetricTypePeackerComponent;
+export default MetricTypePickerComponent;

@@ -1,7 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
-import ChartsOptionsPeackerComponent from "./components/chartsOptionsPeacker";
+import 'react-datepicker/dist/react-datepicker.css';
+
+import ChartsOptionsPickerComponent from "./components/chartsOptionsPicker";
 
 import {
   setTimeFromOption,
@@ -30,4 +32,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ChartsOptionsPeackerComponent);
+)(ChartsOptionsPickerComponent);

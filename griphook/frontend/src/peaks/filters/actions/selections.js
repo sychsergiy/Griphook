@@ -5,7 +5,7 @@ export const selectClusterFilter = clusterID => ({
   clusterID
 });
 
-export const unselectClusterFilter = clusterID => ({
+export const unSelectClusterFilter = clusterID => ({
   type: types.UNSELECT_CLUSTER_FILTER,
   clusterID
 });
@@ -15,7 +15,7 @@ export const selectServerFilter = serverID => ({
   serverID
 });
 
-export const unselectServerFilter = serverID => ({
+export const unSelectServerFilter = serverID => ({
   type: types.UNSELECT_SERVER_FILTER,
   serverID
 });
@@ -25,7 +25,7 @@ export const selectServicesGroupFilter = servicesGroupID => ({
   servicesGroupID
 });
 
-export const unselectServicesGroupFilter = servicesGroupID => ({
+export const unSelectServicesGroupFilter = servicesGroupID => ({
   type: types.UNSELECT_SERVICES_GROUP_FILTER,
   servicesGroupID
 });

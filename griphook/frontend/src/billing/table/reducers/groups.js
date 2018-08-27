@@ -1,7 +1,12 @@
 import * as types from "../actionTypes";
 
 const billingTableInitialState = {
-  items: [],
+  pageItems: [],
+  pagesCount: 1,
+  pageNumber: 1,
+  nextPageExists: false,
+  previousPageExists: false,
+
   selectedItemID: null,
   loading: false,
   error: null
@@ -20,7 +25,11 @@ export function groups(state = billingTableInitialState, action) {
       return {
         ...state,
         loading: false,
-        items: action.items
+        pageItems: action.data.table_data,
+        // TODO: update API and rename pages to pages_count
+        // nextPageExists: action.data.next_page_exists,
+        // previousPageExists: action.data.previous_page_exists,
+        pagesCount: action.data.pages
       };
 
     case types.FETCH_BILLING_TABLE_DATA_FAILURE:
@@ -40,6 +49,9 @@ export function groups(state = billingTableInitialState, action) {
         ...state,
         selectedItemID: null
       };
+
+    case types.SET_BILLING_TABLE_PAGE_NUMBER:
+      return { ...state, pageNumber: action.pageNumber };
 
     default:
       return state;
