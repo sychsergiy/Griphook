@@ -38,8 +38,17 @@ def test_get_services_groups_hierarchy_part(
             "title": "group1",
             "servers_ids": [1, 2, 3],
             "clusters_ids": [1, 2],
+            "projects_ids": [],
+            "teams_ids": [],
         },
-        {"id": 2, "title": "group2", "servers_ids": [3], "clusters_ids": [2]},
+        {
+            "id": 2,
+            "title": "group2",
+            "servers_ids": [3],
+            "clusters_ids": [2],
+            "projects_ids": [],
+            "teams_ids": [],
+        },
     )
     assert services_groups == expected_services_groups
 

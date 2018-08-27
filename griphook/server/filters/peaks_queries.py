@@ -24,14 +24,18 @@ def get_servers_hierarchy_part():
 
 def get_services_groups_hierarchy_part():
     services_groups_query = (
-        ServicesGroup.query.join(Service)
-        .join(Server)
+        ServicesGroup.query.join(
+            Service, Service.services_group_id == ServicesGroup.id
+        )
+        .join(Server, Server.id == Service.server_id)
         .group_by(ServicesGroup.title, ServicesGroup.id)
         .with_entities(
             ServicesGroup.id,
             ServicesGroup.title,
             array_agg(Service.server_id).label("servers_ids"),
             array_agg(Server.cluster_id).label("clusters_ids"),
+            array_agg(ServicesGroup.project_id).label("projects_ids"),
+            array_agg(ServicesGroup.team_id).label("teams_ids"),
         )
     )
     services_groups = tuple(
@@ -40,8 +44,19 @@ def get_services_groups_hierarchy_part():
             "title": title,
             "servers_ids": list(set(servers_ids)),
             "clusters_ids": list(set(clusters_ids)),
+            "projects_ids": list(
+                set(project_id for project_id in projects_ids if project_id)
+            ),
+            "teams_ids": list(set(team_id for team_id in teams_ids if team_id)),
         }
-        for (id_, title, servers_ids, clusters_ids) in services_groups_query
+        for (
+            id_,
+            title,
+            servers_ids,
+            clusters_ids,
+            projects_ids,
+            teams_ids,
+        ) in services_groups_query
     )
     return services_groups
 
