@@ -2,8 +2,6 @@ import json
 
 from flask import url_for
 
-TIME_FORMAT = "%Y-%m-%d"
-
 
 def request_without_required_field(client, url, data, field):
     value = data[field]
@@ -20,20 +18,30 @@ def request_without_required_field(client, url, data, field):
 
 def test_validation_request_data(app, billing_table_endpoint_request_data):
     client = app.test_client()
-    url = url_for("billing.get_filtered_billing_table_data")
+    url = url_for("billing.get-filtered-billing-table-data")
     for key in billing_table_endpoint_request_data:
         response = request_without_required_field(
             client, url, billing_table_endpoint_request_data, key
         )
-        error_msg = json.loads(response.data.decode("utf-8")).get(key)
+        error_msg = response.json
         assert response.status_code == 400
         assert error_msg
 
 
-def test_billing_table_endpoint_response_data(app, clusters, teams, projects, servers, services_groups, services,
-                                              billing_batch_stories, metrics, billing_table_endpoint_request_data):
-    client = app.test_client()
-    url = url_for("billing.get_filtered_billing_table_data")
+def test_billing_table_endpoint_response_data(
+    app,
+    client,
+    clusters,
+    teams,
+    projects,
+    servers,
+    services_groups,
+    services,
+    billing_batch_stories,
+    metrics,
+    billing_table_endpoint_request_data,
+):
+    url = url_for("billing.get-filtered-billing-table-data")
     response = client.post(
         url,
         data=json.dumps(billing_table_endpoint_request_data),
@@ -41,3 +49,5 @@ def test_billing_table_endpoint_response_data(app, clusters, teams, projects, se
         content_type="application/json",
     )
     assert response.status_code == 200
+    resp_data = response.json.get("table_data")
+    assert len(resp_data) == 5

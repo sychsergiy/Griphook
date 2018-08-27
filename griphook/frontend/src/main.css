@@ -1,0 +1,27 @@
+.filter-wrapper li.list-group-item:hover {
+  cursor: pointer;
+}
+
+.filter-wrapper li.list-group-item:not(.active):hover {
+  background-color: #eceff0;
+}
+
+ul.list-group.compact li {
+  padding: 7px;
+}
+
+i.add-filter-rule:hover,
+i.remove-filter-rule:hover {
+  cursor: pointer;
+  color: #3498db;
+}
+
+.filter-group {
+  width: 340px;
+}
+
+@media (max-width: 767.98px) {
+  .filter-group {
+    width: 100%;
+  }
+}
