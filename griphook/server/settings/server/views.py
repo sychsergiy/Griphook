@@ -17,6 +17,9 @@ from griphook.server.settings.constants import (
 
 
 class GetServers(View):
+    """
+    API method for getting all servers.
+    """
     methods = ['GET']
 
     def dispatch_request(self):
@@ -28,6 +31,23 @@ class GetServers(View):
 
 
 class ServerUpdateCPUPrice(View):
+    """
+    API method for update server CPU price.
+
+    Incoming data format:
+    {
+        "id": integer | required,
+        "cpu_price": float | required
+    }
+
+    If the incoming data is not valid or server doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):
@@ -59,6 +79,23 @@ class ServerUpdateCPUPrice(View):
 
 
 class ServerUpdateMemoryPrice(View):
+    """
+    API method for update server memory price.
+
+    Incoming data format:
+    {
+        "id": integer | required,
+        "memory_price": float | required
+    }
+
+    If the incoming data is not valid or server doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):

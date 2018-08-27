@@ -22,6 +22,9 @@ from griphook.server.settings.constants import (
 
 
 class GetTeams(View):
+    """
+    API method for getting all teams.
+    """
     methods = ['GET']
 
     def dispatch_request(self):
@@ -33,6 +36,24 @@ class GetTeams(View):
 
 
 class TeamCreate(View):
+    """
+    API method for create new team instance.
+
+    Incoming data format:
+    {
+        "title": string | required
+    }
+
+    If the incoming data is not valid or the name already exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean,
+        "id": integer,
+        "title": string
+    }
+    """
     methods = ['POST']
 
     def dispatch_request(self):
@@ -66,6 +87,23 @@ class TeamCreate(View):
 
 
 class TeamUpdateTitle(View):
+    """
+    API method for update team title.
+
+    Incoming data format:
+    {
+        "id": integer | required
+        "title": string | required
+    }
+
+    If the incoming data is not valid or team doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):
@@ -97,6 +135,22 @@ class TeamUpdateTitle(View):
 
 
 class TeamDelete(View):
+    """
+    API method for delete team instance.
+
+    Incoming data format:
+    {
+        "id": integer | required
+    }
+
+    If the incoming data is not valid or team doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['DELETE']
 
     def dispatch_request(self):
@@ -126,6 +180,23 @@ class TeamDelete(View):
 
 
 class TeamAttachToServicesGroup(View):
+    """
+    API method for attach team to services_group.
+
+    Incoming data format:
+    {
+        "project_id": integer | required,
+        "services_group_id": integer | required
+    }
+
+    If the incoming data is not valid, team or services_group doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):
@@ -154,6 +225,22 @@ class TeamAttachToServicesGroup(View):
 
 
 class TeamDetachFromServicesGroup(View):
+    """
+    API method for detach team from services_group.
+
+    Incoming data format:
+    {
+        "services_group_id": integer | required
+    }
+
+    If the incoming data is not valid or services_group doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):

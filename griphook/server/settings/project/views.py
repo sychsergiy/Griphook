@@ -21,6 +21,9 @@ from griphook.server.settings.constants import (
 
 
 class GetProjects(View):
+    """
+    API method for getting all projects.
+    """
     methods = ['GET']
 
     def dispatch_request(self):
@@ -32,6 +35,24 @@ class GetProjects(View):
 
 
 class ProjectCreate(View):
+    """
+    API method for create new project instance.
+
+    Incoming data format:
+    {
+        "title": string | required
+    }
+
+    If the incoming data is not valid or the name already exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean,
+        "id": integer,
+        "title": string
+    }
+    """
     methods = ['POST']
 
     def dispatch_request(self):
@@ -65,6 +86,23 @@ class ProjectCreate(View):
 
 
 class ProjectUpdateTitle(View):
+    """
+    API method for update project title.
+
+    Incoming data format:
+    {
+        "id": integer | required
+        "title": string | required
+    }
+
+    If the incoming data is not valid or project doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):
@@ -96,6 +134,22 @@ class ProjectUpdateTitle(View):
 
 
 class ProjectDelete(View):
+    """
+    API method for delete project instance.
+
+    Incoming data format:
+    {
+        "id": integer | required
+    }
+
+    If the incoming data is not valid or project doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['DELETE']
 
     def dispatch_request(self):
@@ -125,6 +179,23 @@ class ProjectDelete(View):
 
 
 class ProjectAttachToServicesGroup(View):
+    """
+    API method for attach project to services_group.
+
+    Incoming data format:
+    {
+        "project_id": integer | required,
+        "services_group_id": integer | required
+    }
+
+    If the incoming data is not valid, project or services_group doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):
@@ -153,6 +224,22 @@ class ProjectAttachToServicesGroup(View):
 
 
 class ProjectDetachFromServicesGroup(View):
+    """
+    API method for detach project from services_group.
+
+    Incoming data format:
+    {
+        "services_group_id": integer | required
+    }
+
+    If the incoming data is not valid or services_group doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):

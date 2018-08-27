@@ -17,6 +17,9 @@ from griphook.server.settings.constants import (
 
 
 class GetClusters(View):
+    """
+    API method for getting all clusters.
+    """
     methods = ['GET']
 
     def dispatch_request(self):
@@ -28,6 +31,22 @@ class GetClusters(View):
 
 
 class ClusterUpdateCPUPrice(View):
+    """
+    API method for update cluster CPU price.
+
+    Incoming data format:
+    {
+        "id": integer | required,
+        "cpu_price": float | required
+    }
+    If the incoming data is not valid or cluster doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):
@@ -59,6 +78,23 @@ class ClusterUpdateCPUPrice(View):
 
 
 class ClusterUpdateMemoryPrice(View):
+    """
+    API method for update cluster memory price.
+
+    Incoming data format:
+    {
+        "id": integer | required,
+        "memory_price": float | required
+    }
+
+    If the incoming data is not valid or cluster doesn't exists,
+    the error information will be returned.
+
+    Result data format:
+    {
+        "success": boolean
+    }
+    """
     methods = ['PUT']
 
     def dispatch_request(self):
