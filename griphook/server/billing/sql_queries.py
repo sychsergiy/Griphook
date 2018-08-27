@@ -84,12 +84,8 @@ def get_billing_table_data(filters):
 def get_services_group_data_group_by_services(
     services_group_id, time_from, time_until
 ):
-    cpu = func.sum(
-        case_builder(ALLOWED_METRIC_TYPES.get("user_cpu_percent"))
-    ).label("cpu")
-    memory = func.sum(case_builder(ALLOWED_METRIC_TYPES.get("vsize"))).label(
-        "memory"
-    )
+    cpu = case_builder(ALLOWED_METRIC_TYPES.get("user_cpu_percent")).label("cpu")
+    memory = case_builder(ALLOWED_METRIC_TYPES.get("vsize")).label("memory")
     query = (
         MetricBilling.query.join(
             Service, MetricBilling.service_id == Service.id

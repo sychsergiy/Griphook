@@ -1,0 +1,2 @@
+class AdminExists(Exception):
+    pass
