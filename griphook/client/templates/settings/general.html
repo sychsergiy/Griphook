@@ -1,0 +1,76 @@
+{% extends 'settings/_base_settings.html' %}
+
+{% block content2 %}
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs">
+      <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#projects">Projects</a></li>
+      <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#teams">Teams</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div id="tabs_content" class="tab-content">
+        <!-- Tab Projects -->
+        <div id="projects" class="container tab-pane active col-9"><br>
+            <h4>Updating project list</h4>
+            <!-- Input Group Projects -->
+            <div class="input-group input-group-sm mb-3">
+                <input id="input_project" type="text" class="form-control" placeholder="Enter project name" aria-label="Enter project name" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button id="add_project" class="btn btn-outline-secondary" type="button" data-action="add_project">Add project</button>
+                </div>
+            </div>
+            <!-- Table Projects -->
+            <table class="table table-sm table-borderless">
+                <thead class="thead-dark">
+                    <tr>
+                      <th scope="col" class="col-8">Project name</th>
+                      <th scope="col" class="col-2"></th>
+                      <th scope="col" class="col-2"></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body-projects">
+                    {% for project in projects %}
+                        <tr data-project-id={{project.id}}>
+                          <td>{{project.title}}</td>
+                          <td><button type="button" class="btn btn-sm btn-block btn-danger" data-action="edit_project"><span class="fa fa-pencil-square-o"></span> Edit</button></td>
+                          <td><button type="button" class="btn btn-sm btn-block btn-danger" data-action="del_project"><span class="fa fa-trash-o"></span> Delete</button></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Tab Teams -->
+        <div id="teams" class="container tab-pane col-9"><br>
+            <h4>Updating team list</h4>
+            <!-- Input Group Teams -->
+            <div class="input-group input-group-sm mb-3">
+                <input id="input_team" type="text" class="form-control" placeholder="Enter team name" aria-label="Enter team name" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button id="add_team" class="btn btn-outline-secondary" type="button" data-action="add_team">Add team</button>
+                </div>
+            </div>
+            <!-- Table Teams -->
+            <table class="table table-sm table-borderless">
+                <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">Team name</th>
+                      <th scope="col"></th>
+                      <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body-teams">
+                    {% for team in teams %}
+                        <tr data-team-id={{team.id}}>
+                          <td class="col-8">{{team.title}}</td>
+                          <td class="col-2"><button type="button" class="btn btn-sm btn-block btn-danger" data-action="edit_team"><span class="fa fa-pencil-square-o"></span> Edit</button></td>
+                          <td class="col-2"><button type="button" class="btn btn-sm btn-block btn-danger" data-action="del_team"><span class="fa fa-trash-o"></span> Delete</button></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{{ url_for('static', filename='js/settings/settings_general.es6') }}"></script>
+{% endblock %}
