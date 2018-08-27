@@ -197,7 +197,6 @@ class MetricBilling(db.Model):
     )
 
 
-
 # Auth models
 class Admin(db.Model):
     __tablename__ = "admins"
