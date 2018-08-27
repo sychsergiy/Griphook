@@ -7,12 +7,22 @@ import {
   removeGroupFromTargetIDs
 } from "../../options/actions";
 
-import { getFilteredServicesGroups } from "../../../common/filtersHelper/servicesGroups";
+import { servicesGroupFilter } from "../../../common/filtersHelper/servicesGroups";
 import { separateSelectedItems } from "../../../common/filtersHelper/common";
 
 import { billingTargetTypes } from "../../../common/constants";
 
 import BaseFilterContainer from "./BaseFilter";
+
+function getFilteredServicesGroups(selections, ServicesGroups) {
+  // TODO: this function must take cluster and servers as arugments
+  let filteredServicesGroups = servicesGroupFilter(ServicesGroups)
+    .filterByClusters(selections.clusters)
+    .filterByServers(selections.servers)
+    .filterByProjects(selections.projects)
+    .getItems();
+  return filteredServicesGroups;
+}
 
 class ServicesGroupFilterContainer extends Component {
   constructor(props) {
