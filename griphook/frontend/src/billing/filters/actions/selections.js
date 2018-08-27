@@ -19,3 +19,13 @@ export const unSelectServerFilter = serverID => ({
   type: types.UNSELECT_BILLING_SERVER_FILTER,
   serverID
 });
+
+export const selectProjectFilter = projectID => ({
+  type: types.SELECT_BILLING_PROJECT_FILTER,
+  projectID
+});
+
+export const unSelectProjectFilter = projectID => ({
+  type: types.UNSELECT_BILLING_PROJECT_FILTER,
+  projectID
+});
