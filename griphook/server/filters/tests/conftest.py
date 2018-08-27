@@ -56,14 +56,6 @@ def projects(session):
     ]
     session.add_all(projects)
     session.commit()
-
-    session.add_all(
-        [
-            ServicesGroup(title="group1", project_id=1),
-            ServicesGroup(title="group2"),
-        ]
-    )
-    session.commit()
     return Project.query.with_entities(Project.id, Project.title)
 
 
@@ -74,15 +66,6 @@ def teams(session):
     teams = [Team(title="team1"), Team(title="team2"), Team(title="team3")]
     session.add_all(teams)
     session.commit()
-
-    session.add_all(
-        [
-            ServicesGroup(title="group1", team_id=1),
-            ServicesGroup(title="group2"),
-        ]
-    )
-    session.commit()
-
     return Team.query.with_entities(Team.id, Team.title)
 
 
