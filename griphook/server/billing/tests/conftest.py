@@ -148,8 +148,8 @@ def metrics(session, services, services_groups, billing_batch_stories):
 @pytest.fixture(scope="function")
 def billing_table_endpoint_request_data(billing_batch_stories, servers):
     data = {
-        "target_type": "cluster",
-        "target_ids": [1, 2, 3, 4, 5, 6],
+        "target_type": "all",
+        "target_ids": [],
         "time_from": billing_batch_stories[0].time.strftime(
             REQUEST_DATE_TIME_FORMAT
         ),
