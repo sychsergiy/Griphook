@@ -42,6 +42,7 @@ def test_billing_table_endpoint_response_data(
     billing_table_endpoint_request_data,
 ):
     url = url_for("billing.get-filtered-billing-table-data")
+    print("BILL", billing_table_endpoint_request_data)
     response = client.post(
         url,
         data=json.dumps(billing_table_endpoint_request_data),
@@ -50,4 +51,6 @@ def test_billing_table_endpoint_response_data(
     )
     assert response.status_code == 200
     resp_data = response.json.get("table_data")
+    for r in resp_data:
+        print(r)
     assert len(resp_data) == 5
