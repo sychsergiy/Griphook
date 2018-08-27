@@ -5,7 +5,9 @@ from sqlalchemy.sql.functions import array_agg
 
 def get_clusters_hierarchy_part():
     clusters_query = Cluster.query.with_entities(Cluster.id, Cluster.title)
-    clusters = tuple({"id": id_, "title": title} for (id_, title) in clusters_query)
+    clusters = tuple(
+        {"id": id_, "title": title} for (id_, title) in clusters_query
+    )
     return clusters
 
 
@@ -68,6 +70,13 @@ def get_services_hierarchy_part():
             "group_id": group_id,
             "cluster_id": cluster_id,
         }
-        for (id_, service, instance, server_id, group_id, cluster_id) in services_query
+        for (
+            id_,
+            service,
+            instance,
+            server_id,
+            group_id,
+            cluster_id,
+        ) in services_query
     )
     return services
