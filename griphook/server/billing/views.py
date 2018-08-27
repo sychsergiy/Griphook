@@ -47,8 +47,8 @@ def get_filtered_billing_table_data():
                     }
                     ...
                 ],
-            "has_next": integer,
-            "has_prev":
+            "has_next": bool,
+            "has_prev": bool,
             "pages": integer
         }
     """
