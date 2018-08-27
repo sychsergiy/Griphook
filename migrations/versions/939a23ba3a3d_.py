@@ -1,8 +1,8 @@
-"""initial
+"""empty message
 
-Revision ID: 6a729a017a42
+Revision ID: 939a23ba3a3d
 Revises: 
-Create Date: 2018-08-06 14:42:49.387588
+Create Date: 2018-08-27 19:05:52.640948
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6a729a017a42'
+revision = '939a23ba3a3d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -71,8 +71,8 @@ def upgrade():
     sa.Column('title', sa.String(), nullable=False),
     sa.Column('project_id', sa.Integer(), nullable=True),
     sa.Column('team_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], name='project_fk', ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], name='team_fk', ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], name='project_fk'),
+    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], name='team_fk'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('title')
     )
@@ -97,10 +97,10 @@ def upgrade():
     sa.Column('project_id', sa.Integer(), nullable=True),
     sa.Column('team_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['batch_id'], ['batches_story_billing.id'], name='batch_story_billing_fk'),
-    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], name='projects_fk', ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], name='projects_fk'),
     sa.ForeignKeyConstraint(['service_id'], ['services.id'], name='service_fk'),
     sa.ForeignKeyConstraint(['services_group_id'], ['services_groups.id'], name='services_groups_fk'),
-    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], name='teams_fk', ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], name='teams_fk'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('batch_id', 'type', 'service_id', 'services_group_id', name='metric_billing_ut_1')
     )
@@ -114,10 +114,10 @@ def upgrade():
     sa.Column('project_id', sa.Integer(), nullable=True),
     sa.Column('team_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['batch_id'], ['batches_story_peaks.id'], name='batch_story_peaks_fk'),
-    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], name='projects_fk', ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], name='projects_fk'),
     sa.ForeignKeyConstraint(['service_id'], ['services.id'], name='service_fk'),
     sa.ForeignKeyConstraint(['services_group_id'], ['services_groups.id'], name='services_groups_fk'),
-    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], name='teams_fk', ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], name='teams_fk'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('batch_id', 'type', 'service_id', 'services_group_id', name='metric_peaks_ut_1')
     )
