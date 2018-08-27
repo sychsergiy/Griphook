@@ -33,10 +33,20 @@ def create_app(script_info=None):
 
     app.register_blueprint(billing_blueprint, url_prefix="/billing")
 
-
     from griphook.server.settings import settings_blueprint
     app.register_blueprint(settings_blueprint, url_prefix='/settings')
 
+    from griphook.server.settings.project import settings_project_blueprint
+    app.register_blueprint(settings_project_blueprint, url_prefix='/settings/project')
+
+    from griphook.server.settings.team import settings_team_blueprint
+    app.register_blueprint(settings_team_blueprint, url_prefix='/settings/team')
+
+    from griphook.server.settings.server import settings_server_blueprint
+    app.register_blueprint(settings_server_blueprint, url_prefix='/settings/server')
+
+    from griphook.server.settings.cluster import settings_cluster_blueprint
+    app.register_blueprint(settings_cluster_blueprint, url_prefix='/settings/cluster')
 
     from griphook.server.filters import filters_blueprint
 
