@@ -70,6 +70,9 @@ def admin():
 
 @admin.command()
 def create():
+    """
+    Create admin and set his password
+    """
     try:
         create_admin(password=getpass())
     except AdminExists:
@@ -79,8 +82,7 @@ def create():
 @admin.command()
 def set_password():
     """
-    Check if user exist and there is only one User,
-    if none - create one.
+    Set admin password
     """
     admin = get_admin()
     if not admin:

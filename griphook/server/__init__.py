@@ -51,6 +51,10 @@ def create_app(script_info=None):
 
     app.register_blueprint(average_load_blueprint, url_prefix="/average_load")
 
+    from griphook.server.auth import auth_blueprint
+
+    app.register_blueprint(auth_blueprint, url_prefix="/auth")
+
     # shell context for flask cli
     @app.shell_context_processor
     def ctx():
