@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Link } from "react-router-dom";
+import {Link, NavLink} from "react-router-dom";
 
 const HeaderComponent = () => (
   <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -27,14 +27,30 @@ const HeaderComponent = () => (
             Billing
           </Link>
         </li>
-        <li className="nav-item  active">
+        <li className="nav-item">
           <Link to="/peaks" className="nav-link">
             Peaks
           </Link>
         </li>
+      </ul>
+      <ul className="navbar-nav ml-auto">
+         <li className="nav-item">
+            <Link to="/settings" className="nav-link">
+                <i className="fas fa-wrench mr-1" />
+                Settings
+            </Link>
+         </li>
       </ul>
     </div>
   </nav>
 );
 
 export default HeaderComponent;
+
+
+
+
+        // {/*<li className="nav-item active">*/}
+
+
+        // {/*</li>*/}
