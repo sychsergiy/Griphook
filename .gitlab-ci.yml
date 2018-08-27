@@ -1,8 +1,13 @@
+variables:
+  KUBECONFIG: "/etc/kubernetes/admin.conf"
+  REGISTY_URL: "registry.gitlab.uaprom:7000/griphook"
+
 stages:
   - build
   - lint
   - test
-#  - deploy
+  - deploy
+  - clean_images
 
 pytest:
   stage: test
@@ -10,13 +15,27 @@ pytest:
 
 build:
   stage: build
-  script: docker build . -t griphook
+  script:
+    - docker build . -t backend
+    - docker build griphook/frontend -t frontend
 
-#push:
-#  stage: deploy
-#  script: docker tag griphook registry.gitlab.uaprom:7000/griphook/tasks && docker push registry.gitlab.uaprom:7000/griphook/tasks
-#  only:
-#    - master
+push:
+  stage: deploy
+  script:
+    - docker tag backend $REGISTY_URL/backend:$CI_COMMIT_SHA
+    - docker push $REGISTY_URL/backend:$CI_COMMIT_SHA
+    - docker tag frontend $REGISTY_URL/frontend:$CI_COMMIT_SHA
+    - docker push $REGISTY_URL/frontend:$CI_COMMIT_SHA
+    - echo $REGISTY_URL/frontend:$CI_COMMIT_SHA
+  only:
+    - kubernetes
+    - master
+
+clean_images:
+  stage: clean_images
+  script:
+    - docker rm -f $(docker ps -a -q)
+    - docker rmi -f $(docker images -q)
 
 flake8:
   stage: lint

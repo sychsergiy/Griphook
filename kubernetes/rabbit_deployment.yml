@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: griphook
+spec:
+  ports:
+    - port: 5673
+      targetPort: 5673
+      protocol: TCP
+  selector:
+    app: rabbitmq
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: griphook
+spec:
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - image: rabbitmq
+          name: rabbitmq
+          ports:
+            - containerPort: 5673
+              name: rabbitmq
