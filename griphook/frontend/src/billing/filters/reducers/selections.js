@@ -43,6 +43,17 @@ export function selections(state = selectedInitialState, action) {
           ...state.projects.slice(indexOfProjectToRemove + 1)
         ]
       };
+    case types.SELECT_BILLING_TEAM_FILTER:
+      return { ...state, teams: [...state.teams, action.teamID] };
+    case types.UNSELECT_BILLING_TEAM_FILTER:
+      const indexOfTeamsToRemove = state.teams.indexOf(action.teamID);
+      return {
+        ...state,
+        teams: [
+          ...state.teams.slice(0, indexOfTeamsToRemove),
+          ...state.teams.slice(indexOfTeamsToRemove + 1)
+        ]
+      };
     default:
       return state;
   }

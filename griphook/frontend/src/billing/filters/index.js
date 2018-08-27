@@ -19,7 +19,7 @@ class BillingFiltersContainer extends Component {
       <div className="filter-group flex-grow-0 flex-shrink-0 mx-md-1 mx-lg-4">
         <div className="row">
           <ProjectFilterContainer />
-          {/* <TeamFilterContainer /> */}
+          <TeamFilterContainer />
           <ClusterFilterContainer />
           <ServerFilterContainer />
           <GroupFilterContainer />
