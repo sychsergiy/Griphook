@@ -1,7 +1,9 @@
-from enum import Enum, unique
 from datetime import datetime
+from enum import Enum, unique
 
-from griphook.server import db
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from griphook.server import bcrypt, db
 
 
 class Cluster(db.Model):
@@ -193,6 +195,37 @@ class MetricBilling(db.Model):
             name="metric_billing_ut_1",
         ),
     )
+
+
+# Auth models
+class Admin(db.Model):
+    __tablename__ = "admins"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    _password = db.Column("password", db.String(255), nullable=False)
+
+    def __init__(self, password, *args, **kwargs):
+        self.password = password
+        super(Admin, self).__init__(*args, **kwargs)
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, new_password):
+        new_password = self.validate_password(new_password)
+        self._password = bcrypt.generate_password_hash(new_password).decode()
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+
+    def validate_password(self, password):
+        if not password:
+            raise ValueError("Password should be set!")
+        if len(password) < 6:
+            raise ValueError("Password length should be more than 6 characters")
+        return password
 
 
 def get_or_create(session, model, defaults=None, **kwargs):
