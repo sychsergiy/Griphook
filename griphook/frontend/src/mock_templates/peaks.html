@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+    crossorigin="anonymous">
+
+  <link rel="stylesheet" href="css/peaks.css">
+  <title>Hello, world!</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">
+        <i class="fas fa-coins mr-2"></i>
+        Griphook
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Billing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Peaks</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-wrench mr-1"></i>
+                    Settings
+                </a>
+            </li>
+        </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="d-flex flex-wrap flex-md-nowrap">
+      <!-- MAIN CONTAINER ROW -->
+      <div class="filter-group flex-grow-0 flex-shrink-0 mx-md-1 mx-lg-4">
+        <div class="row">
+
+          <!-- FILTER -->
+          <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+            <div class="card border-primary mt-2 ">
+              <!-- PROJECT FILTER -->
+              <h5 class="card-title text-center mt-2">
+                <i class="fas fa-project-diagram"></i>
+                Projects
+              </h5>
+              <div class="search-input px-3 mb-3">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+              <ul class="list-group list-group-flush compact">
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+              </ul>
+
+              <ul class="list-group list-group-flush compact mt-3">
+                <li class="list-group-item">
+                  Cras justo odio
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item active-filter active">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+              </ul>
+
+              <div class="pagination mx-auto my-2">
+                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                <span class="page-number px-4">2</span>
+                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+              </div>
+            </div>
+            <!-- END PROJECT FILTER -->
+          </div>
+
+          <!-- FILTER -->
+          <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+            <div class="card border-primary mt-2">
+              <!-- TEAM FILTER -->
+              <h5 class="card-title text-center mt-2">
+                <i class="fas fa-people-carry mr-2"></i>
+                Teams
+              </h5>
+              <div class="search-input px-3 mb-3">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+              <ul class="list-group list-group-flush compact">
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+              </ul>
+
+              <ul class="list-group list-group-flush compact mt-3">
+                <li class="list-group-item">
+                  Cras justo odio
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+              </ul>
+
+              <div class="pagination mx-auto my-2">
+                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                <span class="page-number px-4">2</span>
+                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+              </div>
+            </div>
+            <!-- END TEAM FILTER -->
+          </div>
+
+          <!-- FILTER -->
+          <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+            <div class="card border-primary mt-2">
+              <!-- CLUSTER FILTER -->
+              <h5 class="card-title text-center mt-2">
+                <i class="fas fa-th-large"></i>
+                Clusters
+              </h5>
+              <div class="search-input px-3 mb-3">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+              <ul class="list-group list-group-flush compact">
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+              </ul>
+
+              <ul class="list-group list-group-flush compact mt-3">
+                <li class="list-group-item">
+                  Cras justo odio
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+              </ul>
+
+              <div class="pagination mx-auto my-2">
+                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                <span class="page-number px-4">2</span>
+                <button class="btn btn btn-outline-primary btn-sm disabled" disabled="">Next</button>
+              </div>
+            </div>
+            <!-- END CLUSTER FILTER -->
+          </div>
+
+          <!-- FILTER -->
+          <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+            <div class="card border-primary mt-2">
+              <!-- SERVER FILTER -->
+              <h5 class="card-title text-center mt-2">
+                <i class="fas fa-server"></i>
+                Servers
+              </h5>
+              <div class="search-input px-3 mb-3">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+              <ul class="list-group list-group-flush compact">
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+              </ul>
+
+              <ul class="list-group list-group-flush compact mt-3">
+                <li class="list-group-item">
+                  Cras justo odio
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+              </ul>
+
+              <div class="pagination mx-auto my-2">
+                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                <span class="page-number px-4">2</span>
+                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+              </div>
+            </div>
+            <!-- END SERVER FILTER -->
+          </div>
+
+          <!-- FILTER -->
+          <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+            <div class="card border-primary mt-2">
+              <!-- SERVICE GROUP FILTER -->
+              <h5 class="card-title text-center mt-2">
+                <i class="fas fa-object-group"></i>
+                Service group
+              </h5>
+              <div class="search-input px-3 mb-3">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+              <ul class="list-group list-group-flush compact">
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+              </ul>
+
+              <ul class="list-group list-group-flush compact mt-3">
+                <li class="list-group-item">
+                  Cras justo odio
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+              </ul>
+
+              <div class="pagination mx-auto my-2">
+                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                <span class="page-number px-4">2</span>
+                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+              </div>
+            </div>
+            <!-- END SERVICE GROUP FILTER -->
+          </div>
+
+          <!-- FILTER -->
+          <div class="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
+            <div class="card border-primary mt-2">
+              <!-- SERVICE FILTER -->
+              <h5 class="card-title text-center mt-2">
+                <i class="fas fa-cogs"></i>
+                Service
+              </h5>
+              <div class="search-input px-3 mb-3">
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+              <ul class="list-group list-group-flush compact">
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-minus float-right py-1 px-2 remove-filter-rule"></i>
+                </li>
+              </ul>
+
+              <ul class="list-group list-group-flush compact mt-3">
+                <li class="list-group-item">
+                  Cras justo odio
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Dapibus ac facilisis in
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+                <li class="list-group-item">
+                  Vestibulum at eros
+                  <i class="fas fa-plus float-right py-1 px-2 add-filter-rule"></i>
+                </li>
+              </ul>
+
+              <div class="pagination mx-auto my-2">
+                <button class="btn btn btn-outline-primary btn-sm">Prev</button>
+                <span class="page-number px-4">2</span>
+                <button class="btn btn btn-outline-primary btn-sm">Next</button>
+              </div>
+            </div>
+            <!-- END SERVICE FILTER -->
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="flex-grow-1 mx-md-1 mx-lg-4">
+        <div class="time-filter mt-2">
+          <div class="card border-primary">
+            <div class="card-body">
+              <h4 class="card-title text-center">Time filter</h4>
+              <div class="row">
+                <div class="col-12 col-sm-8 offset-sm-2 offset-md-0 col-md-4">
+                  <div class="form-group">
+                    <label for="start-date-input">Start date</label>
+                    <div class="input-group">
+                      <div class="input-group-prepend d-md-none d-lg-flex">
+                        <span class="input-group-text"><i class="far fa-calendar-alt text-primary"></i></span>
+                      </div>
+                      <input type="datetime-local" class="form-control" id="start-date-input" placeholder="">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-8 offset-sm-2 offset-md-0 col-md-4 px-lg-5">
+                  <div class="form-group">
+                    <label for="step-input">Step</label>
+                    <select id="step-input" class="form-control">
+                        <option value="1">1 Hour</option>
+                        <option value="2">2 Hours</option>
+                        <option value="4" selected>1 Day</option>
+                        <option value="5">2 Days</option>
+                        <option value="6">Week</option>
+                        <option value="7">Month</option>
+                        <option value="8">3 Months</option>
+                      </select>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-8 offset-sm-2 offset-md-0 col-md-4">
+                  <div class="form-group">
+                    <label for="end-date-input">End date</label>
+                    <div class="input-group">
+                      <input type="datetime-local" class="form-control" id="end-date-input" placeholder="">
+                      <div class="input-group-append d-md-none d-lg-flex">
+                        <span class="input-group-text"><i class="far fa-calendar-alt text-primary"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="peak-chart-block mt-5 ">
+          <div class="card border-primary mb-3">
+            <h4 class="card-header"><i class="far fa-chart-bar mr-2"></i>Peaks chart</h4>
+            <div class="card-body">
+                <div class="row">
+                  <div class="col-12">
+                    <h4 class="card-title float-left text-muted">Chart for: <span class="ml-2 text-primary">adv-some-service</span></h4>
+                    <div class="form-group float-right">
+                      <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input" checked="">
+                        <label class="custom-control-label" for="customRadio1">user_cpu_percent</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
+                        <label class="custom-control-label" for="customRadio2">system_cpu_percent</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio3" name="customRadio" class="custom-control-input">
+                        <label class="custom-control-label" for="customRadio3">vsize</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="peak-chart-outer col-12 col-md-11 col-lg-10 mx-auto">
+                      <img class="w-100" src="temp/peak_chart.png" />
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="peak-chart-block mt-5 ">
+          <div class="card border-primary mb-3">
+            <h4 class="card-header"><i class="far fa-chart-bar mr-2"></i>Average chart</h4>
+            <div class="card-body">
+                <div class="row">
+                  <div class="col-12">
+                    <h4 class="card-title float-left text-muted">Chart for: <span class="ml-2 text-primary">adv-some-service</span></h4>
+                    <div class="form-group float-right">
+                      <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input" checked="">
+                        <label class="custom-control-label" for="customRadio1">user_cpu_percent</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
+                        <label class="custom-control-label" for="customRadio2">system_cpu_percent</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio3" name="customRadio" class="custom-control-input">
+                        <label class="custom-control-label" for="customRadio3">vsize</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="peak-chart-outer col-12 col-md-11 col-lg-10 mx-auto">
+                      <img class="w-100" src="temp/average_chart.png" />
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END MAIN CONTAINER ROW -->
+  </div>
+
+</body>
+
+</html>

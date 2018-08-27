@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy.sql import exists
 
 from griphook.server.managers.exceptions import ProjectManagerException
@@ -71,7 +69,7 @@ class ProjectManager(BaseManager):
         :param project_id: project id to attach
         :param services_group_id: services group id to attach
         """
-        self._update_relationship(project_id, services_group_id)
+        self._update_relationship(services_group_id, project_id)
 
     def detach_from_services_group(self, services_group_id: int) -> None:
         """
@@ -80,20 +78,32 @@ class ProjectManager(BaseManager):
         services group id and detaches the project from them.
         :param services_group_id: services group id to detach
         """
-        self._update_relationship(None, services_group_id)
+        self._update_relationship(services_group_id)
 
     def _update_relationship(
-        self, project_id: Optional[int], services_group_id: int
+        self, services_group_id: int, project_id=None
     ) -> None:
-        if (
-            project_id
-            and not self.session.query(
-                exists().where(Project.id == project_id)
-            ).scalar()
-        ):
+        if project_id:
+            self._check_exists_project(project_id)
+
+        services_group = self._get_services_group(services_group_id)
+        services_group.project_id = project_id
+
+        self._update_metrics_peaks_relationship(project_id, services_group_id)
+        self._update_metrics_billing_relationship(project_id, services_group_id)
+
+        self.session.add(services_group)
+        self.session.commit()
+
+    def _check_exists_project(self, project_id: int) -> None:
+        if not self.session.query(
+            exists().where(Project.id == project_id)
+        ).scalar():
             raise ProjectManagerException(
                 EXC_PROJECT_DOESNT_EXISTS.format(project_id)
             )
+
+    def _get_services_group(self, services_group_id: int) -> ServicesGroup:
         services_group = (
             self.session.query(ServicesGroup)
             .filter_by(id=services_group_id)
@@ -103,25 +113,34 @@ class ProjectManager(BaseManager):
             raise ProjectManagerException(
                 EXC_SERVICES_GROUP_DOESNT_EXISTS.format(services_group_id)
             )
-        services_group.project_id = project_id
-        # update relationships for MetricPeak
+        return services_group
+
+    def _update_metrics_peaks_relationship(
+        self, project_id: int, services_group_id: int
+    ) -> None:
         metrics_peaks_query = (
             self.session.query(MetricPeak)
             .filter_by(services_group_id=services_group_id)
             .all()
         )
+
         for metric_peaks in metrics_peaks_query:
             metric_peaks.project_id = project_id
-        # update relationships for MetricBilling
+
+        self.session.add_all(metrics_peaks_query)
+        self.session.commit()
+
+    def _update_metrics_billing_relationship(
+        self, project_id: int, services_group_id: int
+    ) -> None:
         metrics_billing_query = (
             self.session.query(MetricBilling)
             .filter_by(services_group_id=services_group_id)
             .all()
         )
+
         for metric_billing in metrics_billing_query:
             metric_billing.project_id = project_id
 
-        self.session.add(services_group)
-        self.session.add_all(metrics_peaks_query)
         self.session.add_all(metrics_billing_query)
         self.session.commit()
