@@ -30,7 +30,7 @@ class LoginView(MethodView):
         password = request.json.get("password")
 
         # Check password field is filled
-        if not password:
+        if password is None:
             return "Password field is unfilled", 400
 
         admin = get_admin()
