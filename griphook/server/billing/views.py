@@ -47,7 +47,8 @@ def get_filtered_billing_table_data():
                     }
                     ...
                 ],
-            "total": integer,
+            "has_next": integer,
+            "has_prev":
             "pages": integer
         }
     """
@@ -65,9 +66,11 @@ def get_filtered_billing_table_data():
             "table_data": [
                 format_row_for_billing_table(i) for i in table_data.items
             ],
-            "total": table_data.total,
+            "has_next": table_data.has_next,
+            "has_prev": table_data.has_prev,
             "pages": table_data.pages,
         }
+        print("RESULT:", result)
         response = jsonify(result)
     return response
 

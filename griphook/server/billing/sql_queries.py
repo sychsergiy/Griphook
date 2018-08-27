@@ -65,8 +65,7 @@ def get_billing_table_data(filters):
     elif target_type == ALLOWED_TARGET_TYPES.get("team"):
         query = query.filter(Team.id.in_(target_ids))
     elif target_type == ALLOWED_TARGET_TYPES.get("project"):
-        query = query.join(Project, Project.id == ServicesGroup.project_id)
-        query = query.filter(Project.id.id_(target_ids))
+        query = query.filter(Project.id.in_(target_ids))
     elif target_type == ALLOWED_TARGET_TYPES.get(
         "server"
     ) or target_type == ALLOWED_TARGET_TYPES.get("cluster"):
@@ -75,7 +74,7 @@ def get_billing_table_data(filters):
         ).join(Server, Service.server_id == Server.id)
         if target_type == ALLOWED_TARGET_TYPES.get("server"):
             query = query.filter(Server.id.in_(target_ids))
-        else:
+        elif target_type == ALLOWED_TARGET_TYPES.get("cluster"):
             query = query.join(Cluster, Cluster.id == Server.cluster_id)
             query = query.filter(Cluster.id.in_(target_ids))
     result = query.paginate(per_page=metrics_per_page, page=page)
