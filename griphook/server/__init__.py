@@ -7,13 +7,11 @@ from flask import Flask, render_template
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_cors import CORS
 
 # instantiate the extensions
 toolbar = DebugToolbarExtension()
 db = SQLAlchemy()
 migrate = Migrate()
-cors = CORS()
 
 
 def create_app(script_info=None):
@@ -34,7 +32,6 @@ def create_app(script_info=None):
     toolbar.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
-    cors.init_app(app)
 
     # register blueprints
     from griphook.server.billing import billing_blueprint
