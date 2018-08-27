@@ -1,27 +1,21 @@
-# griphook/server/__init__.py
 
 
 import os
 
-from flask import Flask, render_template
-from flask_debugtoolbar import DebugToolbarExtension
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_cors import CORS
 
 # instantiate the extensions
-toolbar = DebugToolbarExtension()
 db = SQLAlchemy()
 migrate = Migrate()
-cors = CORS()
 
 
 def create_app(script_info=None):
     # instantiate the app
     app = Flask(
         __name__,
-        template_folder="../client/templates",
-        static_folder="../client/static",
+        static_folder="../frontend/dist",
     )
 
     # set config
@@ -31,10 +25,8 @@ def create_app(script_info=None):
     app.config.from_object(app_settings)
 
     # set up extensions
-    toolbar.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
-    cors.init_app(app)
 
     # register blueprints
     from griphook.server.billing import billing_blueprint
@@ -56,15 +48,6 @@ def create_app(script_info=None):
     from griphook.server.average_load import average_load_blueprint
 
     app.register_blueprint(average_load_blueprint, url_prefix="/average_load")
-
-    # set up error handlers
-    @app.errorhandler(404)
-    def page_not_found(error):
-        return render_template("errors/404.html"), 404
-
-    @app.errorhandler(500)
-    def server_error_page(error):
-        return render_template("errors/500.html"), 500
 
     # shell context for flask cli
     @app.shell_context_processor

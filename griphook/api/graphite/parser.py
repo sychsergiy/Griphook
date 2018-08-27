@@ -53,7 +53,7 @@ class GraphiteAPIParser(APIParser):
         path: Optional[DotPath] = None,
         metrics: Optional[str] = None,
         function: Optional[Function] = None,
-        *func_args: Union[BuiltInOrTarget, Argument]
+        func_args: Union[BuiltInOrTarget, Argument] = (),
     ) -> str:
         path = path or cls.__path
         metrics = metrics or str(cls.__metrics)

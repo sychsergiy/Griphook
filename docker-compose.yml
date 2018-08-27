@@ -1,80 +1,54 @@
 version: "2.1"
 services:
-#    celery_beat:
-#        restart: always
-#        build: .
-#        depends_on:
-#            rabbit:
-#                condition: service_healthy
-#            postgres:
-#                condition: service_healthy
-#        depends_on:
-#            celery_worker:
-#                condition: service_healthy
-#        environment:
-#            - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
-#            - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
-#        command: celery -A griphook.tasks.tasks beat
-#
-    celery_worker:
-      restart: always
-      build: .
-      depends_on:
-        rabbit:
-          condition: service_healthy
-        postgres:
-          condition: service_healthy
-      environment:
-          - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
-          - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
-      healthcheck:
-        test: "exit 0"
-      command: bash -c "sleep 3 && python manage.py db upgrade && celery -A griphook.tasks.tasks worker -l INFO"
-
-    task_scheduler:
-      restart: always
-      build: .
-      depends_on:
-        rabbit:
-          condition: service_healthy
-        postgres:
-          condition: service_healthy
-        celery_worker: 
-          condition: service_healthy  
-      environment:
-          - GH_CELERY_BROKER_URL=amqp://guest:guest@rabbit
-          - GH_DATABASE_URL=postgresql://user:password@postgres/database_name
-      healthcheck:
-        test: "exit 0"
-      command: bash -c "sleep 3 && python griphook/tasks/task_scheduler.py"
-
-    rabbit:
-      restart: always
-      image: rabbitmq
-      healthcheck:
-        test: "exit 0"
-
     postgres:
       restart: always
       image: postgres
+
+      volumes:
+        - ./dev/postgres:/docker-entrypoint-initdb.d:ro
+        - ./dev/postgres-data:/var/lib/postgresql/data
       environment:
-          - POSTGRES_PASSWORD=password
-          - POSTGRES_USER=user
-          - POSTGRES_DB=database_name
+          - POSTGRES_PASSWORD=griphook
+          - POSTGRES_USER=griphook_admin
+          - POSTGRES_DB=griphook
       healthcheck:
           test: "exit 0"
 
+    postgres_test:
+        image: postgres
+        ports:
+          - 5433:5432
+        environment:
+            - POSTGRES_PASSWORD=griphook
+            - POSTGRES_USER=griphook_admin
+            - POSTGRES_DB=test_griphook
+        healthcheck:
+            test: "exit 0"
     web:
+      restart: always
       image: web
       build: .
       ports:
-        - 5002:5000
+        - 5000:5000
+      volumes:
+        - ./:/etc/grip
       environment:
         - APP_NAME=griphook
         - FLASK_DEBUG=1
         - PYTHONUNBUFFERED=0
         - APP_SETTINGS=griphook.server.config.DevelopmentConfig
         - SECRET_KEY=change_me_in_prod
+        - GH_DATABASE_URL=postgresql://griphook_admin:griphook@postgres/griphook
       depends_on:
         - postgres
-      command: bash -c "python manage.py run -h 0.0.0.0"
+      command: bash -c "gunicorn -c gunicorn_config.py  manage:app"
+
+    frontend:
+      restart: always
+      build: griphook/frontend
+      ports:
+        - 82:82
+      volumes:
+        - ./griphook/frontend/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        - ./griphook/frontend/dist:/etc/nginx/dist/static/
+      command: /bin/sh -c "sleep 5; nginx -g 'daemon off;'"

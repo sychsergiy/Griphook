@@ -19,6 +19,7 @@ class BaseConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
     TESTING = False
+    BILLING_TABLE_METRICS_PER_PAGE = 5
 
 
 class DevelopmentConfig(BaseConfig):
