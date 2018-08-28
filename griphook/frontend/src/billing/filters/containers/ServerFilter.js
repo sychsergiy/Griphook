@@ -30,7 +30,8 @@ const mapStateToProps = state => {
     currentTargetType: billingTargetTypes.server,
     selectedTargetType: state.billing.options.targetType,
     selectedTargetIDs: state.billing.options.targetIDs,
-    blockTitle: "Servers"
+    blockTitle: "Servers",
+    blockTitleIconClass: "fas fa-server mr-2"
   };
 };
 

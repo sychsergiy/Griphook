@@ -33,7 +33,7 @@ const mapStateToProps = state => {
     selectedTargetID: state.peaks.chartsOptions.targetID,
     selectedTargetType: state.peaks.chartsOptions.targetType,
     currentTargetType: peaksTargetTypes.cluster,
-    blockTitleIconClass: "fas fa-th-large"
+    blockTitleIconClass: "fas fa-th-large mr-2"
   };
 };
 

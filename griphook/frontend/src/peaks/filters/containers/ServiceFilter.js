@@ -20,7 +20,7 @@ const mapStateToProps = state => ({
   selectedTargetType: state.peaks.chartsOptions.targetType,
   currentTargetType: peaksTargetTypes.service,
   blockTitle: "Services",
-  blockTitleIconClass: "fas fa-cogs"
+  blockTitleIconClass: "fas fa-cogs mr-2"
 });
 
 const mapDispatchToProps = dispatch => ({
