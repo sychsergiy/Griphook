@@ -19,49 +19,52 @@ flake8:
   stage: lint
   script: docker run backend python manage.py flake
 
-pytest:
-  stage: test
-  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml run pytest
+#pytest:
+#  stage: test
+#  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml run pytest
 
 push:
   stage: deploy
   script:
-    - docker tag backend $REGISTY_URL/backend:$CI_COMMIT_SHA
-    - docker push $REGISTY_URL/backend:$CI_COMMIT_SHA
-    - docker tag frontend $REGISTY_URL/frontend:$CI_COMMIT_SHA
-    - docker push $REGISTY_URL/frontend:$CI_COMMIT_SHA
-    - echo $REGISTY_URL/frontend:$CI_COMMIT_SHA
+    - docker tag backend $REGISTY_URL/backend:${CI_COMMIT_SHA:0:8}
+    - docker push $REGISTY_URL/backend:${CI_COMMIT_SHA:0:8}
+    - docker tag frontend $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
+    - docker push $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
+    - echo $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
   only:
     - kubernetes
     - master
 
-.deploy_template: &deployment_file
+.deploy_template: &kube_apply
   stage: deploy
   before_script:
-    - sed -i 's/CI_COMMIT_SHA/$CI_COMMIT_SHA/g' kubernetes/deployment_file.yml
+    - sed s/\CI_COMMIT_SHA/${CI_COMMIT_SHA:0:8}/ kubernetes/${CI_JOB_NAME##*:}.yml > $CI_JOB_NAME.yml
   script:
-    -  kubectl --kubeconfig $KUBECONFIG apply -f kubernetes/deployment_file.yml
+    -  kubectl  --kubeconfig $KUBECONFIG apply -f $CI_JOB_NAME.yml
+  only:
+    - kubernetes
+    - master
 
 deploy:postgres_deployment:
-  <<: *deployment_file
+  <<: *kube_apply
 
 deploy:backend_deployment:
-  <<: *deployment_file
-
-deploy:celery_deployment:
-  <<: *deployment_file
+  <<: *kube_apply
 
 deploy:rabbit_deployment:
-  <<: *deployment_file
+  <<: *kube_apply
+
+deploy:celery_deployment:
+  <<: *kube_apply
 
 deploy:task_scheduler_deployment:
-  <<: *deployment_file
+  <<: *kube_apply
 
 deploy:frontend_deployment:
-  <<: *deployment_file
+  <<: *kube_apply
 
-clean_images:
-  stage: clean_images
-  script:
-    - docker rm -f $(docker ps -a -q)
-    - docker rmi -f $(docker images -q)
+#clean_images:
+#  stage: clean_images
+#  script:
+#    - docker rm -f $(docker ps -a -q)
+#    - docker rmi -f $(docker images -q)
