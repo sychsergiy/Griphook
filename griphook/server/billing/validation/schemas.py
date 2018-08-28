@@ -1,5 +1,5 @@
 from griphook.server.billing.formatter import string_to_date_time
-from griphook.server.billing.constants import ALLOWED_TARGET_TYPES
+from griphook.server.billing.constants import ALLOWED_TARGET_TYPES, ALLOWED_METRIC_TYPES
 
 SCHEMA_FOR_BILLING_TABLE = {
     "page": {"type": "integer", "required": True, "min": 1},
@@ -38,4 +38,34 @@ SCHEMA_FOR_GENERAL_TABLE = {
         "required": True,
         "coerce": string_to_date_time,
     },
+}
+
+PIE_CHART_ENDPOINT_SCHEMA = {
+    "target_type": {
+        "type": "string",
+        "allowed": tuple(ALLOWED_TARGET_TYPES.values()),
+        "required": True,
+    },
+    "target_ids": {
+        "type": "list",
+        "schema": {"type": "integer"},
+        "empty": True,
+        "required": True,
+    },
+    "metric_type": {
+        "type": "string",
+        "required": True,
+        "allowed": tuple(ALLOWED_METRIC_TYPES.values()),
+    },
+    "time_from": {
+        "type": "date",
+        "required": True,
+        "coerce": string_to_date_time,
+    },
+    "time_until": {
+        "type": "date",
+        "required": True,
+        "coerce": string_to_date_time,
+    },
+
 }
