@@ -19,6 +19,14 @@ from griphook.server.settings.constants import (
 class GetServers(View):
     """
     API method for getting all servers.
+
+    Result data format:
+    {
+        "id": integer,
+        "title": string,
+        "cpu_price": float,
+        "memory_price": float
+    }
     """
 
     methods = ["GET"]
@@ -26,8 +34,18 @@ class GetServers(View):
     def dispatch_request(self):
         servers_query = DataBase.get_servers(db.session)
         servers = [
-            {"id": server_id, "title": server_title}
-            for (server_id, server_title) in servers_query
+            {
+                "id": server_id,
+                "title": server_title,
+                "cpu_price": server_cpu_price,
+                "memory_price": server_memory_price,
+            }
+            for (
+                server_id,
+                server_title,
+                server_cpu_price,
+                server_memory_price,
+            ) in servers_query
         ]
         return jsonify({"servers": servers})
 

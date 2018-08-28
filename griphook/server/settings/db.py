@@ -21,12 +21,16 @@ class DataBase:
 
     @staticmethod
     def get_servers(session):
-        servers_query = session.query(Server.id, Server.title).all()
+        servers_query = session.query(
+            Server.id, Server.title, Server.cpu_price, Server.memory_price
+        ).all()
         return servers_query
 
     @staticmethod
     def get_clusters(session):
-        clusters_query = session.query(Cluster.id, Cluster.title).all()
+        clusters_query = session.query(
+            Cluster.id, Cluster.title, Cluster.cpu_price, Cluster.memory_price
+        ).all()
         return clusters_query
 
     @staticmethod
