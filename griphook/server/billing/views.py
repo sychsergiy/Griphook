@@ -70,7 +70,6 @@ def get_filtered_billing_table_data():
             "has_prev": table_data.has_prev,
             "pages": table_data.pages,
         }
-        print("RESULT:", result)
         response = jsonify(result)
     return response
 

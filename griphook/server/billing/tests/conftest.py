@@ -88,7 +88,6 @@ def services_groups(session, teams, projects):
 def services(session, servers, services_groups):
     services = []
     for i, t in enumerate(zip(servers, services_groups), start=1):
-        print()
         services.append(
             Service(
                 title="service_" + str(i),
