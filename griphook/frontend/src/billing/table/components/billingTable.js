@@ -4,7 +4,22 @@ import BillingTableRowComponent from "./billingTableRow";
 
 import BillingTablePaginationContainer from "../containers/Pagination";
 
+import { Spinner } from "../../../common/spinner";
+
 const BillingTableComponent = props => {
+  let content = null;
+  if (props.loading) {
+    content = (
+      <tr>
+        <th colSpan="6">
+          <Spinner />
+        </th>
+      </tr>
+    );
+  } else if (props.error) {
+    content = <div>{props.error.toString()}</div>;
+  }
+
   return (
     <Fragment>
       <div className="table-responsive services-group-table-outer border rounded border-primary">
@@ -24,15 +39,19 @@ const BillingTableComponent = props => {
             </tr>
           </thead>
           <tbody>
-            {props.groups.map(item => (
-              <BillingTableRowComponent
-                key={item.services_group_id}
-                isSelected={props.selectedGroupID === item.services_group_id}
-                item={item}
-                onExpandButtonClick={props.onExpandButtonClick}
-                selectedGroupID={props.selectedGroupID}
-              />
-            ))}
+            {content
+              ? content
+              : props.groups.map(item => (
+                  <BillingTableRowComponent
+                    key={item.services_group_id}
+                    isSelected={
+                      props.selectedGroupID === item.services_group_id
+                    }
+                    item={item}
+                    onExpandButtonClick={props.onExpandButtonClick}
+                    selectedGroupID={props.selectedGroupID}
+                  />
+                ))}
           </tbody>
         </table>
       </div>

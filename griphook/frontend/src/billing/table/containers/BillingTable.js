@@ -33,19 +33,13 @@ class BillingTableContainer extends Component {
   }
 
   render() {
-    if (this.props.loading) {
-      return <Spinner />;
-    }
-
-    if (this.props.error) {
-      return <div>{this.props.error.toString()}</div>;
-    }
-
     return (
       <BillingTableComponent
         selectedGroupID={this.props.selectedGroupID}
         groups={this.props.servicesGroups}
         onExpandButtonClick={this.onExpandButtonClick}
+        loading={this.props.loading}
+        error={this.props.error}
       />
     );
   }
