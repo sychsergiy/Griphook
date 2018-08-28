@@ -1,7 +1,7 @@
 api:
   GRAPHITE_URL: https://graphite.olympus.evo/render
 db:
-  DATABASE_URL: postgresql://griphook_admin:griphook@localhost:5432/test_griphook
+  DATABASE_URL: postgresql://griphook_admin:griphook@localhost:5432/griphook
   DATABASE_TEST_URL: postgresql://griphook_admin:griphook@localhost:5433/test_griphook
 tasks:
   CELERY_BROKER_URL: ampq://user:password@localhost/root
