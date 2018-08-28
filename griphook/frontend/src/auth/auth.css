@@ -1,0 +1,10 @@
+.login-form {
+    /* flex-direction: center; */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 15rem;
+    text-align: center
+    /* TODO: wix width */
+}
