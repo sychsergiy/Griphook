@@ -65,6 +65,7 @@ class ServicesGroupFilterContainer extends Component {
         selectTarget={this.toggleFilterItem}
         multiselect={true}
         selectedItems={this.props.selectedItems}
+        blockTitleIconClass={this.props.blockTitleIconClass}
         hideIcon={true}
       />
     );
@@ -82,11 +83,12 @@ const mapStateToProps = state => {
   );
   return {
     selectedItems: selectedGroups,
-    visibleItems: filteredGroups, // paginator
+    visibleItems: filteredGroups,
     currentTargetType: billingTargetTypes.group,
     selectedTargetType: state.billing.options.targetType,
     selectedTargetIDs: state.billing.options.targetIDs,
-    blockTitle: "Services Groups"
+    blockTitle: "Services Groups",
+    blockTitleIconClass: "fas fa-object-group mr-2"
   };
 };
 

@@ -30,7 +30,7 @@ const mapStateToProps = state => {
     selectedTargetID: state.peaks.chartsOptions.targetID,
     selectedTargetType: state.peaks.chartsOptions.targetType,
     currentTargetType: peaksTargetTypes.servicesGroup,
-    blockTitleIconClass: "fas fa-object-group"
+    blockTitleIconClass: "fas fa-object-group mr-2"
   };
 };
 

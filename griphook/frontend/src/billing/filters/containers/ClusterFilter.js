@@ -21,11 +21,12 @@ const mapStateToProps = state => {
   );
   return {
     selectedItems: selectedClusters,
-    visibleItems: unSelectedClusters, // paginator
+    visibleItems: unSelectedClusters,
     currentTargetType: billingTargetTypes.cluster,
     selectedTargetType: state.billing.options.targetType,
     selectedTargetIDs: state.billing.options.targetIDs,
-    blockTitle: "Clusters"
+    blockTitle: "Clusters",
+    blockTitleIconClass: "fas fa-th-large mr-2"
   };
 };
 

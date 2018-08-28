@@ -2,15 +2,6 @@ import React from "react";
 
 import FilterBlockItemComponent from "./filterBlockItem";
 
-{
-  /* <i className="fas fa-project-diagram" />; */
-  // <i class="fas fa-people-carry mr-2"></i>
-  // <i class="fas fa-th-large"></i>
-  // <i class="fas fa-server"></i>
-  // <i class="fas fa-object-group"></i>
-  // <i class="fas fa-cogs"></i>
-}
-
 export const FilterBlockComponent = props => {
   return (
     <div className="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
