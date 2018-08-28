@@ -3,22 +3,23 @@ import { connect } from "react-redux";
 
 import ServicesChartComponent from "../components/servicesChart";
 
-import { fetchGroupChartData } from "../actions/groupChart";
+import {
+  fetchGroupChartData,
+  setGroupChartMetricType
+} from "../actions/groupChart";
 
 import { metricTypes } from "../../../common/constants";
-import { Spinner } from "../../../common/spinner";
+import { isEquivalent } from "../../../common/utils";
 
 class ServicesChartContainer extends Component {
-  constructor(props) {
-    super();
-    this.setMetricType = this.setMetricType.bind(this);
-    this.state = {
-      metricType: metricTypes.memory
-    };
-  }
-
   componentDidMount() {
     this.props.fetchChartData(this.props.requestOptions);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!isEquivalent(nextProps.requestOptions, this.props.requestOptions)) {
+      this.props.fetchChartData(nextProps.requestOptions);
+    }
   }
 
   constructChartData(chartData) {
@@ -26,7 +27,7 @@ class ServicesChartContainer extends Component {
       labels: chartData.timeline,
       datasets: [
         {
-          label: this.state.metricType,
+          label: this.props.requestOptions.metric_type,
           data: chartData.values,
           fill: false,
           pointRadius: 0,
@@ -39,33 +40,18 @@ class ServicesChartContainer extends Component {
     return constructedData;
   }
 
-  setMetricType(metricType) {
-    this.setState({ metricType });
-  }
-
   render() {
-    if (this.props.loading) {
-      return <Spinner />;
-    }
+    const chartData = this.props.chartData
+      ? this.constructChartData(this.props.chartData)
+      : {};
 
-    if (this.props.error) {
-      return this.props.error.toString();
-    }
-
-    let { cpu, memory } = this.props.chartData;
-
-    // TODO: separete chart data fetch for each metric type
-    let chartData = {};
-    if (this.state.metricType === metricTypes.memory) {
-      chartData = memory ? this.constructChartData(memory) : {};
-    } else if (this.state.metricType === metricTypes.cpu) {
-      chartData = cpu ? this.constructChartData(cpu) : {};
-    }
     return (
       <ServicesChartComponent
-        setMetricType={this.setMetricType}
-        metricType={this.state.metricType}
+        setMetricType={this.props.setMetricType}
+        metricType={this.props.requestOptions.metric_type}
         chartData={chartData}
+        loading={this.props.loading}
+        error={this.props.error}
       />
     );
   }
@@ -73,6 +59,7 @@ class ServicesChartContainer extends Component {
 
 const mapStateToProps = state => ({
   requestOptions: {
+    metric_type: state.billing.table.groupChart.metricType,
     time_from: state.billing.options.timeFrom.format("YYYY-MM-DD"),
     time_until: state.billing.options.timeUntil.format("YYYY-MM-DD"),
     services_group_id: state.billing.table.groups.selectedItemID
@@ -86,6 +73,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   fetchChartData: options => {
     dispatch(fetchGroupChartData(options));
+  },
+  setMetricType: metricType => {
+    dispatch(setGroupChartMetricType(metricType));
   }
 });
 

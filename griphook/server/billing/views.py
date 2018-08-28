@@ -136,9 +136,7 @@ def get_metric_chart_for_services_group():
         schemas.BILLING_TABLE_SERVICES_GROUP_CHART_SCHEMA, request_json
     )
     if is_valid:
-        metrics = get_services_group_data_chart(
-            metric_type=request_json['metric_type'], **valid_data
-        )
+        metrics = get_services_group_data_chart(**valid_data)
         resp_data = format_metrics_list_for_general_table(metrics)
         response = jsonify(resp_data)
     else:
