@@ -13,15 +13,22 @@ billing_blueprint.add_url_rule(
 )
 
 billing_blueprint.add_url_rule(
-    "/get_service_group_metrics/user_cpu_percent/",
-    "services-group-user-cpu-percent",
+    "/get_service_group_metrics",
+    "metrics-grouped-by-services",
+    view_func=views.get_billing_metric_values_by_services_group,
+    methods=("POST",),
+)
+
+billing_blueprint.add_url_rule(
+    "/get_service_group_chart_data/user_cpu_percent",
+    "services-group-user-cpu-percent-chart",
     view_func=views.get_servcies_group_cpu_metrics,
     methods=("POST",),
 )
 
 billing_blueprint.add_url_rule(
-    "/get_service_group_metrics/vsize/",
-    "services-group-vsize",
+    "/get_service_group_chart_data/vsize",
+    "services-group-vsize-chart",
     view_func=views.get_services_group_vsize_metrics,
     methods=("POST",),
 )
