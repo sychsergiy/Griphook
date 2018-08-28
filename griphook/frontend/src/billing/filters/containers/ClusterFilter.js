@@ -26,7 +26,9 @@ const mapStateToProps = state => {
     selectedTargetType: state.billing.options.targetType,
     selectedTargetIDs: state.billing.options.targetIDs,
     blockTitle: "Clusters",
-    blockTitleIconClass: "fas fa-th-large mr-2"
+    blockTitleIconClass: "fas fa-th-large mr-2",
+    loading: state.billing.filters.hierarchy.loading,
+    error: state.billing.filters.hierarchy.error
   };
 };
 

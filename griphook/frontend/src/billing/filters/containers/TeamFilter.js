@@ -23,7 +23,9 @@ const mapStateToProps = state => {
     selectedTargetType: state.billing.options.targetType,
     selectedTargetIDs: state.billing.options.targetIDs,
     blockTitle: "Teams",
-    blockTitleIconClass: "fas fa-people-carry mr-2"
+    blockTitleIconClass: "fas fa-people-carry mr-2",
+    loading: state.billing.filters.hierarchy.loading,
+    error: state.billing.filters.hierarchy.error
   };
 };
 

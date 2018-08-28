@@ -5,6 +5,8 @@ import { fetchBillingPieChartAbsoluteData } from "../actions/absoluteChart";
 
 import { isEquivalent } from "../../../common/utils";
 
+import { Spinner } from "../../../common/spinner";
+
 import { Pie } from "react-chartjs-2";
 
 import AbsoluteChartComponent from "../components/absoluteChart";
@@ -36,7 +38,7 @@ class AbsolutePieChartContainer extends Component {
 
   render() {
     if (this.props.loading) {
-      return <div>Loading ...</div>;
+      return <Spinner />;
     }
     if (this.props.error) {
       return <div>{this.props.error.toString()}</div>;
