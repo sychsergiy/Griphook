@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask.views import View
 
-from sqlalchemy import func
+from sqlalchemy import func, BigInteger, cast
 
 from griphook.server.models import (
     ServicesGroup,
@@ -84,8 +84,8 @@ class GetPieChartAbsoluteDataView(View):
                 "labels": ("selected", "rest"),
                 "values": (
                     # todo: solve problem with ceiling in big number
-                    selected_metric_sum,
-                    total_metric_sum - selected_metric_sum,
+                    round(selected_metric_sum, 0),
+                    round(total_metric_sum - selected_metric_sum, 0)
                 ),
             }
         else:
@@ -210,7 +210,7 @@ class GetPieChartRelativeDataView(View):
             .group_by(ServicesGroup.title)
             .order_by(func.sum(MetricBilling.value).desc())
             .with_entities(
-                ServicesGroup.title, func.sum(MetricBilling.value).label("metric_sum")
+                ServicesGroup.title, cast(func.sum(MetricBilling.value), BigInteger).label("metric_sum")
             )
         ).all()
         return total

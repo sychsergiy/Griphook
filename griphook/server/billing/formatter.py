@@ -16,8 +16,8 @@ def format_row_for_billing_table(row):
         "services_group_title": row.services_group_title,
         "team": row.team,
         "project": row.project,
-        "cpu_sum": row.cpu_sum,
-        "memory_sum": row.memory_sum,
+        "cpu_sum": round(row.cpu_sum, 0),
+        "memory_sum": round(row.memory_sum, 0)
     }
 
 
@@ -27,5 +27,5 @@ def format_metrics_list_for_general_table(metrics):
         chart["timeline"].append(
             metric.time.strftime(RESPONSE_DATE_TIME_FORMAT)
         )
-        chart["values"].append(round(metric.value, 1))
+        chart["values"].append(round(metric.value, 0))
     return chart
