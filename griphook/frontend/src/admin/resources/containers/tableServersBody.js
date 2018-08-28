@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 
 import {fetchServers, updateServerCPUPrice, updateServerMemoryPrice} from "../fetchHelpers";
-import {getErrorInformation, TableServersRowComponent} from "../index";
+import {TableServersRowComponent} from "../components/tableServersRow";
+import {getErrorInformation} from "../utils";
 
 
 class TableServersBodyContainer extends Component {

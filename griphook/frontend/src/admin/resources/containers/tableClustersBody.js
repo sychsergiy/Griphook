@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 
 import {fetchClusters, updateClusterCPUPrice, updateClusterMemoryPrice} from "../fetchHelpers";
-import {getErrorInformation, TableClustersRowComponent} from "../index";
+import {TableClustersRowComponent} from "../components/tableClustersRow";
+import {getErrorInformation} from "../utils";
 
 
 class TableClustersBodyContainer extends Component {
