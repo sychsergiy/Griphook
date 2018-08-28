@@ -5,7 +5,7 @@ class LoginPage extends Component {
     render() {
         return (
             <div className="container">
-            <LoginForm />
+                <LoginForm />
             </div>
         );
     }
