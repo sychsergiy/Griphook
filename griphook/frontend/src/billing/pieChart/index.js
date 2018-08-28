@@ -54,20 +54,13 @@ class PieChartsContainer extends Component {
 
         <div className="clearfix" />
         <div className="d-flex justify-content-around flex-wrap">
-          <div className="row">
-            <div className="col-12 mx-auto">
-              {/* // TODO: handle charts disappearing */}
-              {/* <div className="col-12 col-sm-11 col-md-10 mx-auto"> */}
+            <div className="col-12 col-md-6 col-xl-5 mx-auto">
               <AbsolutePieChartContainer metricType={this.state.metricType} />
             </div>
-          </div>
 
-          <div className="row">
-            <div className="col-12 mx-auto">
-              {/* <div className="col-12 col-sm-11 col-md-10 mx-auto"> */}
+            <div className="col-12 col-md-6 col-xl-5 mx-auto">
               <RelativePieChartContainer metricType={this.state.metricType} />
             </div>
-          </div>
         </div>
       </div>
     );

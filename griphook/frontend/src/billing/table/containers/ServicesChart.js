@@ -30,7 +30,8 @@ class ServicesChartContainer extends Component {
           fill: false,
           pointRadius: 0,
           lineTension: 0,
-          borderWidth: 2
+          borderWidth: 2,
+          borderColor: "#18bc9ca1"
         }
       ]
     };
