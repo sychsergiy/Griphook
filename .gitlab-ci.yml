@@ -6,8 +6,8 @@ stages:
   - build
   - lint
   - test
+  - push_images_to_registry
   - deploy
-  - clean_images
 
 build:
   stage: build
@@ -19,12 +19,12 @@ flake8:
   stage: lint
   script: docker run backend python manage.py flake
 
-#pytest:
-#  stage: test
-#  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml run pytest
+pytest:
+  stage: test
+  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml run pytest
 
 push:
-  stage: deploy
+  stage: push_images_to_registry
   script:
     - docker tag backend $REGISTY_URL/backend:${CI_COMMIT_SHA:0:8}
     - docker push $REGISTY_URL/backend:${CI_COMMIT_SHA:0:8}
@@ -32,7 +32,6 @@ push:
     - docker push $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
     - echo $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
   only:
-    - kubernetes
     - master
 
 .deploy_template: &kube_apply
@@ -42,7 +41,6 @@ push:
   script:
     -  kubectl  --kubeconfig $KUBECONFIG apply -f $CI_JOB_NAME.yml
   only:
-    - kubernetes
     - master
 
 deploy:postgres_deployment:
@@ -62,9 +60,3 @@ deploy:task_scheduler_deployment:
 
 deploy:frontend_deployment:
   <<: *kube_apply
-
-#clean_images:
-#  stage: clean_images
-#  script:
-#    - docker rm -f $(docker ps -a -q)
-#    - docker rmi -f $(docker images -q)
