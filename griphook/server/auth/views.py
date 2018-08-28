@@ -31,11 +31,11 @@ class LoginView(MethodView):
 
         # Check password field is filled
         if password is None:
-            return "Password field is unfilled", 400
+            return jsonify({"error": "Password field is unfilled"}), 400
 
         admin = get_admin()
         if not admin or not admin.check_password(password):
-            return "Wrong password", 401
+            return jsonify({"error": "Wrong password"}), 401
 
         # Create JWT and return it
         return (
