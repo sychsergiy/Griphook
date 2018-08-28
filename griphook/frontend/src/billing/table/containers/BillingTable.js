@@ -10,6 +10,8 @@ import {
 
 import { isEquivalent } from "../../../common/utils";
 
+import { Spinner } from "../../../common/spinner";
+
 import BillingTableComponent from "../components/billingTable";
 
 class BillingTableContainer extends Component {
@@ -32,8 +34,9 @@ class BillingTableContainer extends Component {
 
   render() {
     if (this.props.loading) {
-      return <div>Loading ...</div>;
+      return <Spinner />;
     }
+
     if (this.props.error) {
       return <div>{this.props.error.toString()}</div>;
     }

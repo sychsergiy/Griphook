@@ -1,8 +1,17 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 import FilterBlockItemComponent from "./filterBlockItem";
 
+import { Spinner } from "../../../common/spinner";
+
 export const FilterBlockComponent = props => {
+  let content = null;
+  if (props.loading) {
+    content = <Spinner />;
+  } else if (props.error) {
+    content = <div>{props.error.toString()}</div>;
+  }
+
   return (
     <div className="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
       <div className="card border-primary mt-2 ">
@@ -31,19 +40,23 @@ export const FilterBlockComponent = props => {
           ))}
         </ul>
 
-        <ul className="list-group list-group-flush compact mt-3">
-          {props.page.items.map(item => (
-            <FilterBlockItemComponent
-              key={item.id}
-              item={item}
-              isTargetSelected={props.checkIsTargetSelected(item.id)}
-              onItemClick={props.onItemClick}
-              onIconClick={props.onSelectFilterItem}
-              isItemSelected={false}
-              hideIcon={props.hideCheckbox}
-            />
-          ))}
-        </ul>
+        {content ? (
+          content
+        ) : (
+          <ul className="list-group list-group-flush compact mt-3">
+            {props.page.items.map(item => (
+              <FilterBlockItemComponent
+                key={item.id}
+                item={item}
+                isTargetSelected={props.checkIsTargetSelected(item.id)}
+                onItemClick={props.onItemClick}
+                onIconClick={props.onSelectFilterItem}
+                isItemSelected={false}
+                hideIcon={props.hideCheckbox}
+              />
+            ))}
+          </ul>
+        )}
 
         <div className="pagination mx-auto my-2">
           {props.page.previousPageExists ? (

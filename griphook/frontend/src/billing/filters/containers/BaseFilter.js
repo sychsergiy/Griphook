@@ -57,6 +57,8 @@ export default class BaseFilterContainer extends Component {
         multiselect={this.props.multiselect}
         hideIcon={this.props.hideIcon}
         blockTitleIconClass={this.props.blockTitleIconClass}
+        loading={this.props.loading}
+        error={this.props.error}
       />
     );
   }

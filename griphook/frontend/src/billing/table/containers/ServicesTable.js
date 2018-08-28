@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 
 import { fetchGroupServicesData } from "../actions/services";
 
+import { Spinner } from "../../../common/spinner";
+
 import ServicesTableComponent from "../components/servicesTable";
 
 class ServicesTableContainer extends Component {
@@ -11,7 +13,7 @@ class ServicesTableContainer extends Component {
   }
   render() {
     if (this.props.loading) {
-      return <div> Loading ...</div>;
+      return <Spinner />;
     }
 
     if (this.props.error) {

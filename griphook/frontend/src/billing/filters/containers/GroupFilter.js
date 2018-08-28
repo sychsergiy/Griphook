@@ -67,6 +67,8 @@ class ServicesGroupFilterContainer extends Component {
         selectedItems={this.props.selectedItems}
         blockTitleIconClass={this.props.blockTitleIconClass}
         hideIcon={true}
+        loading={this.props.loading}
+        error={this.props.error}
       />
     );
   }
@@ -88,7 +90,9 @@ const mapStateToProps = state => {
     selectedTargetType: state.billing.options.targetType,
     selectedTargetIDs: state.billing.options.targetIDs,
     blockTitle: "Services Groups",
-    blockTitleIconClass: "fas fa-object-group mr-2"
+    blockTitleIconClass: "fas fa-object-group mr-2",
+    loading: state.billing.filters.hierarchy.loading,
+    error: state.billing.filters.hierarchy.error
   };
 };
 
