@@ -95,7 +95,7 @@ def get_billing_metric_values_by_services_group():
     """
     request_json = request.get_json()
     is_valid, error_data, valid_data = validators.validate_request_json(
-        schemas.SCHEMA_FOR_GENERAL_TABLE, request_json
+        schemas.BILLING_TABLE_SERVICES_GROUP_SCHEMA, request_json
     )
     if is_valid:
         metrics = get_services_group_data_group_by_services(**valid_data)
@@ -121,37 +121,23 @@ def get_metric_chart_for_services_group():
         {
             "services_group_id": int,
             "time_from": string,
-            "time_until": string
+            "time_until": string,
+            "metric_type": string
         }
 
         response_json:
        {
-            "cpu": {
-                "timeline": [string],
-                "values": [int]
-            },
-            "memory": {
-                "timeline": [string],
-                "values": [int]
-            }
+            "timeline": [string],
+            "values": [int]
         }
     """
     request_json = request.get_json()
     is_valid, error_data, valid_data = validators.validate_request_json(
-        schemas.SCHEMA_FOR_GENERAL_TABLE, request_json
+        schemas.BILLING_TABLE_SERVICES_GROUP_CHART_SCHEMA, request_json
     )
     if is_valid:
-        cpu_metrics = get_services_group_data_chart(
-            metric_type="user_cpu_percent", **valid_data
-        )
-        memory_metrics = get_services_group_data_chart(
-            metric_type="vsize", **valid_data
-        )
-        resp_data = {
-            "cpu": format_metrics_list_for_general_table(cpu_metrics),
-            "memory": format_metrics_list_for_general_table(memory_metrics),
-        }
-
+        metrics = get_services_group_data_chart(**valid_data)
+        resp_data = format_metrics_list_for_general_table(metrics)
         response = jsonify(resp_data)
     else:
         response = jsonify(error_data)
