@@ -1,5 +1,6 @@
 RESPONSE_DATE_TIME_FORMAT = "%Y-%m-%d %H"
 REQUEST_DATE_TIME_FORMAT = "%Y-%m-%d"
+
 ALLOWED_TARGET_TYPES = {
     "services_group": "services_group",
     "cluster": "cluster",

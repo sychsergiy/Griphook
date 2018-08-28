@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import { fetchFiltersHierarchy } from "./actions/hierarchy";
+
 import ClusterFilterContainer from "./containers/ClusterFilter";
 import ServerFilterContainer from "./containers/ServerFilter";
 import ServicesGroupFilterContainer from "./containers/ServicesGroupFilter";
@@ -20,7 +21,7 @@ const PeaksFiltersComponent = props => (
 
 class PeaksFiltersContainer extends Component {
   componentDidMount() {
-    this.props.dispatch(fetchFiltersHierarchy());
+    this.props.fetchFiltersHierarchy();
   }
 
   render() {
@@ -35,11 +36,14 @@ class PeaksFiltersContainer extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.peaks.filters.hierarchy.loading,
-    error: state.peaks.filters.hierarchy.error
-  };
-};
+const mapStateToProps = state => ({});
 
-export default connect(mapStateToProps)(PeaksFiltersContainer);
+const mapDispatchToProps = dispatch => ({
+  fetchFiltersHierarchy: () => {
+    dispatch(fetchFiltersHierarchy());
+  }
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PeaksFiltersContainer);

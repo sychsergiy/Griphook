@@ -5,6 +5,7 @@ import { fetchBillingPieChartRelativeData } from "../actions/relativeChart";
 
 import { isEquivalent } from "../../../common/utils";
 import { metricTypes } from "../../../common/constants";
+import { Spinner } from "../../../common/spinner";
 
 import { Pie } from "react-chartjs-2";
 
@@ -35,7 +36,7 @@ class RelativePieChartContainer extends Component {
 
   render() {
     if (this.props.loading) {
-      return <div>Loading ...</div>;
+      return <Spinner />;
     }
     if (this.props.error) {
       return <div>{this.props.error.toString()}</div>;
@@ -47,7 +48,7 @@ class RelativePieChartContainer extends Component {
           datasets: [
             {
               data: this.props.chartData.values,
-              backgroundColor: "#3860a0"
+              backgroundColor: "#2C3E50"
             }
           ]
         }

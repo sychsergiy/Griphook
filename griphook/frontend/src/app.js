@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { Switch, Route } from "react-router-dom";
 
+import AuthPage from "./auth/index";
 import PeaksPage from "./peaks/index";
-import AdminPage from "./admin/index";
 import BillingPage from "./billing/index";
+import SettingsPage from "./admin/index";
 
 import HeaderComponent from "./common/headerComponent";
 
@@ -18,7 +19,8 @@ class App extends Component {
           <Route exact path="/" component={BillingPage} />
           <Route path="/peaks" component={PeaksPage} />
           <Route path="/billing" component={BillingPage} />
-          <Route path="/admin" component={AdminPage} />
+          <Route path="/settings" component={SettingsPage} />
+          <Route path="/auth" component={AuthPage} />
         </Switch>
       </div>
     );

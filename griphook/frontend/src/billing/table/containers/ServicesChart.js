@@ -6,6 +6,7 @@ import ServicesChartComponent from "../components/servicesChart";
 import { fetchGroupChartData } from "../actions/groupChart";
 
 import { metricTypes } from "../../../common/constants";
+import { Spinner } from "../../../common/spinner";
 
 class ServicesChartContainer extends Component {
   constructor(props) {
@@ -30,7 +31,8 @@ class ServicesChartContainer extends Component {
           fill: false,
           pointRadius: 0,
           lineTension: 0,
-          borderWidth: 2
+          borderWidth: 2,
+          borderColor: "#18bc9ca1"
         }
       ]
     };
@@ -43,7 +45,7 @@ class ServicesChartContainer extends Component {
 
   render() {
     if (this.props.loading) {
-      return <div> Loading ...</div>;
+      return <Spinner />;
     }
 
     if (this.props.error) {

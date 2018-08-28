@@ -53,6 +53,8 @@ class FilterContainer extends Component {
         blockTitleIconClass={this.props.blockTitleIconClass}
         onItemClick={this.props.selectTarget}
         checkIsTargetSelected={this.checkIsTargetSelected}
+        loading={this.props.loading}
+        error={this.props.error}
       />
     );
   }
