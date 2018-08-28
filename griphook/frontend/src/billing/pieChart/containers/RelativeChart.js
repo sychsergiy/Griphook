@@ -47,7 +47,7 @@ class RelativePieChartContainer extends Component {
           datasets: [
             {
               data: this.props.chartData.values,
-              backgroundColor: "#3860a0"
+              backgroundColor: "#2C3E50"
             }
           ]
         }

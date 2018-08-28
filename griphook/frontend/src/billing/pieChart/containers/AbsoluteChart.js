@@ -48,7 +48,7 @@ class AbsolutePieChartContainer extends Component {
           datasets: [
             {
               data: this.props.chartData.values,
-              backgroundColor: ["#F7464A", "#FDB45C"]
+              backgroundColor: ["#f39c12", "#e74c3c"]
             }
           ]
         }
