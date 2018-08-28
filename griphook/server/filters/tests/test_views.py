@@ -42,32 +42,37 @@ def clusters_hierarchy_part():
 @pytest.fixture
 def groups_hierarchy_part():
     groups = [
-        {"clusters_ids": [1, 2], "id": 1, "servers_ids": [1, 2, 3], "title": "group1"}
+        {
+            "clusters_ids": [1, 2],
+            "id": 1,
+            "servers_ids": [1, 2, 3],
+            "title": "group1",
+        }
     ]
     return groups
 
 
 @pytest.fixture
 def teams_hierarchy_part():
-    teams = [{"id": 1, "title": "team1"}, {"id": 2, "title": "team2"}, ]
+    teams = [{"id": 1, "title": "team1"}, {"id": 2, "title": "team2"}]
     return teams
 
 
 @pytest.fixture
 def projects_hierarchy_part():
-    projects = [{"id": 1, "title": "team1"}, {"id": 2, "title": "team2"}, ]
+    projects = [{"id": 1, "title": "team1"}, {"id": 2, "title": "team2"}]
     return projects
 
 
 @pytest.mark.usefixtures("client_class")
 class TestGetPeaksFiltersHierarchyView(object):
     def test_view_return_correct_response(
-            self,
-            mocker,
-            services_hierarchy_part,
-            servers_hierarchy_part,
-            clusters_hierarchy_part,
-            groups_hierarchy_part,
+        self,
+        mocker,
+        services_hierarchy_part,
+        servers_hierarchy_part,
+        clusters_hierarchy_part,
+        groups_hierarchy_part,
     ):
         mocker.patch(
             "griphook.server.filters.views.get_services_hierarchy_part",
@@ -105,14 +110,14 @@ class TestGetPeaksFiltersHierarchyView(object):
 @pytest.mark.usefixtures("client_class")
 class TestGetBillingFiltersHierarchyView(object):
     def test_view_return_correct_response(
-            self,
-            mocker,
-            services_hierarchy_part,
-            servers_hierarchy_part,
-            clusters_hierarchy_part,
-            groups_hierarchy_part,
-            projects_hierarchy_part,
-            teams_hierarchy_part
+        self,
+        mocker,
+        services_hierarchy_part,
+        servers_hierarchy_part,
+        clusters_hierarchy_part,
+        groups_hierarchy_part,
+        projects_hierarchy_part,
+        teams_hierarchy_part,
     ):
         mocker.patch(
             "griphook.server.filters.views.get_services_hierarchy_part",
