@@ -23,9 +23,10 @@ spec:
         app: web
     spec:
       containers:
-        - image: registry.gitlab.uaprom:7000/griphook/backend
+        - image: registry.gitlab.uaprom:7000/griphook/backend:CI_COMMIT_SHA
           name: web
-          command: "gunicorn -c gunicorn_config.py  manage:app"
+          command: ["gunicorn"]
+          args: ["-c", "gunicorn_config.py", "manage:app"]
           env:
             - name: GH_DATABASE_URL
               value: postgresql://griphook:griphook@postgres/griphook

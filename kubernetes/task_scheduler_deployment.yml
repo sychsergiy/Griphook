@@ -1,18 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: celery
+  name: scheduler
   namespace: griphook
 spec:
   template:
     metadata:
       labels:
-        app: celery
+        app: scheduler
     spec:
       containers:
-        - image: registry.gitlab.uaprom:7000/griphook/backend
-          name: postgres
-          command: "python griphook/tasks/task_scheduler.py"
+        - image: registry.gitlab.uaprom:7000/griphook/backend:CI_COMMIT_SHA
+          name: scheduler
+          command: ["python"]
+          args: ["griphook/tasks/task_scheduler.py"]
           env:
             - name: GH_DATABASE_URL
               value: postgresql://griphook:griphook@postgres/griphook

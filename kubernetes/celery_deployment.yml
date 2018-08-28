@@ -10,9 +10,10 @@ spec:
         app: celery
     spec:
       containers:
-        - image: registry.gitlab.uaprom:7000/griphook/backend
-          name: postgres
-          command: "celery -A griphook.tasks.tasks worker -l INFO"
+        - image: registry.gitlab.uaprom:7000/griphook/backend:CI_COMMIT_SHA
+          name: celery
+          command: ["celery"]
+          args: ["-A", "griphook.tasks.tasks", "worker", "-l", "INFO"]
           env:
             - name: GH_DATABASE_URL
               value: postgresql://griphook:griphook@postgres/griphook

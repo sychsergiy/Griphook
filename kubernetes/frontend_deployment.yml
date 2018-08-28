@@ -26,7 +26,7 @@ spec:
         app: frontend
     spec:
       containers:
-        - image: registry.gitlab.uaprom:7000/griphook/frontend
+        - image: registry.gitlab.uaprom:7000/griphook/frontend:CI_COMMIT_SHA
           name: frontend
           ports:
             - containerPort: 82

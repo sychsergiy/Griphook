@@ -9,15 +9,19 @@ stages:
   - deploy
   - clean_images
 
-pytest:
-  stage: test
-  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml build && docker-compose -f compose-test.yml run pytest
-
 build:
   stage: build
   script:
     - docker build . -t backend
     - docker build griphook/frontend -t frontend
+
+flake8:
+  stage: lint
+  script: docker run backend python manage.py flake
+
+pytest:
+  stage: test
+  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml run pytest
 
 push:
   stage: deploy
@@ -31,12 +35,33 @@ push:
     - kubernetes
     - master
 
+.deploy_template: &deployment_file
+  stage: deploy
+  before_script:
+    - sed -i 's/CI_COMMIT_SHA/$CI_COMMIT_SHA/g' kubernetes/deployment_file.yml
+  script:
+    -  kubectl --kubeconfig $KUBECONFIG apply -f kubernetes/deployment_file.yml
+
+deploy:postgres_deployment:
+  <<: *deployment_file
+
+deploy:backend_deployment:
+  <<: *deployment_file
+
+deploy:celery_deployment:
+  <<: *deployment_file
+
+deploy:rabbit_deployment:
+  <<: *deployment_file
+
+deploy:task_scheduler_deployment:
+  <<: *deployment_file
+
+deploy:frontend_deployment:
+  <<: *deployment_file
+
 clean_images:
   stage: clean_images
   script:
     - docker rm -f $(docker ps -a -q)
     - docker rmi -f $(docker images -q)
-
-flake8:
-  stage: lint
-  script: docker run griphook python manage.py flake
