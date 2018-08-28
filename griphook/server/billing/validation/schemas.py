@@ -14,29 +14,24 @@ SCHEMA_FOR_BILLING_TABLE = {
         "empty": True,
         "required": True,
     },
-    "time_from": {
-        "type": "date",
-        "required": True,
-        "coerce": string_to_date_time,
-    },
-    "time_until": {
-        "type": "date",
-        "required": True,
-        "coerce": string_to_date_time,
-    },
+    "time_from": {"type": "date", "required": True, "coerce": string_to_date_time},
+    "time_until": {"type": "date", "required": True, "coerce": string_to_date_time},
 }
 
-SCHEMA_FOR_GENERAL_TABLE = {
+BILLING_TABLE_SERVICES_GROUP_SCHEMA = {
     "services_group_id": {"type": "integer", "required": True},
-    "time_from": {
-        "type": "date",
+    "time_from": {"type": "date", "required": True, "coerce": string_to_date_time},
+    "time_until": {"type": "date", "required": True, "coerce": string_to_date_time},
+}
+
+BILLING_TABLE_SERVICES_GROUP_CHART_SCHEMA = {
+    "services_group_id": {"type": "integer", "required": True},
+    "time_from": {"type": "date", "required": True, "coerce": string_to_date_time},
+    "time_until": {"type": "date", "required": True, "coerce": string_to_date_time},
+    "metric_type": {
+        "type": "string",
         "required": True,
-        "coerce": string_to_date_time,
-    },
-    "time_until": {
-        "type": "date",
-        "required": True,
-        "coerce": string_to_date_time,
+        "allowed": tuple(ALLOWED_METRIC_TYPES.values()),
     },
 }
 
@@ -57,15 +52,6 @@ PIE_CHART_ENDPOINT_SCHEMA = {
         "required": True,
         "allowed": tuple(ALLOWED_METRIC_TYPES.values()),
     },
-    "time_from": {
-        "type": "date",
-        "required": True,
-        "coerce": string_to_date_time,
-    },
-    "time_until": {
-        "type": "date",
-        "required": True,
-        "coerce": string_to_date_time,
-    },
-
+    "time_from": {"type": "date", "required": True, "coerce": string_to_date_time},
+    "time_until": {"type": "date", "required": True, "coerce": string_to_date_time},
 }
