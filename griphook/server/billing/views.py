@@ -101,8 +101,8 @@ def get_billing_metric_values_by_services_group():
         metrics = get_services_group_data_group_by_services(**valid_data)
         resp_data = tuple(
             {
-                "cpu": round(metric.cpu, 1),
-                "memory": round(metric.memory, 1),
+                "cpu": round(metric.cpu, 0),
+                "memory": round(metric.memory, 0),
                 "service_id": metric.service_id,
                 "service_title": metric.service_title,
             }
