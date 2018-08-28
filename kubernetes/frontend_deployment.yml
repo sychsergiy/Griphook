@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: griphook
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 82
+    targetPort: 82
+    nodePort: 30082
+    protocol: TCP
+  selector:
+    app: frontend
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: griphook
+spec:
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - image: registry.gitlab.uaprom:7000/griphook/frontend:CI_COMMIT_SHA
+          name: frontend
+          ports:
+            - containerPort: 82
+              name: frontend

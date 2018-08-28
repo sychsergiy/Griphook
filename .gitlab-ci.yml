@@ -1,23 +1,62 @@
+variables:
+  KUBECONFIG: "/etc/kubernetes/admin.conf"
+  REGISTY_URL: "registry.gitlab.uaprom:7000/griphook"
+
 stages:
   - build
   - lint
   - test
-#  - deploy
-
-pytest:
-  stage: test
-  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml build && docker-compose -f compose-test.yml run pytest
+  - push_images_to_registry
+  - deploy
 
 build:
   stage: build
-  script: docker build . -t griphook
-
-#push:
-#  stage: deploy
-#  script: docker tag griphook registry.gitlab.uaprom:7000/griphook/tasks && docker push registry.gitlab.uaprom:7000/griphook/tasks
-#  only:
-#    - master
+  script:
+    - docker build . -t backend
+    - docker build griphook/frontend -t frontend
 
 flake8:
   stage: lint
-  script: docker run griphook python manage.py flake
+  script: docker run backend python manage.py flake
+
+pytest:
+  stage: test
+  script: docker-compose -f compose-test.yml down && docker-compose -f compose-test.yml run pytest
+
+push:
+  stage: push_images_to_registry
+  script:
+    - docker tag backend $REGISTY_URL/backend:${CI_COMMIT_SHA:0:8}
+    - docker push $REGISTY_URL/backend:${CI_COMMIT_SHA:0:8}
+    - docker tag frontend $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
+    - docker push $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
+    - echo $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
+  only:
+    - master
+
+.deploy_template: &kube_apply
+  stage: deploy
+  before_script:
+    - sed s/\CI_COMMIT_SHA/${CI_COMMIT_SHA:0:8}/ kubernetes/${CI_JOB_NAME##*:}.yml > $CI_JOB_NAME.yml
+  script:
+    -  kubectl  --kubeconfig $KUBECONFIG apply -f $CI_JOB_NAME.yml
+  only:
+    - master
+
+deploy:postgres_deployment:
+  <<: *kube_apply
+
+deploy:backend_deployment:
+  <<: *kube_apply
+
+deploy:rabbit_deployment:
+  <<: *kube_apply
+
+deploy:celery_deployment:
+  <<: *kube_apply
+
+deploy:task_scheduler_deployment:
+  <<: *kube_apply
+
+deploy:frontend_deployment:
+  <<: *kube_apply

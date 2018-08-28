@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: griphook
+spec:
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: web
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: web
+  namespace: griphook
+spec:
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - image: registry.gitlab.uaprom:7000/griphook/backend:CI_COMMIT_SHA
+          name: web
+          command: ["gunicorn"]
+          args: ["-c", "gunicorn_config.py", "manage:app"]
+          env:
+            - name: GH_DATABASE_URL
+              value: postgresql://griphook:griphook@postgres/griphook
+          ports:
+            - containerPort: 5000
+              name: web
