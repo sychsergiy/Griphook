@@ -37,7 +37,7 @@ class LoginForm extends Component {
                     case 401:
                         // if we got unauthorized status code
                         // return rejected promise with error
-                        return response.json().then(data => Promise.reject(data.error));
+                        return response.json().then(data => data.reject(data.error));
                     default:
                         throw Error(`[${response.status}] ${response.statusText}`);
                 }
