@@ -17,7 +17,7 @@ export const ModalComponent = props => {
           <div className="modal-content">
             <ModalHeaderComponent hideModal={props.hideModal} listDataType={props.listDataType}/>
             <ModalBodyContainer listDataType={props.listDataType}/>
-            <ModalFooterComponent />
+            <ModalFooterComponent hideModal={props.hideModal}/>
           </div>
         </div>
       </div>
