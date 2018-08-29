@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 import {TabClustersResourcesComponent} from "./components/tabClustersResources"
 import {TabServersResourcesComponent} from "./components/tabServersResources"
@@ -18,6 +18,7 @@ class ResourcesSettingsPage extends Component {
                 <Switch>
                   <Route path="/settings/resources/servers" component={TabServersResourcesComponent} />
                   <Route path="/settings/resources/clusters" component={TabClustersResourcesComponent} />
+                  <Redirect to="/settings/resources/clusters" />
                 </Switch>
             </div>
         </div>

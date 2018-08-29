@@ -19,7 +19,6 @@ class SettingsPage extends Component {
             <Route exact path="/settings" component={TasksSettingsPage} />
             <Route path="/settings/tasks" component={TasksSettingsPage} />
             <Route path="/settings/resources" component={ResourcesSettingsPage} />
-            <Route path="/settings/resources/servers" component={ResourcesSettingsPage} />
           </Switch>
         </div>
       </div>
