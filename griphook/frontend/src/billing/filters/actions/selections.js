@@ -19,3 +19,23 @@ export const unSelectServerFilter = serverID => ({
   type: types.UNSELECT_BILLING_SERVER_FILTER,
   serverID
 });
+
+export const selectProjectFilter = projectID => ({
+  type: types.SELECT_BILLING_PROJECT_FILTER,
+  projectID
+});
+
+export const unSelectProjectFilter = projectID => ({
+  type: types.UNSELECT_BILLING_PROJECT_FILTER,
+  projectID
+});
+
+export const selectTeamFilter = teamID => ({
+  type: types.SELECT_BILLING_TEAM_FILTER,
+  teamID
+});
+
+export const unSelectTeamFilter = teamID => ({
+  type: types.UNSELECT_BILLING_TEAM_FILTER,
+  teamID
+});

@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import AverageLoadChartComponent from "./averageLoadChart";
 
 import { isEquivalent } from "../../../common/utils";
+import { Spinner } from "../../../common/spinner";
 
 import { fetchAverageLoadChartData } from "./actions";
 
@@ -38,7 +39,7 @@ class AverageLoadChartContainer extends Component {
 
   render() {
     if (this.props.loading) {
-      return <div>Loading ...</div>;
+      return <Spinner />;
     }
 
     let options = {

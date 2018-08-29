@@ -41,18 +41,20 @@ def servers(session, clusters: tuple):
     session.add_all(servers)
     session.commit()
 
-    return Server.query.with_entities(Server.id, Server.title, Server.cluster_id).all()
+    return Server.query.with_entities(
+        Server.id, Server.title, Server.cluster_id
+    ).all()
 
 
 @pytest.fixture
 def projects(session):
     """save Projects instances to db"""
-    clusters = [
+    projects = [
         Project(title="project1"),
         Project(title="project2"),
         Project(title="project3"),
     ]
-    session.add_all(clusters)
+    session.add_all(projects)
     session.commit()
     return Project.query.with_entities(Project.id, Project.title)
 
@@ -60,7 +62,8 @@ def projects(session):
 @pytest.fixture
 def teams(session):
     """save Teams instances to db"""
-    teams = [Team(title="project1"), Team(title="project2"), Team(title="project3")]
+
+    teams = [Team(title="team1"), Team(title="team2"), Team(title="team3")]
     session.add_all(teams)
     session.commit()
     return Team.query.with_entities(Team.id, Team.title)
@@ -74,26 +77,42 @@ def services_groups_with_servers_and_clusters(session, servers, clusters):
     ServicesGroups attached to servers through services
     """
     (server1_id, *_), (server2_id, *_), (server3_id, *_), *_ = servers
-
-    session.add_all([ServicesGroup(title="group1"), ServicesGroup(title="group2")])
+    session.add_all(
+        [ServicesGroup(title="group1"), ServicesGroup(title="group2")]
+    )
     session.commit()
 
     session.add_all(
         [
             Service(
-                title="service1", server_id=server1_id, services_group_id=1, instance=0
+                title="service1",
+                server_id=server1_id,
+                services_group_id=1,
+                instance=0,
             ),
             Service(
-                title="service2", server_id=server1_id, services_group_id=1, instance=0
+                title="service2",
+                server_id=server1_id,
+                services_group_id=1,
+                instance=0,
             ),
             Service(
-                title="service3", server_id=server2_id, services_group_id=1, instance=0
+                title="service3",
+                server_id=server2_id,
+                services_group_id=1,
+                instance=0,
             ),
             Service(
-                title="service4", server_id=server3_id, services_group_id=1, instance=0
+                title="service4",
+                server_id=server3_id,
+                services_group_id=1,
+                instance=0,
             ),
             Service(
-                title="service5", server_id=server3_id, services_group_id=2, instance=0
+                title="service5",
+                server_id=server3_id,
+                services_group_id=2,
+                instance=0,
             ),
         ]
     )

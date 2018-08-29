@@ -6,6 +6,7 @@ import PeaksChartComponent from "./peaksChart";
 import { fetchPeaksChartData } from "./actions";
 
 import { isEquivalent } from "../../../common/utils";
+import { Spinner } from "../../../common/spinner";
 
 class PeaksChartContainer extends Component {
   componentWillReceiveProps(nextProps) {
@@ -36,7 +37,7 @@ class PeaksChartContainer extends Component {
 
   render() {
     if (this.props.loading) {
-      return <div>Loading ...</div>;
+      return <Spinner />;
     }
     let data = this.constructChartData(this.props.chartData);
 

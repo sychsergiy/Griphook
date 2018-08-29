@@ -11,7 +11,9 @@ from griphook.server.filters.peaks_queries import (
 def test_get_clusters_hierarchy_part(clusters):
     real_clusters = get_clusters_hierarchy_part()
 
-    expected_clusters = tuple({"id": id_, "title": title} for (id_, title) in clusters)
+    expected_clusters = tuple(
+        {"id": id_, "title": title} for (id_, title) in clusters
+    )
 
     assert real_clusters == expected_clusters
 
@@ -26,17 +28,35 @@ def test_get_servers_hierarchy_part(servers):
     assert real_servers == expected_servers
 
 
-def test_get_services_groups_hierarchy_part(services_groups_with_servers_and_clusters):
+def test_get_services_groups_hierarchy_part(
+    services_groups_with_servers_and_clusters
+):
     services_groups = get_services_groups_hierarchy_part()
     expected_services_groups = (
-        {"id": 1, "title": "group1", "servers_ids": [1, 2, 3], "clusters_ids": [1, 2]},
-        {"id": 2, "title": "group2", "servers_ids": [3], "clusters_ids": [2]},
+        {
+            "id": 1,
+            "title": "group1",
+            "servers_ids": [1, 2, 3],
+            "clusters_ids": [1, 2],
+            "projects_ids": [],
+            "teams_ids": [],
+        },
+        {
+            "id": 2,
+            "title": "group2",
+            "servers_ids": [3],
+            "clusters_ids": [2],
+            "projects_ids": [],
+            "teams_ids": [],
+        },
     )
     assert services_groups == expected_services_groups
 
 
 def test_get_services_hierarchy_part(services_groups_with_servers_and_clusters):
-    services = tuple(sorted(get_services_hierarchy_part(), key=itemgetter("id")))
+    services = tuple(
+        sorted(get_services_hierarchy_part(), key=itemgetter("id"))
+    )
     expected_services = (
         {
             "id": 1,

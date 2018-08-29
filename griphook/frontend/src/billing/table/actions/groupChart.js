@@ -14,6 +14,11 @@ export const fetchGroupChartDataFailure = error => ({
   error
 });
 
+export const setGroupChartMetricType = metricType => ({
+  type: types.SET_GROUP_CHART_METRIC_TYPE,
+  metricType
+});
+
 export const fetchGroupChartData = options => dispatch => {
   dispatch(fetchGroupChartDataBegin());
   const requesData = {

@@ -30,12 +30,12 @@ class LoginView(MethodView):
         password = request.json.get("password")
 
         # Check password field is filled
-        if not password:
-            return "Password field is unfilled", 400
+        if password is None:
+            return jsonify({"error": "Password field is unfilled"}), 400
 
         admin = get_admin()
         if not admin or not admin.check_password(password):
-            return "Wrong password", 401
+            return jsonify({"error": "Wrong password"}), 401
 
         # Create JWT and return it
         return (

@@ -12,7 +12,7 @@ services:
             - GH_DATABASE_TEST_URL=postgres://user:password@postgres:5432/dbname
         healthcheck:
                 test: "exit 0"
-        command: bash -c "pytest"
+        command: bash -c "sleep 2 && pytest"
 
     rabbit:
         image: rabbitmq

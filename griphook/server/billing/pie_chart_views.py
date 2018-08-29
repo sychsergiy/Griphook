@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask.views import View
 
-from sqlalchemy import func
+from sqlalchemy import func, BigInteger, cast
 
 from griphook.server.models import (
     ServicesGroup,
@@ -14,6 +14,9 @@ from griphook.server.models import (
     Project,
 )
 
+from griphook.server.billing.validation import validators
+from griphook.server.billing.validation import schemas
+
 
 class GetPieChartAbsoluteDataView(View):
     """
@@ -22,7 +25,7 @@ class GetPieChartAbsoluteDataView(View):
         "target_type": one_of(project, team, cluster, server, services_group, all),
         "target_ids": [int],
         "time_from": "Y-M-D"
-        "metric_type": one_of("user_cpu_percent", "vsize")
+        "metric_type": one_of(user_cpu_percent, vsize)
         "time_until": "Y-M-D"
       }
       response format:
@@ -38,17 +41,21 @@ class GetPieChartAbsoluteDataView(View):
     methods = ["POST"]
 
     def dispatch_request(self):
-        # todo: input data validation
-        request_data = request.get_json()
-        # todo: check if target_ids are in db, else abort 404
-        total_initial_query = ServicesGroup.query
-        total_metric_sum = self.get_query_metric_sum(
-            total_initial_query, request_data
+        request_data = request.get_json() or {}
+        valid, error_message, formatted_json = validators.validate_request_json(
+            schemas.PIE_CHART_ENDPOINT_SCHEMA, request_data
         )
+        if not valid:
+            response = jsonify(error_message)
+            response.status_code = 400
+            return response
+
+        total_initial_query = ServicesGroup.query
+        total_metric_sum = self.get_query_metric_sum(total_initial_query, request_data)
 
         target_type = request_data["target_type"]
         target_ids = request_data["target_ids"]
-        # todo: change on hash map
+
         if target_type == "all":
             initial_query = total_initial_query
         elif target_type == "cluster":
@@ -58,13 +65,9 @@ class GetPieChartAbsoluteDataView(View):
                 .join(Service)
             )
         elif target_type == "server":
-            initial_query = Server.query.filter(Server.id.in_(target_ids)).join(
-                Service
-            )
+            initial_query = Server.query.filter(Server.id.in_(target_ids)).join(Service)
         elif target_type == "services_group":
-            initial_query = ServicesGroup.query.filter(
-                ServicesGroup.id.in_(target_ids)
-            )
+            initial_query = ServicesGroup.query.filter(ServicesGroup.id.in_(target_ids))
         elif target_type == "team":
             initial_query = Team.query
             # todo: need to check if it is working
@@ -74,21 +77,19 @@ class GetPieChartAbsoluteDataView(View):
         else:
             raise Exception("Problem with request data validation")
 
-        selected_metric_sum = self.get_query_metric_sum(
-            initial_query, request_data
-        )
-        # if target ids are not found and selected_metric_sum is None, just set 0
-        # todo: maybe it will be better to return 404
-        selected_metric_sum = selected_metric_sum if selected_metric_sum else 0
-
-        response_data = {
-            "labels": ("selected", "rest"),
-            "values": (
-                # todo: solve problem with ceiling in big number
-                selected_metric_sum,
-                total_metric_sum - selected_metric_sum,
-            ),
-        }
+        selected_metric_sum = self.get_query_metric_sum(initial_query, request_data)
+        # todo: move this part to frontend
+        if selected_metric_sum:
+            response_data = {
+                "labels": ("selected", "rest"),
+                "values": (
+                    # todo: solve problem with ceiling in big number
+                    round(selected_metric_sum, 0),
+                    round(total_metric_sum - selected_metric_sum, 0)
+                ),
+            }
+        else:
+            response_data = {"labels": [], "values": []}
         return jsonify(response_data)
 
     def get_query_metric_sum(self, initial_query, request_data):
@@ -109,6 +110,7 @@ class GetPieChartAbsoluteDataView(View):
             )
             .with_entities(func.sum(MetricBilling.value).label("metric_sum"))
         ).scalar()
+        # todo: handle returning None
         return metric_sum
 
 
@@ -118,9 +120,9 @@ class GetPieChartRelativeDataView(View):
       {
         "target_type": one_of(project, team, cluster, server, services_group, all),
         "target_ids": [int],
-        "time_from": "Y-M-D"
+        "time_from": "Y-M-D",
+        "time_until": "Y-M-D",
         "metric_type": one_of("user_cpu_percent", "vsize")
-        "time_until": "Y-M-D"
       }
       response format:
       {
@@ -134,8 +136,14 @@ class GetPieChartRelativeDataView(View):
     methods = ["POST"]
 
     def dispatch_request(self):
-        # todo: add request data validation
-        request_data = request.get_json()
+        request_data = request.get_json() or {}
+        valid, error_message, formatted_json = validators.validate_request_json(
+            schemas.PIE_CHART_ENDPOINT_SCHEMA, request_data
+        )
+        if not valid:
+            response = jsonify(error_message)
+            response.status_code = 400
+            return response
 
         target_type = request_data["target_type"]
         target_ids = request_data["target_ids"]
@@ -147,22 +155,16 @@ class GetPieChartRelativeDataView(View):
                 Cluster.query.filter(Cluster.id.in_(target_ids))
                 .join(Server, Server.cluster_id == Cluster.id)
                 .join(Service, Service.server_id == Server.id)
-                .join(
-                    ServicesGroup, Service.services_group_id == ServicesGroup.id
-                )
+                .join(ServicesGroup, Service.services_group_id == ServicesGroup.id)
             )
         elif target_type == "server":
             initial_query = (
                 Server.query.filter(Server.id.in_(target_ids))
                 .join(Service, Service.server_id == Server.id)
-                .join(
-                    ServicesGroup, ServicesGroup.id == Service.services_group_id
-                )
+                .join(ServicesGroup, ServicesGroup.id == Service.services_group_id)
             )
         elif target_type == "services_group":
-            initial_query = ServicesGroup.query.filter(
-                ServicesGroup.id.in_(target_ids)
-            )
+            initial_query = ServicesGroup.query.filter(ServicesGroup.id.in_(target_ids))
         elif target_type == "project":
             initial_query = Project.query.join(
                 ServicesGroup, Project.id == ServicesGroup.project_id
@@ -172,15 +174,17 @@ class GetPieChartRelativeDataView(View):
                 ServicesGroup, Team.id == ServicesGroup.team_id
             )
         else:
-            raise Exception(
-                "Problem with request data validation, wrong target type"
-            )
+            raise Exception("Problem with request data validation, wrong target type")
 
         groups_metric_sum_values = self.get_metric_sum_for_each_group(
             initial_query, request_data
         )
 
-        labels, values = zip(*groups_metric_sum_values)
+        # todo: move this part to frontend
+        if groups_metric_sum_values:
+            labels, values = zip(*groups_metric_sum_values)
+        else:
+            labels, values = [], []
 
         response_data = {"labels": labels, "values": values}
         return jsonify(response_data)
@@ -194,8 +198,7 @@ class GetPieChartRelativeDataView(View):
 
         total = (
             initial_query.join(
-                MetricBilling,
-                MetricBilling.services_group_id == ServicesGroup.id,
+                MetricBilling, MetricBilling.services_group_id == ServicesGroup.id
             )
             .join(BatchStoryBilling)
             .filter(MetricBilling.type == request_data["metric_type"])
@@ -207,8 +210,7 @@ class GetPieChartRelativeDataView(View):
             .group_by(ServicesGroup.title)
             .order_by(func.sum(MetricBilling.value).desc())
             .with_entities(
-                ServicesGroup.title,
-                func.sum(MetricBilling.value).label("metric_sum"),
+                ServicesGroup.title, cast(func.sum(MetricBilling.value), BigInteger).label("metric_sum")
             )
         ).all()
         return total

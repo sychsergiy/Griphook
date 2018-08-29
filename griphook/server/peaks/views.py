@@ -39,7 +39,7 @@ def get_peaks_for_chart():
         query = get_peaks_query_group_by_time_step(**validated_data)
         query_result = query.get_items()
         timeline = [peak_formatter(element) for element in query_result]
-        values = [round(element.peaks, 1) for element in query_result]
+        values = [round(element.peaks, 0) for element in query_result]
         data = {
             "timeline": timeline,
             "values": values,

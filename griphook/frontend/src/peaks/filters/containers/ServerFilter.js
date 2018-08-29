@@ -29,7 +29,9 @@ const mapStateToProps = state => {
     selectedTargetType: state.peaks.chartsOptions.targetType,
     visibleItems: filteredServers,
     currentTargetType: peaksTargetTypes.server,
-    blockTitleIconClass: "fas fa-server mr-2"
+    blockTitleIconClass: "fas fa-server mr-2",
+    loading: state.peaks.filters.hierarchy.loading,
+    error: state.peaks.filters.hierarchy.error
   };
 };
 const mapDispatchToProps = dispatch => ({

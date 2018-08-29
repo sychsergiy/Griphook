@@ -7,12 +7,23 @@ import {
   removeGroupFromTargetIDs
 } from "../../options/actions";
 
-import { getFilteredServicesGroups } from "../../../common/filtersHelper/servicesGroups";
+import { servicesGroupFilter } from "../../../common/filtersHelper/servicesGroups";
 import { separateSelectedItems } from "../../../common/filtersHelper/common";
 
 import { billingTargetTypes } from "../../../common/constants";
 
 import BaseFilterContainer from "./BaseFilter";
+
+function getFilteredServicesGroups(selections, ServicesGroups) {
+  // TODO: this function must take cluster and servers as arugments
+  let filteredServicesGroups = servicesGroupFilter(ServicesGroups)
+    .filterByClusters(selections.clusters)
+    .filterByServers(selections.servers)
+    .filterByProjects(selections.projects)
+    .filterByTeams(selections.teams)
+    .getItems();
+  return filteredServicesGroups;
+}
 
 class ServicesGroupFilterContainer extends Component {
   constructor(props) {
@@ -54,7 +65,10 @@ class ServicesGroupFilterContainer extends Component {
         selectTarget={this.toggleFilterItem}
         multiselect={true}
         selectedItems={this.props.selectedItems}
+        blockTitleIconClass={this.props.blockTitleIconClass}
         hideIcon={true}
+        loading={this.props.loading}
+        error={this.props.error}
       />
     );
   }
@@ -71,11 +85,14 @@ const mapStateToProps = state => {
   );
   return {
     selectedItems: selectedGroups,
-    visibleItems: filteredGroups, // paginator
+    visibleItems: filteredGroups,
     currentTargetType: billingTargetTypes.group,
     selectedTargetType: state.billing.options.targetType,
     selectedTargetIDs: state.billing.options.targetIDs,
-    blockTitle: "Services Groups"
+    blockTitle: "Services Groups",
+    blockTitleIconClass: "fas fa-object-group mr-2",
+    loading: state.billing.filters.hierarchy.loading,
+    error: state.billing.filters.hierarchy.error
   };
 };
 

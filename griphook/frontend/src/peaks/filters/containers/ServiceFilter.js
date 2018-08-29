@@ -20,7 +20,9 @@ const mapStateToProps = state => ({
   selectedTargetType: state.peaks.chartsOptions.targetType,
   currentTargetType: peaksTargetTypes.service,
   blockTitle: "Services",
-  blockTitleIconClass: "fas fa-cogs"
+  blockTitleIconClass: "fas fa-cogs mr-2",
+  loading: state.peaks.filters.hierarchy.loading,
+  error: state.peaks.filters.hierarchy.error
 });
 
 const mapDispatchToProps = dispatch => ({

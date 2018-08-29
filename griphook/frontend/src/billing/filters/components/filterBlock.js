@@ -3,16 +3,16 @@ import React, { Component } from "react";
 import { SearchInputComponent } from "./searchInput";
 import FilterBlockItemComponent from "./filterBlockItem";
 
-{
-  /* <i className="fas fa-project-diagram" />; */
-  // <i class="fas fa-people-carry mr-2"></i>
-  // <i class="fas fa-th-large"></i>
-  // <i class="fas fa-server"></i>
-  // <i class="fas fa-object-group"></i>
-  // <i class="fas fa-cogs"></i>
-}
+import { Spinner } from "../../../common/spinner";
 
 export const FilterBlockComponent = props => {
+  let content = null;
+  if (props.loading) {
+    content = <Spinner />;
+  } else if (props.error) {
+    content = <div>{props.error.toString()}</div>;
+  }
+
   return (
     <div className="filter-wrapper col-12 col-sm-6 col-md-12 mx-auto mx-lg-0">
       <div className="card border-primary mt-2 ">
@@ -41,19 +41,23 @@ export const FilterBlockComponent = props => {
           ))}
         </ul>
 
-        <ul className="list-group list-group-flush compact mt-3">
-          {props.page.items.map(item => (
-            <FilterBlockItemComponent
-              key={item.id}
-              item={item}
-              isTargetSelected={props.selectedTargetIDs.includes(item.id)}
-              onTargetClick={props.onTargetClick}
-              onIconClick={props.onSelectFilterItem}
-              isItemSelected={false}
-              hideIcon={props.hideIcon}
-            />
-          ))}
-        </ul>
+        {content ? (
+          content
+        ) : (
+          <ul className="list-group list-group-flush compact mt-3">
+            {props.page.items.map(item => (
+              <FilterBlockItemComponent
+                key={item.id}
+                item={item}
+                isTargetSelected={props.selectedTargetIDs.includes(item.id)}
+                onTargetClick={props.onTargetClick}
+                onIconClick={props.onSelectFilterItem}
+                isItemSelected={false}
+                hideIcon={props.hideIcon}
+              />
+            ))}
+          </ul>
+        )}
 
         <div className="pagination mx-auto my-2">
           {props.page.previousPageExists ? (
