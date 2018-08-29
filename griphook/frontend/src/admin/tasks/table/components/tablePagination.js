@@ -13,6 +13,8 @@ export const TablePaginationComponent = props => {
           </button>
         ) : null}
         <span className="page-number px-4">{props.pageNumber}</span>
+        <span>. . .</span>
+        <span className="page-number px-4">{props.page.amountAllPages}</span>
         {props.page.nextPageExists ? (
           <button
             className="btn btn btn-outline-primary btn-sm"
