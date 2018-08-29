@@ -12,8 +12,14 @@ const BillingTablePaginationComponent = props => {
     <div className="row">
       <div className="pagination mx-auto mt-4">
         <button
-          className={props.previousPageExists ? buttonClass : disabledButtonClass}
-          onClick={() => props.setPageNumber(props.pageNumber - 1)}
+          className={
+            props.previousPageExists ? buttonClass : disabledButtonClass
+          }
+          onClick={
+            props.previousPageExists
+              ? () => props.setPageNumber(props.pageNumber - 1)
+              : null
+          }
         >
           Prev
         </button>
@@ -22,7 +28,11 @@ const BillingTablePaginationComponent = props => {
         <span className="max-page-number pl-2 pr-4">{props.pagesCount}</span>
         <button
           className={props.nextPageExists ? buttonClass : disabledButtonClass}
-          onClick={() => props.setPageNumber(props.pageNumber + 1)}
+          onClick={
+            props.nextPageExists
+              ? () => props.setPageNumber(props.pageNumber + 1)
+              : null
+          }
         >
           Next
         </button>

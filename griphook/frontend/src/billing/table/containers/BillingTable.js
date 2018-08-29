@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { fetchBillingTableData } from "../actions/groups";
+import {
+  fetchBillingTableData,
+  setBillingTablePageNumber
+} from "../actions/groups";
 
 import {
   selectBillingTableRow,
@@ -22,6 +25,10 @@ class BillingTableContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (!isEquivalent(this.props.requestOptions, nextProps.requestOptions)) {
+      if (this.props.requestOptions.page === nextProps.requestOptions.page) {
+        this.props.setPageNumber(1);
+        nextProps.requestOptions.page = 1;
+      }
       this.props.fetchTableData(nextProps.requestOptions);
     }
   }
@@ -68,6 +75,9 @@ const mapDispatchToProps = dispatch => ({
   },
   hideRow: () => {
     dispatch(unSelectBillingTableRow());
+  },
+  setPageNumber: pageNumber => {
+    dispatch(setBillingTablePageNumber(pageNumber));
   }
 });
 
