@@ -1,11 +1,12 @@
 export const ITEMS_PER_FILTER_PAGE = 8;
 
 export function paginator(items, pageNumber, itemsPerPage = ITEMS_PER_FILTER_PAGE) {
-
   const endIndex = pageNumber * itemsPerPage;
 
+  const amountAllPages =  Math.ceil(items.length / itemsPerPage)
+
   if (endIndex >= items.length && pageNumber > 1) {
-    pageNumber = Math.ceil(items.length / itemsPerPage);
+    pageNumber = amountAllPages;
   }
 
   const startIndex = (pageNumber - 1) * itemsPerPage;
@@ -18,6 +19,7 @@ export function paginator(items, pageNumber, itemsPerPage = ITEMS_PER_FILTER_PAG
     items: slicedItems,
     nextPageExists,
     previousPageExists,
-    pageNumber
+    pageNumber,
+    amountAllPages
   };
 }

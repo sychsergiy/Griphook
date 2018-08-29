@@ -15,13 +15,11 @@ class SettingsPage extends Component {
         <div className="d-flex flex-wrap flex-md-nowrap">
           <SettingsMenuComponent />
 
-          <div className="content flex-grow-1 mt-4 mx-md-1 mx-lg-4">
-            <Switch>
-              <Route exact path="/settings" component={TasksSettingsPage} />
-              <Route path="/settings/tasks" component={TasksSettingsPage} />
-              <Route path="/settings/resources" component={ResourcesSettingsPage} />
-            </Switch>
-          </div>
+          <Switch>
+            <Route exact path="/settings" component={TasksSettingsPage} />
+            <Route path="/settings/tasks" component={TasksSettingsPage} />
+            <Route path="/settings/resources" component={ResourcesSettingsPage} />
+          </Switch>
         </div>
       </div>
     );

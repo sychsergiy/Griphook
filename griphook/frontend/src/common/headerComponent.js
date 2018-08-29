@@ -35,7 +35,7 @@ const HeaderComponent = () => (
       </ul>
       <ul className="navbar-nav ml-auto">
          <li className="nav-item">
-            <Link to="/settings" className="nav-link">
+            <Link to="/settings/tasks" className="nav-link">
                 <i className="fas fa-wrench mr-1" />
                 Settings
             </Link>

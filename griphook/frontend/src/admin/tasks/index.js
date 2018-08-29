@@ -15,7 +15,6 @@ class TasksSettingsPage extends Component {
   }
 
   showModal(listDataType) {
-    console.log(listDataType);
     this.setState({ show: true , modalListDataType: listDataType});
   };
 
@@ -25,7 +24,7 @@ class TasksSettingsPage extends Component {
 
   render() {
     return(
-      <div>
+      <div className="content flex-grow-1 mt-4 mx-md-1 mx-lg-4">
         <h3>Tasks conformity settings</h3>
         <p className="text-muted">Choose team and project for services groups</p>
         <TableContainer showModal={this.showModal}/>
