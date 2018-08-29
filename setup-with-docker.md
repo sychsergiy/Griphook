@@ -1,15 +1,13 @@
+## Local installation using Docker
 
+1) [Install Docker](https://docs.docker.com/install/) at your local machine.
 
-## Local Installation docker
+2) Build the image and run
 
-
-RUN with docker-compose.
-```sh
-docker-compose run --build
+```bash
+cd Griphook/ && docker-compose up --build
 ```
 
-RUN tests with docker-compose.
-```sh
-docker-compose build
-docker-compose -f compose-test.yml run pytest
-```
+At this point app should be working at port 82
+
+Api is serving at 5000 port
