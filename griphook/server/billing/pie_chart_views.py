@@ -51,7 +51,9 @@ class GetPieChartAbsoluteDataView(View):
             return response
 
         total_initial_query = Service.query
-        total_metric_sum = self.get_query_metric_sum(total_initial_query, request_data)
+        total_metric_sum = self.get_query_metric_sum(
+            total_initial_query, request_data
+        )
 
         target_type = request_data["target_type"]
         target_ids = request_data["target_ids"]
@@ -65,34 +67,31 @@ class GetPieChartAbsoluteDataView(View):
                 .join(Service, Server.id == Service.server_id)
             )
         elif target_type == "server":
-            initial_query = (
-                Server.query.filter(Server.id.in_(target_ids))
-                .join(Service, Service.server_id == Server.id)
+            initial_query = Server.query.filter(Server.id.in_(target_ids)).join(
+                Service, Service.server_id == Server.id
             )
         elif target_type == "services_group":
-            initial_query = (
-                ServicesGroup.query
-                .filter(ServicesGroup.id.in_(target_ids))
-                .join(Service, Service.services_group_id == ServicesGroup.id)
-            )
+            initial_query = ServicesGroup.query.filter(
+                ServicesGroup.id.in_(target_ids)
+            ).join(Service, Service.services_group_id == ServicesGroup.id)
         elif target_type == "team":
             initial_query = (
-                Team.query
-                .filter(Team.id.in_(target_ids))
+                Team.query.filter(Team.id.in_(target_ids))
                 .join(ServicesGroup, ServicesGroup.team_id == Team.id)
                 .join(Service, Service.services_group_id == ServicesGroup.id)
             )
         elif target_type == "project":
             initial_query = (
-                Project.query
-                .filter(Project.id.in_(target_ids))
+                Project.query.filter(Project.id.in_(target_ids))
                 .join(ServicesGroup, ServicesGroup.team_id == Project.id)
                 .join(Service, Service.services_group_id == ServicesGroup.id)
             )
         else:
             raise Exception("Problem with request data validation")
 
-        selected_metric_sum = self.get_query_metric_sum(initial_query, request_data)
+        selected_metric_sum = self.get_query_metric_sum(
+            initial_query, request_data
+        )
         # todo: move this part to frontend
         if selected_metric_sum:
             response_data = {
@@ -100,7 +99,7 @@ class GetPieChartAbsoluteDataView(View):
                 "values": (
                     # todo: solve problem with ceiling in big number
                     round(selected_metric_sum, 0),
-                    round(total_metric_sum - selected_metric_sum, 0)
+                    round(total_metric_sum - selected_metric_sum, 0),
                 ),
             }
         else:
@@ -113,9 +112,9 @@ class GetPieChartAbsoluteDataView(View):
          MetricBillling table, must be joined with Service or ServicesGroup
         """
         metric_sum = (
-            # todo: need to explicit join with Service or ServicesGroup
-            # to avoid unpredictable behavior
-            initial_query.join(MetricBilling, Service.id == MetricBilling.service_id)
+            initial_query.join(
+                MetricBilling, Service.id == MetricBilling.service_id
+            )
             .join(BatchStoryBilling)
             .filter(MetricBilling.type == request_data["metric_type"])
             .filter(
@@ -167,28 +166,36 @@ class GetPieChartRelativeDataView(View):
         elif target_type == "cluster":
             initial_query = (
                 Cluster.query.filter(Cluster.id.in_(target_ids))
-                    .join(Server, Server.cluster_id == Cluster.id)
-                    .join(Service, Service.server_id == Server.id)
-                    .join(ServicesGroup, Service.services_group_id == ServicesGroup.id)
+                .join(Server, Server.cluster_id == Cluster.id)
+                .join(Service, Service.server_id == Server.id)
+                .join(
+                    ServicesGroup, Service.services_group_id == ServicesGroup.id
+                )
             )
         elif target_type == "server":
             initial_query = (
                 Server.query.filter(Server.id.in_(target_ids))
-                    .join(Service, Service.server_id == Server.id)
-                    .join(ServicesGroup, ServicesGroup.id == Service.services_group_id)
+                .join(Service, Service.server_id == Server.id)
+                .join(
+                    ServicesGroup, ServicesGroup.id == Service.services_group_id
+                )
             )
         elif target_type == "services_group":
-            initial_query = ServicesGroup.query.filter(ServicesGroup.id.in_(target_ids))
-        elif target_type == "project":
-            initial_query = Project.query.join(
-                ServicesGroup, Project.id == ServicesGroup.project_id
+            initial_query = ServicesGroup.query.filter(
+                ServicesGroup.id.in_(target_ids)
             )
+        elif target_type == "project":
+            initial_query = Project.query.filter(
+                Project.id.in_(target_ids)
+            ).join(ServicesGroup, Project.id == ServicesGroup.project_id)
         elif target_type == "team":
-            initial_query = Team.query.join(
-                ServicesGroup, Team.id == ServicesGroup.team_id
+            initial_query = Team.query.filter(Team.id.in_(target_ids)).join(
+                ServicesGroup, Team.id == ServicesGroup.project_id
             )
         else:
-            raise Exception("Problem with request data validation, wrong target type")
+            raise Exception(
+                "Problem with request data validation, wrong target type"
+            )
 
         groups_metric_sum_values = self.get_metric_sum_for_each_group(
             initial_query, request_data
@@ -212,19 +219,23 @@ class GetPieChartRelativeDataView(View):
 
         total = (
             initial_query.join(
-                MetricBilling, MetricBilling.services_group_id == ServicesGroup.id
+                MetricBilling,
+                MetricBilling.services_group_id == ServicesGroup.id,
             )
-                .join(BatchStoryBilling)
-                .filter(MetricBilling.type == request_data["metric_type"])
-                .filter(
+            .join(BatchStoryBilling)
+            .filter(MetricBilling.type == request_data["metric_type"])
+            .filter(
                 BatchStoryBilling.time.between(
                     request_data["time_from"], request_data["time_until"]
                 )
             )
-                .group_by(ServicesGroup.title)
-                .order_by(func.sum(MetricBilling.value).desc())
-                .with_entities(
-                ServicesGroup.title, cast(func.sum(MetricBilling.value), BigInteger).label("metric_sum")
+            .group_by(ServicesGroup.title)
+            .order_by(func.sum(MetricBilling.value).desc())
+            .with_entities(
+                ServicesGroup.title,
+                cast(func.sum(MetricBilling.value), BigInteger).label(
+                    "metric_sum"
+                ),
             )
         ).all()
         return total
