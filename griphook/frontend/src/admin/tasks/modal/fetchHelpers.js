@@ -4,7 +4,10 @@ import * as urls from './urls';
 export const fetchProjects = () =>  {
   const url = urls.PROJECT_GET_ALL;
   const data = {
-    method: "GET"
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+    }
   };
   return fetch(url, data)
 };
@@ -12,7 +15,10 @@ export const fetchProjects = () =>  {
 export const fetchTeams = () =>  {
   const url = urls.TEAM_GET_ALL;
   const data = {
-    method: "GET"
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+    }
   };
   return fetch(url, data)
 };
@@ -23,7 +29,8 @@ export const createProject = projectTitle =>  {
     method: "POST",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({title: projectTitle})
   };
@@ -36,7 +43,8 @@ export const createTeam = teamTitle =>  {
     method: "POST",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({title: teamTitle})
   };
@@ -49,7 +57,8 @@ export const updateProjectTitle = (projectId, projectTitle) =>  {
     method: "PUT",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({id: projectId, title: projectTitle})
   };
@@ -63,7 +72,8 @@ export const updateTeamTitle = (teamId, teamTitle) =>  {
     method: "PUT",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({id: teamId, title: teamTitle})
   };
@@ -76,7 +86,8 @@ export const deleteProject = projectId =>  {
     method: "DELETE",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({id: projectId})
   };
@@ -89,7 +100,8 @@ export const deleteTeam = teamId =>  {
     method: "DELETE",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({id: teamId})
   };

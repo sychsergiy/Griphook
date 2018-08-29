@@ -4,7 +4,10 @@ import * as urls from "./urls";
 export const fetchServers = () => {
   const url = urls.SERVERS_GET_ALL;
   const data = {
-    method: "GET"
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+    }
   };
   return fetch(url, data);
 };
@@ -16,7 +19,8 @@ export const updateServerCPUPrice = (serverId, serverCPUPrice) =>  {
     method: "PUT",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({id: serverId, cpu_price: serverCPUPrice})
   };
@@ -30,7 +34,8 @@ export const updateServerMemoryPrice = (serverId, serverMemoryPrice) =>  {
     method: "PUT",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({id: serverId, memory_price: serverMemoryPrice})
   };
@@ -41,7 +46,10 @@ export const updateServerMemoryPrice = (serverId, serverMemoryPrice) =>  {
 export const fetchClusters = () => {
   const url = urls.CLUSTERS_GET_ALL;
   const data = {
-    method: "GET"
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+    }
   };
   return fetch(url, data);
 };
@@ -53,7 +61,8 @@ export const updateClusterCPUPrice = (clusterId, clusterCPUPrice) =>  {
     method: "PUT",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({id: clusterId, cpu_price: clusterCPUPrice})
   };
@@ -67,7 +76,8 @@ export const updateClusterMemoryPrice = (clusterId, clusterMemoryPrice) =>  {
     method: "PUT",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("access_token")}`
     },
     body: JSON.stringify({id: clusterId, memory_price: clusterMemoryPrice})
   };
