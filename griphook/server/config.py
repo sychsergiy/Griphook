@@ -16,6 +16,7 @@ class BaseConfig(object):
     BCRYPT_LOG_ROUNDS = 4
     DEBUG_TB_ENABLED = False
     SECRET_KEY = os.getenv("SECRET_KEY", "my_precious")
+    JWT_SECRET_KEY = SECRET_KEY
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
     TESTING = False
