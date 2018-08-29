@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import TableBodyComponent from "./components/tableBody";
 import TableHeaderComponent from './components/tableHeader'
 
+import {TableSpinnerComponent} from "../../common/tableSpinner";
 import {TableControlPanelComponent} from "./components/tableControlPanel"
 import {TablePaginationComponent} from "./components/tablePagination"
 import {paginator} from "./paginator"
@@ -35,12 +36,10 @@ class TableContainer extends Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
+    this.setState({loading: true});
     fetchServicesgroupsProjectsTeams().then(response => {
-      console.log(response);
       if (response.ok) {
         response.json().then(data => {
-          console.log(data);
           this.setState({
             servicesGroups: data.services_groups,
             servicesGroupsFiltered: data.services_groups,
@@ -78,6 +77,7 @@ class TableContainer extends Component {
 
   attachTeamToServicesGroup(event, servicesGroupId) {
     const newTeamId = parseInt(event.target.value);
+    this.setState({loading: true});
     attachTeam(newTeamId, servicesGroupId)
     .then(() => {
       const ServicesGroupObject = this.state.servicesGroups.find(object => object.id === servicesGroupId);
@@ -86,12 +86,13 @@ class TableContainer extends Component {
       let servicesGroups = [...this.state.servicesGroups];
       servicesGroups[objectIndex].team_id=newTeamId;
 
-      this.setState({servicesGroups: servicesGroups});
+      this.setState({servicesGroups: servicesGroups, loading: false});
     });
   }
 
   attachProjectToServicesGroup(event, servicesGroupId) {
     const newProjectId = parseInt(event.target.value);
+    this.setState({loading: true});
     attachProject(newProjectId, servicesGroupId)
     .then(() => {
       const ServicesGroupObject = this.state.servicesGroups.find(object => object.id === servicesGroupId);
@@ -100,14 +101,27 @@ class TableContainer extends Component {
       let servicesGroups = [...this.state.servicesGroups];
       servicesGroups[objectIndex].project_id=newProjectId;
 
-      this.setState({servicesGroups: servicesGroups});
+      this.setState({servicesGroups: servicesGroups, loading: false});
     });
   }
 
   render() {
+    if (this.state.loading === true) {
+      return (
+        <div>
+          <TableControlPanelComponent
+            onSearchInputChange={this.onSearchInputChange}
+            showModal={this.props.showModal} />
+          <table className="table mt-2">
+            <TableHeaderComponent />
+            <TableSpinnerComponent />
+          </table>
+        </div>
+      );
+    }
+
     let page = paginator(this.state.servicesGroupsFiltered, this.state.pageNumber);
     let dataAfterPagination = page.items
-
 
     return (
       <div>

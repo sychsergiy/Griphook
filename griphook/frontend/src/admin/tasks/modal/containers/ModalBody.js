@@ -1,17 +1,12 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 
-import ListBlockComponent from "../components/listBlock"
-import InputBlockContainer from "./InputBlock"
+import ListBlockComponent from "../components/listBlock";
+import InputBlockContainer from "./InputBlock";
 
-import {listDataType} from "../constants"
+import { listDataType } from "../constants";
+import { Spinner } from "../../../../common/spinner";
 
-import {
-  createObject,
-  deleteObject,
-  getObjects
-} from "../requestHelpers";
-
+import { createObject, deleteObject, getObjects } from "../requestHelpers";
 
 class ModalBodyContainer extends Component {
   constructor(props) {
@@ -25,13 +20,13 @@ class ModalBodyContainer extends Component {
   }
 
   componentDidMount() {
+    this.setState({ loading: true });
     getObjects(this.props.listDataType).then(response => {
       if (response.ok) {
         response.json().then(data => {
           if (this.props.listDataType === listDataType.projects) {
             this.setState({ listData: data.projects, loading: false });
-          }
-          else if (this.props.listDataType === listDataType.teams) {
+          } else if (this.props.listDataType === listDataType.teams) {
             this.setState({ listData: data.teams, loading: false });
           }
         });
@@ -51,8 +46,7 @@ class ModalBodyContainer extends Component {
           response.json().then(data => {
             if (nextProps.listDataType === listDataType.projects) {
               this.setState({ listData: data.projects, loading: false });
-            }
-            else if (nextProps.listDataType === listDataType.teams) {
+            } else if (nextProps.listDataType === listDataType.teams) {
               this.setState({ listData: data.teams, loading: false });
             }
           });
@@ -67,12 +61,14 @@ class ModalBodyContainer extends Component {
     }
   }
 
-
   onRowDelete(objectId) {
+    this.setState({ loading: true });
     deleteObject(this.props.listDataType, objectId).then(response => {
       if (response.ok) {
         response.json().then(() => {
-          const rowObject = this.state.listData.find(object => object.id === objectId);
+          const rowObject = this.state.listData.find(
+            object => object.id === objectId
+          );
           const objectIndex = this.state.listData.indexOf(rowObject);
 
           this.setState({
@@ -84,6 +80,7 @@ class ModalBodyContainer extends Component {
           });
         });
       } else {
+        console.log(response.json());
         response.json().then(data => {
           // TODO: output !data.error!
           alert(data.error);
@@ -91,9 +88,10 @@ class ModalBodyContainer extends Component {
         });
       }
     });
-  };
+  }
 
   onRowAdd(objectTitle) {
+    this.setState({ loading: true });
     createObject(this.props.listDataType, objectTitle).then(response => {
       if (response.ok) {
         response.json().then(object => {
@@ -112,19 +110,20 @@ class ModalBodyContainer extends Component {
         });
       }
     });
-  };
+  }
   render() {
+    if (this.state.loading === true) {
+      return <Spinner />;
+    }
     return (
       <div className="modal-body">
-          <div className="row">
-            <InputBlockContainer
-              onRowAdd={this.onRowAdd}
-              />
-            <ListBlockComponent
-              listData={this.state.listData}
-              onRowDelete={this.onRowDelete}
-              />
-          </div>
+        <div className="row">
+          <InputBlockContainer onRowAdd={this.onRowAdd} />
+          <ListBlockComponent
+            listData={this.state.listData}
+            onRowDelete={this.onRowDelete}
+          />
+        </div>
       </div>
     );
   }
