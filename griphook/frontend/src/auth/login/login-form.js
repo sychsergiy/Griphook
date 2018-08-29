@@ -37,7 +37,7 @@ class LoginForm extends Component {
                     case 401:
                         // if we got unauthorized status code
                         // return rejected promise with error
-                        return response.json().then(data => data.reject(data.error));
+                        return response.json().then(data => Promise.reject(data.error));
                     default:
                         throw Error(`[${response.status}] ${response.statusText}`);
                 }
@@ -45,7 +45,7 @@ class LoginForm extends Component {
             .then(data => {
                 // Save access_token to local storage and redirect to settings
                 localStorage.setItem('access_token', data.access_token);
-                this.props.history.push("/settings");
+                this.props.history.push("/settings/tasks");
             })
             .catch(error => {
                 this.setState({ isPasswordCorrect: false, errorMessage: error });

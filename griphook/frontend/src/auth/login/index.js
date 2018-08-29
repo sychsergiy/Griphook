@@ -6,7 +6,7 @@ class LoginPage extends Component {
     render() {
         if (localStorage.getItem('access_token')) {
             return (
-                <Redirect to="/settings" />
+                <Redirect to="/settings/tasks" />
             );
         }
         return (
