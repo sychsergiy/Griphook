@@ -8,12 +8,21 @@ const BillingTablePaginationComponent = props => {
   const buttonClass = "btn btn-outline-primary btn-sm";
   const disabledButtonClass = "btn btn-outline-primary btn-sm disabled";
 
+  const isPreviousPageButtonActive = props.previousPageExists && !props.loading;
+  const isNextPageButtonActive = props.nextPageExists && !props.loading;
+
   return (
     <div className="row">
       <div className="pagination mx-auto mt-4">
         <button
-          className={props.previousPageExists ? buttonClass : disabledButtonClass}
-          onClick={() => props.setPageNumber(props.pageNumber - 1)}
+          className={
+            isPreviousPageButtonActive ? buttonClass : disabledButtonClass
+          }
+          onClick={
+            isPreviousPageButtonActive
+              ? () => props.setPageNumber(props.pageNumber - 1)
+              : null
+          }
         >
           Prev
         </button>
@@ -21,8 +30,12 @@ const BillingTablePaginationComponent = props => {
         ...
         <span className="max-page-number pl-2 pr-4">{props.pagesCount}</span>
         <button
-          className={props.nextPageExists ? buttonClass : disabledButtonClass}
-          onClick={() => props.setPageNumber(props.pageNumber + 1)}
+          className={isNextPageButtonActive ? buttonClass : disabledButtonClass}
+          onClick={
+            isNextPageButtonActive
+              ? () => props.setPageNumber(props.pageNumber + 1)
+              : null
+          }
         >
           Next
         </button>
@@ -32,6 +45,7 @@ const BillingTablePaginationComponent = props => {
 };
 
 const mapStateToProps = state => ({
+  loading: state.billing.table.groups.loading,
   pageNumber: state.billing.table.groups.pageNumber,
   pagesCount: state.billing.table.groups.pagesCount,
   nextPageExists: state.billing.table.groups.nextPageExists,

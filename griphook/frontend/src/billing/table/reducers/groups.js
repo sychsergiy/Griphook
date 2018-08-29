@@ -26,9 +26,8 @@ export function groups(state = billingTableInitialState, action) {
         ...state,
         loading: false,
         pageItems: action.data.table_data,
-        // TODO: update API and rename pages to pages_count
-        // nextPageExists: action.data.next_page_exists,
-        // previousPageExists: action.data.previous_page_exists,
+        nextPageExists: action.data.has_next,
+        previousPageExists: action.data.has_prev,
         pagesCount: action.data.pages
       };
 

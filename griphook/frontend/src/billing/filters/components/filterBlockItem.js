@@ -11,13 +11,12 @@ const FilterBlockItemComponent = props => {
 
   return (
     <li
+      onClick={() => props.onTargetClick(props.item.id)}
       className={
         props.isTargetSelected ? selectedTargetClass : unSelectedTargetClass
       }
     >
-      <span onClick={() => props.onTargetClick(props.item.id)}>
-        {props.item.title}
-      </span>
+      <span>{props.item.title}</span>
 
       {!props.hideIcon ? (
         <i
@@ -26,7 +25,10 @@ const FilterBlockItemComponent = props => {
               ? selectedItemIconClass
               : unSelectedItemIconClass
           }
-          onClick={e => props.onIconClick(props.item.id)}
+          onClick={e => {
+            props.onIconClick(props.item.id);
+            e.stopPropagation();
+          }}
         />
       ) : null}
     </li>

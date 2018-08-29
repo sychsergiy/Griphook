@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 
 const FilterBlockItemComponent = props => {
   const selectedTargetClass = "list-group-item active-filter active";
@@ -11,13 +11,12 @@ const FilterBlockItemComponent = props => {
 
   return (
     <li
+      onClick={() => props.onItemClick(props.item.id)}
       className={
         props.isTargetSelected ? selectedTargetClass : unSelectedTargetClass
       }
     >
-      <span onClick={() => props.onItemClick(props.item.id)}>
-        {props.item.title}
-      </span>
+      <span>{props.item.title}</span>
 
       {!props.hideIcon ? (
         <i
@@ -26,7 +25,10 @@ const FilterBlockItemComponent = props => {
               ? selectedItemIconClass
               : unSelectedItemIconClass
           }
-          onClick={e => props.onIconClick(props.item.id)}
+          onClick={e => {
+            props.onIconClick(props.item.id);
+            e.stopPropagation();
+          }}
         />
       ) : null}
     </li>
