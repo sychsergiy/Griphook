@@ -60,7 +60,7 @@ def get_billing_table_data(filters):
     )
     if target_type == ALLOWED_TARGET_TYPES.get("all"):
         pass
-    elif target_type == ALLOWED_TARGET_TYPES.get("services_groups"):
+    elif target_type == ALLOWED_TARGET_TYPES.get("services_group"):
         query = query.filter(ServicesGroup.id.in_(target_ids))
     elif target_type == ALLOWED_TARGET_TYPES.get("team"):
         query = query.filter(Team.id.in_(target_ids))
@@ -70,7 +70,7 @@ def get_billing_table_data(filters):
         "server"
     ) or target_type == ALLOWED_TARGET_TYPES.get("cluster"):
         query = query.join(
-            Service, Service.services_group_id == MetricBilling.service_id
+            Service, Service.id == MetricBilling.service_id
         ).join(Server, Service.server_id == Server.id)
         if target_type == ALLOWED_TARGET_TYPES.get("server"):
             query = query.filter(Server.id.in_(target_ids))
