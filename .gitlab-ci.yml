@@ -33,6 +33,7 @@ push:
     - echo $REGISTY_URL/frontend:${CI_COMMIT_SHA:0:8}
   only:
     - master
+    - migration_job
 
 .deploy_template: &kube_apply
   stage: deploy
@@ -42,11 +43,15 @@ push:
     -  kubectl  --kubeconfig $KUBECONFIG apply -f $CI_JOB_NAME.yml
   only:
     - master
+    - migration_job
 
 deploy:postgres_deployment:
   <<: *kube_apply
 
 deploy:backend_deployment:
+  <<: *kube_apply
+
+deploy:db_migration_job:
   <<: *kube_apply
 
 deploy:rabbit_deployment:

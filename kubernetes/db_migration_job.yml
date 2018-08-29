@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrations
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrations
+        image: registry.gitlab.uaprom:7000/griphook/backend:CI_COMMIT_SHA
+        command: ["python",  "manage.py", "db", "upgrade"]
+        env:
+            - name: GH_DATABASE_URL
+              value: postgresql://griphook:griphook@postgres/griphook
+            - name: GH_CELERY_BROKER_URL
+              value: amqp://guest:guest@rabbitmq
+      restartPolicy: Never
+  backoffLimit: 4
