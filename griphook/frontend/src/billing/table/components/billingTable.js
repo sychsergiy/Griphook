@@ -32,9 +32,13 @@ const BillingTableComponent = props => {
               <th scope="col">Services group</th>
               <th scope="col">Team</th>
               <th scope="col">Project</th>
-              <th scope="col">CPU</th>
               <th scope="col">
-                <span className="pr-5 mr-5">Memory</span>
+                CPU <i className="fas fa-dollar-sign" />
+              </th>
+              <th scope="col">
+                {/* <span className="pr-5 mr-5"> */}
+                  Memory <i className="fas fa-dollar-sign" />
+                {/* </span> */}
               </th>
             </tr>
           </thead>

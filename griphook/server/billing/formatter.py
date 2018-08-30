@@ -12,12 +12,12 @@ def string_to_date_time(time_in_string):
 
 def format_row_for_billing_table(row):
     return {
-        "services_group_id": row.service_group_id,
-        "services_group_title": row.services_group_title,
-        "team": row.team,
-        "project": row.project,
-        "cpu_sum": round(row.cpu_sum, 0),
-        "memory_sum": round(row.memory_sum, 0)
+        "services_group_title": row[0],
+        "services_group_id": row[1],
+        "team": row[2],
+        "project": row[3],
+        "memory_sum": round(row[4], 0),
+        "cpu_sum": round(row[5], 0),
     }
 
 

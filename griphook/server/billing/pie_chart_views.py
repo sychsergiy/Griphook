@@ -65,7 +65,7 @@ class GetPieChartAbsoluteDataView(View):
       }
       response format:
       {
-        "labels": ["selected", "rest"],
+        "labels": ["selected", "other"],
         "values": [int, int],
       ]
     return metric sum of selected_part
@@ -130,7 +130,7 @@ class GetPieChartAbsoluteDataView(View):
         # todo: move this part to frontend
         if selected_metric_sum:
             response_data = {
-                "labels": ("selected", "rest"),
+                "labels": ("selected", "other"),
                 "values": (
                     # todo: solve problem with ceiling in big number
                     round(selected_metric_sum, 0),
