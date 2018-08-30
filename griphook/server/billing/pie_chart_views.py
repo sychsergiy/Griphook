@@ -20,6 +20,39 @@ from griphook.server.models import (
 from griphook.server.billing.validation import validators, schemas
 
 
+def get_price_coefficients(time_from, time_until):
+    time_coefficient = (time_until - time_from).days / 30
+
+    memory_convert_coefficient = time_coefficient / (
+        10 ** 9
+    )  # need to multiply on memory price
+    cpu_convert_coefficient = (
+        time_coefficient / 100
+    )  # need to multiply on cpu price
+    return memory_convert_coefficient, cpu_convert_coefficient
+
+
+def get_average_metric_sum_func_with_cases(cpu_price_coef, memory_price_coef):
+    average_function = func.avg(
+        case(
+            [
+                (
+                    MetricBilling.type == "user_cpu_percent",
+                    MetricBilling.value * cpu_price_coef * Cluster.cpu_price,
+                ),
+                (
+                    MetricBilling.type == "vsize",
+                    MetricBilling.value
+                    * memory_price_coef
+                    * Cluster.memory_price,
+                ),
+            ],
+            else_=0,
+        )
+    )
+    return average_function
+
+
 class GetPieChartAbsoluteDataView(View):
     """
     request format:
@@ -113,18 +146,11 @@ class GetPieChartAbsoluteDataView(View):
     def get_query_metric_sum(self, initial_query, request_data):
         """
         :param initial_query: query before joining with
-         MetricBillling table, must be joined with Service or ServicesGroup
+         MetricBilling table, must be joined with Service or ServicesGroup
         """
-        time_coefficient = (
-            request_data["time_until"] - request_data["time_from"]
-        ).days / 30
-
-        memory_convert_coefficient = time_coefficient / (
-            10 ** 9
-        )  # need to multiply on memory price
-        cpu_convert_coefficient = (
-            time_coefficient / 100
-        )  # need to multiply on cpu price
+        memory_price_coef, cpu_price_coef = get_price_coefficients(
+            request_data["time_from"], request_data["time_until"]
+        )
 
         aggregated_services_subquery = (
             initial_query.join(
@@ -142,24 +168,8 @@ class GetPieChartAbsoluteDataView(View):
             )
             .group_by(Service.instance, Service.title, Server.title)
             .with_entities(
-                func.avg(
-                    case(
-                        [
-                            (
-                                MetricBilling.type == "user_cpu_percent",
-                                MetricBilling.value
-                                * cpu_convert_coefficient
-                                * Cluster.cpu_price,
-                            ),
-                            (
-                                MetricBilling.type == "vsize",
-                                MetricBilling.value
-                                * memory_convert_coefficient
-                                * Cluster.memory_price,
-                            ),
-                        ],
-                        else_=0,
-                    )
+                get_average_metric_sum_func_with_cases(
+                    cpu_price_coef, memory_price_coef
                 ).label("service_average_load")
             )
         ).subquery()
