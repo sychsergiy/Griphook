@@ -2,22 +2,19 @@ from datetime import timedelta
 
 from flask import current_app as app
 from sqlalchemy import func, case
-from sqlalchemy.sql import label, column, and_
+from sqlalchemy.sql import column, and_
 
 from griphook.server.models import (
     db,
     MetricBilling,
     Team,
     Project,
-    Cluster,
     BatchStoryBilling,
     Service,
     ServicesGroup,
-    Server,
 )
 
 from griphook.server.billing.constants import (
-    ALLOWED_TARGET_TYPES,
     ALLOWED_METRIC_TYPES,
 )
 
@@ -33,26 +30,34 @@ def case_builder(metrics_type):
 def get_billing_table_data(filters):
     time_from = filters.get("time_from")
     time_until = filters.get("time_until")
-    target_type = filters.get("target_type")
-    target_ids = filters.get("target_ids")
+    # target_type = filters.get("target_type")
+    # target_ids = filters.get("target_ids")
     page = filters.get("page")
     metrics_per_page = app.config["BILLING_TABLE_METRICS_PER_PAGE"]
 
     # todo: add filster by projects, teams, clusters
 
-    memory_coef = 1.5 * 3 / 10**9
+    memory_coef = 1.5 * 3 / 10 ** 9
     cpu_coef = 9 * 3 / 100
 
-    memory_result = get_services_groups_resources("vsize", time_from, time_until, memory_coef).subquery()
+    memory_result = get_services_groups_resources(
+        "vsize", time_from, time_until, memory_coef
+    ).subquery()
 
-    cpu_result = get_services_groups_resources("user_cpu_percent", time_from, time_until, cpu_coef).subquery()
+    cpu_result = get_services_groups_resources(
+        "user_cpu_percent", time_from, time_until, cpu_coef
+    ).subquery()
 
-    result_query = (
-        db.session.query(
-            memory_result.c.title, memory_result.c.services_group_id,
-            memory_result.c.team, memory_result.c.project, memory_result.c.metric_sum, cpu_result.c.metric_sum
-        )
-        .join(cpu_result, cpu_result.c.services_group_id == memory_result.c.services_group_id)
+    result_query = db.session.query(
+        memory_result.c.title,
+        memory_result.c.services_group_id,
+        memory_result.c.team,
+        memory_result.c.project,
+        memory_result.c.metric_sum,
+        cpu_result.c.metric_sum,
+    ).join(
+        cpu_result,
+        cpu_result.c.services_group_id == memory_result.c.services_group_id,
     )
     return result_query.paginate(per_page=metrics_per_page, page=page)
 
@@ -133,7 +138,9 @@ def get_services_group_data_chart(
     return metrics.all()
 
 
-def get_services_groups_resources(metric_type, time_from, time_until, coefficient):
+def get_services_groups_resources(
+    metric_type, time_from, time_until, coefficient
+):
     """Return services_groups resources for `metric_type`"""
     services_average_values = (
         db.session.query(
@@ -148,19 +155,23 @@ def get_services_groups_resources(metric_type, time_from, time_until, coefficien
 
     services_groups_resources = (
         db.session.query(
-            ServicesGroup.title.label("title"), ServicesGroup.id.label("services_group_id"),
-            Team.title.label("team"), Project.title.label("project"),
-            func.sum(services_average_values.c.value * coefficient).label("metric_sum"),
+            ServicesGroup.title.label("title"),
+            ServicesGroup.id.label("services_group_id"),
+            Team.title.label("team"),
+            Project.title.label("project"),
+            func.sum(services_average_values.c.value * coefficient).label(
+                "metric_sum"
+            ),
         )
         .join(Service, Service.services_group_id == ServicesGroup.id)
         .join(
             services_average_values,
             Service.id == services_average_values.c.service_id,
         )
-
         .outerjoin(Team, Team.id == ServicesGroup.team_id)
         .outerjoin(Project, Project.id == ServicesGroup.project_id)
-
-        .group_by(ServicesGroup.id, ServicesGroup.title, Project.title, Team.title)
+        .group_by(
+            ServicesGroup.id, ServicesGroup.title, Project.title, Team.title
+        )
     )
     return services_groups_resources

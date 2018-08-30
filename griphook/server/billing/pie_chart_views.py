@@ -2,9 +2,6 @@ from flask import request, jsonify
 from flask.views import View
 
 from sqlalchemy import func, case
-from sqlalchemy.sql import and_
-
-from griphook.server import db
 
 from griphook.server.models import (
     ServicesGroup,
