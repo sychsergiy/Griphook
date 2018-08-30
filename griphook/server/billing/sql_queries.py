@@ -21,6 +21,9 @@ from griphook.server.billing.constants import (
     ALLOWED_METRIC_TYPES,
 )
 
+# Max number of points will be returned by `get_services_group_data_chart`
+MAX_POINTS = 1000
+
 
 def case_builder(metrics_type):
     condition = MetricBilling.type == metrics_type
@@ -114,8 +117,11 @@ def get_services_group_data_group_by_services(
 def get_services_group_data_chart(
     services_group_id, time_from, time_until, metric_type
 ):
-    MAX_POINTS = 1000
-
+    """
+    Return data for billing cpu/vsize charts.
+    If for time_from-time_until period number of data points more then
+    `MAX_POINTS`, data will be aggregated to get less number of points.
+    """
     delta = time_until - time_from
     # Compute interval (in hours) for grouping data, it can't be 0
     interval = delta.total_seconds() // (3600 * MAX_POINTS) or 1
