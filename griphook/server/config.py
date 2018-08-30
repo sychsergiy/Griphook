@@ -17,6 +17,8 @@ class BaseConfig(object):
     DEBUG_TB_ENABLED = False
     SECRET_KEY = os.getenv("SECRET_KEY", "my_precious")
     JWT_SECRET_KEY = SECRET_KEY
+    # auth token never expires
+    JWT_ACCESS_TOKEN_EXPIRES = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
     TESTING = False
