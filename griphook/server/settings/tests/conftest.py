@@ -31,13 +31,13 @@ def create_team_settings_test_data(session):
 
 
 @pytest.fixture
-def create_server_settings_test_data(session):
+def create_server_settings_test_data(session, create_cluster_settings_test_data):
     session.add_all(
         [
-            Server(id=1, title="test_server_1"),
-            Server(id=2, title="test_server_2"),
+            Server(id=1, title="test_server_1", cluster_id=2),
+            Server(id=2, title="test_server_2", cluster_id=1),
             Server(
-                id=3, title="test_server_3", cpu_price=2.2, memory_price=1.8
+                id=3, title="test_server_3", cluster_id=3, cpu_price=2.2, memory_price=1.8
             ),
         ]
     )

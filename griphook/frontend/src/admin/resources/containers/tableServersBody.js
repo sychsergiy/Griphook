@@ -90,6 +90,7 @@ class TableServersBodyContainer extends Component {
             key={server.id}
             serverId={server.id}
             serverTitle={server.title}
+            serverClusterTitle={server.cluster_title}
             serverCPUPrice={server.cpu_price}
             serverMemoryPrice={server.memory_price}
             serverUpdateCPUPrice={this.serverUpdateCPUPrice}

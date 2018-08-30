@@ -119,7 +119,7 @@ class ModalBodyContainer extends Component {
     return (
       <div className="modal-body">
         <div className="row">
-          <InputBlockContainer onRowAdd={this.onRowAdd} />
+          <InputBlockContainer onRowAdd={this.onRowAdd} listDataType={this.props.listDataType} />
           <ListBlockComponent
             listData={this.state.listData}
             onRowDelete={this.onRowDelete}
