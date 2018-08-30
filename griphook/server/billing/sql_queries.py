@@ -147,7 +147,7 @@ def get_services_group_data_chart(
         .outerjoin(
             BatchStoryBilling,
             and_(BatchStoryBilling.time >= serie.c.date,
-                 BatchStoryBilling.time < (serie.c.date + timedelta(hours=2)))
+                 BatchStoryBilling.time < (serie.c.date + timedelta(hours=interval)))
         )
         .outerjoin(
             MetricBilling,
