@@ -34,9 +34,8 @@ def create_app(script_info=None):
     app.config.from_object(app_settings)
 
     # set up extensions and db
-    if not app.config.get("TESTING"):
-        init_db(app)
-        set_up_extensions(app)
+    init_db(app)
+    set_up_extensions(app)
 
     # import blueprints
     from griphook.server.billing import billing_blueprint
@@ -51,8 +50,7 @@ def create_app(script_info=None):
     from griphook.server.filters import filters_blueprint
 
     # Prevent tests to fail with wrong status code assertion
-    if app.config.get("TESTING"):
-
+    if not app.config.get("TESTING"):
         # PROTECT SETTINGS FROM UNAUTHORIZED USERS
         settings_blueprint.before_request(verify_jwt_in_request)
         settings_project_blueprint.before_request(verify_jwt_in_request)
