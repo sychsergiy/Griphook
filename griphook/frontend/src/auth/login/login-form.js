@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
+
 import { LOGIN_ENDPOINT } from '../endpoints';
 
 class LoginForm extends Component {
@@ -7,6 +9,7 @@ class LoginForm extends Component {
         this.state = {
             password: "",
             isPasswordCorrect: true,
+            errorMessage: "",
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -28,22 +31,25 @@ class LoginForm extends Component {
             .then(response => {
                 switch (response.status) {
                     case 200:
-                        // if request succeed
+                        // if login succeed reset correct flag
+                        this.setState({ isPasswordCorrect: true });
                         return response.json()
                     case 401:
                         // if we got unauthorized status code
-                        this.setState({ isPasswordCorrect: false })
-                        break
+                        // return rejected promise with error
+                        return response.json().then(data => Promise.reject(data.error));
                     default:
-                        throw Error(response.statusText);
+                        throw Error(`[${response.status}] ${response.statusText}`);
                 }
             })
-            .then(response => response.json())
             .then(data => {
-                console.log(data);
-                localStorage.setItem('access_token', data['access_token'])
+                // Save access_token to local storage and redirect to settings
+                localStorage.setItem('access_token', data.access_token);
+                this.props.history.push("/settings/tasks");
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                this.setState({ isPasswordCorrect: false, errorMessage: error });
+            });
     };
 
     handleChange(event) {
@@ -54,19 +60,34 @@ class LoginForm extends Component {
         return (
             <form className="login-form" onSubmit={this.handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="login-password">Enter password:</label>
-                    <input
-                        type="password"
-                        value={this.state.password}
-                        onChange={this.handleChange}
-                        id="login-password"
-                        className={`form-control is-${this.state.isPasswordCorrect ? 'valid' : 'invalid'}`}
-                        placeholder="Password" />
+                    <label htmlFor="login-password">Enter password: </label>
+                    <div className="input-group">
+
+                        {/* Password input */}
+                        <input
+                            type="password"
+                            value={this.state.password}
+                            onChange={this.handleChange}
+                            id="login-password"
+                            className={`form-control ${!this.state.isPasswordCorrect ? 'is-invalid' : ''}`}
+                            placeholder="Password" />
+
+                        {/* Submit */}
+                        <div className="input-group-append">
+                            <input
+                                className={`btn btn-outline-${this.state.isPasswordCorrect ? 'primary' : 'danger'}`}
+                                type="submit"
+                                value="Login" />
+                        </div>
+
+                    </div>
+
+                    {/* Error message */}
+                    {!this.state.isPasswordCorrect && <p className="text-danger">{this.state.errorMessage}</p>}
                 </div>
-                <input className="btn btn-primary" type="submit" value="Login" />
             </form>
         );
     }
 }
 
-export default LoginForm;
+export default withRouter(LoginForm);

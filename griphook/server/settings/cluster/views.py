@@ -19,6 +19,14 @@ from griphook.server.settings.constants import (
 class GetClusters(View):
     """
     API method for getting all clusters.
+
+    Result data format:
+    {
+        "id": integer,
+        "title": string,
+        "cpu_price": float,
+        "memory_price": float
+    }
     """
 
     methods = ["GET"]
@@ -26,8 +34,18 @@ class GetClusters(View):
     def dispatch_request(self):
         clusters_query = DataBase.get_clusters(db.session)
         clusters = [
-            {"id": cluster_id, "title": cluster_title}
-            for (cluster_id, cluster_title) in clusters_query
+            {
+                "id": cluster_id,
+                "title": cluster_title,
+                "cpu_price": cluster_cpu_price,
+                "memory_price": cluster_memory_price,
+            }
+            for (
+                cluster_id,
+                cluster_title,
+                cluster_cpu_price,
+                cluster_memory_price,
+            ) in clusters_query
         ]
         return jsonify({"clusters": clusters})
 

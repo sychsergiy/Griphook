@@ -16,6 +16,9 @@ class BaseConfig(object):
     BCRYPT_LOG_ROUNDS = 4
     DEBUG_TB_ENABLED = False
     SECRET_KEY = os.getenv("SECRET_KEY", "my_precious")
+    JWT_SECRET_KEY = SECRET_KEY
+    # auth token never expires
+    JWT_ACCESS_TOKEN_EXPIRES = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
     TESTING = False
@@ -36,6 +39,7 @@ class TestingConfig(BaseConfig):
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_DATABASE_URI = options["db"]["DATABASE_TEST_URL"]
     TESTING = True
+    SERVER_NAME = "localhost.localdomain"
 
 
 class ProductionConfig(BaseConfig):

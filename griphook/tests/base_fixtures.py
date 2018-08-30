@@ -1,7 +1,7 @@
 import pytest
 
 from griphook.server.models import Cluster
-from griphook.server import create_app, db as _db
+from griphook.server import create_app, init_db, db as _db
 
 
 @pytest.fixture
@@ -12,12 +12,28 @@ def app():
 
 
 @pytest.fixture
+def client():
+    app = create_app()
+    app.config.from_object("griphook.server.config.TestingConfig")
+    with app.app_context():
+        yield app.test_client()
+
+
+@pytest.fixture
+def client_class(request, client):
+    if request.cls is not None:
+        request.cls.client = client
+
+
+@pytest.fixture
 def session(app):
-    session = _db.session
-    _db.drop_all()
-    _db.create_all()
-    session.commit()
-    yield session
+    with app.app_context():
+        init_db(app)
+        session = _db.session
+        _db.drop_all()
+        _db.create_all()
+        session.commit()
+        yield session
 
 
 @pytest.fixture(scope="function")

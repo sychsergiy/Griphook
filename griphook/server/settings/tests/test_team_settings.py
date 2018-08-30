@@ -11,13 +11,13 @@ from griphook.server.managers.constants import (
 
 
 class TestTeamCreateSettingsAPI:
-    def test_create_team(self, client, db_session):
+    def test_create_team(self, client, session):
         test_title = "test_team_1"
         test_data = {"title": test_title}
         resp = client.post(
             url_for("settings_team.team-create"), data=json.dumps(test_data)
         )
-        team_id = db_session.query(Team.id).filter_by(title=test_title).scalar()
+        team_id = session.query(Team.id).filter_by(title=test_title).scalar()
         assert resp.status_code == 200
         assert resp.json == {
             "success": True,
@@ -66,7 +66,7 @@ class TestTeamCreateSettingsAPI:
 
 class TestTeamUpdateTitleSettingsAPI:
     def test_update_team(
-        self, client, db_session, create_team_settings_test_data
+        self, client, session, create_team_settings_test_data
     ):
         test_title = "test_new_title"
         test_team_id = 1

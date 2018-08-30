@@ -57,11 +57,11 @@ class ServicesGroup(db.Model):
     title = db.Column(db.String, unique=True, nullable=False)
 
     project_id = db.Column(
-        db.Integer, db.ForeignKey(column="projects.id", name="project_fk")
+        db.Integer, db.ForeignKey(column="projects.id", name="project_fk", ondelete="SET NULL")
     )
 
     team_id = db.Column(
-        db.Integer, db.ForeignKey(column="teams.id", name="team_fk")
+        db.Integer, db.ForeignKey(column="teams.id", name="team_fk", ondelete="SET NULL")
     )
 
 
@@ -137,11 +137,11 @@ class MetricPeak(db.Model):
     )
 
     project_id = db.Column(
-        db.Integer, db.ForeignKey(column="projects.id", name="projects_fk")
+        db.Integer, db.ForeignKey(column="projects.id", name="projects_fk", ondelete="SET NULL")
     )
 
     team_id = db.Column(
-        db.Integer, db.ForeignKey(column="teams.id", name="teams_fk")
+        db.Integer, db.ForeignKey(column="teams.id", name="teams_fk", ondelete="SET NULL")
     )
 
     __table_args__ = (
@@ -179,11 +179,11 @@ class MetricBilling(db.Model):
     )
 
     project_id = db.Column(
-        db.Integer, db.ForeignKey(column="projects.id", name="projects_fk")
+        db.Integer, db.ForeignKey(column="projects.id", name="projects_fk", ondelete="SET NULL")
     )
 
     team_id = db.Column(
-        db.Integer, db.ForeignKey(column="teams.id", name="teams_fk")
+        db.Integer, db.ForeignKey(column="teams.id", name="teams_fk", ondelete="SET NULL")
     )
 
     __table_args__ = (

@@ -7,7 +7,8 @@ class TableBodyComponent extends Component {
     return dataAfterPagination.map(servicesGroup => {
       if (servicesGroup.project_id == null) {
         servicesGroup.project_id = "null";
-      } else if (servicesGroup.team_id == null) {
+      }
+      if (servicesGroup.team_id == null) {
         servicesGroup.team_id = "null";
       }
       return (

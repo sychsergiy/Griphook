@@ -1,8 +1,11 @@
+from datetime import timedelta
+
 from flask import current_app as app
 from sqlalchemy import func, case
-from sqlalchemy.sql import label
+from sqlalchemy.sql import label, column, and_
 
 from griphook.server.models import (
+    db,
     MetricBilling,
     Team,
     Project,
@@ -17,6 +20,9 @@ from griphook.server.billing.constants import (
     ALLOWED_TARGET_TYPES,
     ALLOWED_METRIC_TYPES,
 )
+
+# Max number of points will be returned by `get_services_group_data_chart`
+MAX_POINTS = 1000
 
 
 def case_builder(metrics_type):
@@ -111,21 +117,46 @@ def get_services_group_data_group_by_services(
 def get_services_group_data_chart(
     services_group_id, time_from, time_until, metric_type
 ):
-    query = (
-        MetricBilling.query.join(
-            Service, MetricBilling.service_id == Service.id
-        )
-        .join(BatchStoryBilling, MetricBilling.batch_id == BatchStoryBilling.id)
-        .join(
-            ServicesGroup, MetricBilling.services_group_id == ServicesGroup.id
-        )
-        .filter(BatchStoryBilling.time.between(time_from, time_until))
-        .filter(ServicesGroup.id == services_group_id)
-        .filter(MetricBilling.type == metric_type)
-        .with_entities(
-            MetricBilling.value.label("value"),
-            BatchStoryBilling.time.label("time"),
-        )
-        .order_by(BatchStoryBilling.time)
+    """
+    Return data for billing cpu/vsize charts.
+    If for time_from-time_until period number of data points more then
+    `MAX_POINTS`, data will be aggregated to get less number of points.
+    """
+    delta = time_until - time_from
+    # Compute interval (in hours) for grouping data, it can't be 0
+    interval = delta.total_seconds() // (3600 * MAX_POINTS) or 1
+
+    serie = (
+        db.session
+        .query(
+            func.generate_series(
+                time_from,
+                time_until,
+                timedelta(hours=interval)
+            ).label('date')
+        ).subquery()
     )
-    return query.all()
+
+    metrics = (
+        db.session
+        .query(
+            serie.c.date.label('time'),
+            serie.c.date + timedelta(hours=interval),
+            func.coalesce(func.avg(column('value')), 0).label('value')
+        )
+        .outerjoin(
+            BatchStoryBilling,
+            and_(BatchStoryBilling.time >= serie.c.date,
+                 BatchStoryBilling.time < (serie.c.date + timedelta(hours=interval)))
+        )
+        .outerjoin(
+            MetricBilling,
+            and_(MetricBilling.batch_id == BatchStoryBilling.id,
+                 MetricBilling.type == metric_type,
+                 MetricBilling.services_group_id == services_group_id)
+        )
+        .group_by(serie.c.date)
+        .order_by(serie.c.date)
+    )
+
+    return metrics.all()

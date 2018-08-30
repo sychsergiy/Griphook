@@ -6,13 +6,11 @@ import './auth.css';
 
 class AuthPage extends Component {
     render() {
+        let matchUrl = this.props.match.url;
         return (
-            <div className="login-form">
-                <Route path={`${this.props.match.url}/login`} component={LoginPage} />
-            </div>
-
-            // <div className="modal" align="center">
-            // </div>
+                <Switch>
+                    <Route path={`${matchUrl}/login`} component={LoginPage} />
+                </Switch>
         );
     }
 }

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import pytest
 
+from griphook.tests.base_fixtures import app, client, client_class
 from griphook.server.models import (
     Cluster,
     Server,

@@ -25,3 +25,57 @@ i.remove-filter-rule:hover {
     width: 100%;
   }
 }
+
+
+/*style Settings ResourceControl Page*/
+.input-price {
+    width: 100%;
+    border: none;
+    transition: all 0.4s;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.input-price:focus {
+    outline: none;
+    border-bottom: 1px solid #2c3e50;
+}
+
+.input-tools {
+    transition: all 0.4s;
+    position: absolute;
+    bottom: -24px;
+    right: 0;
+    background-color: white;
+    padding: 1px 5px;
+    border-left: 1px solid #2c3e50;
+    border-right: 1px solid #2c3e50;
+    border-bottom: 1px solid #2c3e50;
+    border-radius: 0 0 3px 3px;
+}
+
+.input-tools.hidden {
+    opacity: 0;
+    bottom: -22px;
+}
+
+input.input-price:not(:focus) + .input-tools {
+    border-color: #dee2e6;
+}
+
+i.accept {
+    color: #18bc9c;
+}
+
+i.cancel {
+    color: #e74c3c;
+}
+
+i.accept:hover {
+    cursor: pointer;
+    color: #20e4be;
+}
+
+i.cancel:hover {
+    cursor: pointer;
+    color: #f9aba3;
+}
