@@ -14,6 +14,16 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 
+def init_db(app):
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+
+def set_up_extensions(app):
+    jwt.init_app(app)
+    bcrypt.init_app(app)
+
+
 def create_app(script_info=None):
     # instantiate the app
     app = Flask(__name__, static_folder="../frontend/dist")
@@ -23,11 +33,10 @@ def create_app(script_info=None):
     )
     app.config.from_object(app_settings)
 
-    # set up extensions
-    db.init_app(app)
-    migrate.init_app(app, db)
-    jwt.init_app(app)
-    bcrypt.init_app(app)
+    # set up extensions and db
+    if not app.config.get("TESTING"):
+        init_db(app)
+        set_up_extensions(app)
 
     # import blueprints
     from griphook.server.billing import billing_blueprint

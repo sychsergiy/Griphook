@@ -17,21 +17,7 @@ from griphook.server.models import (
 
 from griphook.server.billing.constants import REQUEST_DATE_TIME_FORMAT
 
-
-@pytest.fixture
-def app():
-    app = create_app()
-    app.config.from_object("griphook.server.config.TestingConfig")
-    return app
-
-
-@pytest.fixture
-def session(app):
-    session = _db.session
-    _db.drop_all()
-    _db.create_all()
-    session.commit()
-    yield session
+from griphook.tests.base_fixtures import app, client, client_class, session
 
 
 @pytest.fixture(scope="function")
@@ -74,7 +60,9 @@ def services_groups(session, teams, projects):
     for i, t in enumerate(zip(projects, teams), start=1):
         services_groups.append(
             ServicesGroup(
-                title="services_group_" + str(i), project_id=t[0].id, team_id=t[1].id
+                title="services_group_" + str(i),
+                project_id=t[0].id,
+                team_id=t[1].id,
             )
         )
     session.add_all(services_groups)
@@ -93,7 +81,7 @@ def services(session, servers, services_groups):
                 title="service_" + str(i),
                 instance="test_instance",
                 server_id=t[0].id,
-                services_group_id=t[1].id
+                services_group_id=t[1].id,
             )
         )
     session.add_all(services)
@@ -121,22 +109,26 @@ def metrics(session, services, services_groups, billing_batch_stories):
 
     metrics = []
     for i in zip(services, services_groups):
-        metrics.append(MetricBilling(
-            value=random.randint(1, 30),
-            batch_id=batch_stories.pop().id,
-            service_id=i[0].id,
-            services_group_id=i[1].id,
-            type="user_cpu_percent"
-        ))
+        metrics.append(
+            MetricBilling(
+                value=random.randint(1, 30),
+                batch_id=batch_stories.pop().id,
+                service_id=i[0].id,
+                services_group_id=i[1].id,
+                type="user_cpu_percent",
+            )
+        )
 
     for i in zip(services, services_groups):
-        metrics.append(MetricBilling(
-            value=random.randint(1, 30),
-            batch_id=batch_stories.pop().id,
-            service_id=i[0].id,
-            services_group_id=i[1].id,
-            type="vsize"
-        ))
+        metrics.append(
+            MetricBilling(
+                value=random.randint(1, 30),
+                batch_id=batch_stories.pop().id,
+                service_id=i[0].id,
+                services_group_id=i[1].id,
+                type="vsize",
+            )
+        )
     session.add_all(metrics)
     session.commit()
     return MetricBilling.query.with_entities(

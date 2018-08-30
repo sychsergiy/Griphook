@@ -9,7 +9,7 @@ from griphook.server.models import (
     ServicesGroup,
 )
 
-from griphook.tests.base_fixtures import app, session
+from griphook.tests.base_fixtures import app, client, client_class, session
 
 
 @pytest.fixture

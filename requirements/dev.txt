@@ -2,7 +2,6 @@
 
 Flask-Testing==0.7.1
 pytest==3.6.3
-pytest-flask==0.10.0
 pytest-mock==1.10.0
 python-dotenv==0.8.2
 
