@@ -3,6 +3,7 @@ from datetime import timedelta
 from flask import current_app as app
 from sqlalchemy import func, case
 from sqlalchemy.sql import label, column, and_
+from sqlalchemy.dialects import postgresql
 
 from griphook.server.models import (
     db,
@@ -83,6 +84,7 @@ def get_billing_table_data(filters):
         elif target_type == ALLOWED_TARGET_TYPES.get("cluster"):
             query = query.join(Cluster, Cluster.id == Server.cluster_id)
             query = query.filter(Cluster.id.in_(target_ids))
+    print(query.statement.compile().params)
     result = query.paginate(per_page=metrics_per_page, page=page)
     return result
 
@@ -160,3 +162,31 @@ def get_services_group_data_chart(
     )
 
     return metrics.all()
+
+
+def get_services_groups_resources(metric_type, time_from, time_until):
+    """Return services_groups resources for `metric_type`"""
+    services_average_values = (
+        db.session
+        .query(
+            MetricBilling.service_id.label('service_id'),
+            func.avg(MetricBilling.value).label('value')
+        )
+        .join(BatchStoryBilling, BatchStoryBilling.id == MetricBilling.batch_id)
+        .filter(MetricBilling.type == metric_type)
+        .filter(BatchStoryBilling.time.between(time_from, time_until))
+        .group_by(MetricBilling.service_id)
+    ).subquery()
+
+    services_groups_resources = (
+        db.session
+        .query(
+            ServicesGroup.title,
+            func.sum(services_average_values.c.value)
+        )
+        .join(Service, Service.services_group_id == ServicesGroup.id)
+        .join(services_average_values, Service.id == services_average_values.c.service_id)
+        .group_by(ServicesGroup.title)
+    )
+
+    return services_groups_resources.all()
