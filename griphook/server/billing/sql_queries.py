@@ -2,22 +2,19 @@ from datetime import timedelta
 
 from flask import current_app as app
 from sqlalchemy import func, case
-from sqlalchemy.sql import label, column, and_
+from sqlalchemy.sql import column, and_
 
 from griphook.server.models import (
     db,
     MetricBilling,
     Team,
     Project,
-    Cluster,
     BatchStoryBilling,
     Service,
     ServicesGroup,
-    Server,
 )
 
 from griphook.server.billing.constants import (
-    ALLOWED_TARGET_TYPES,
     ALLOWED_METRIC_TYPES,
 )
 
@@ -33,59 +30,36 @@ def case_builder(metrics_type):
 def get_billing_table_data(filters):
     time_from = filters.get("time_from")
     time_until = filters.get("time_until")
-    target_type = filters.get("target_type")
-    target_ids = filters.get("target_ids")
+    # target_type = filters.get("target_type")
+    # target_ids = filters.get("target_ids")
     page = filters.get("page")
     metrics_per_page = app.config["BILLING_TABLE_METRICS_PER_PAGE"]
-    # TODO create left join for services_groups with team and project
-    query = (
-        ServicesGroup.query.with_entities(
-            label("services_group_title", ServicesGroup.title),
-            label("service_group_id", ServicesGroup.id),
-            label("team", Team.title),
-            label("project", Project.title),
-            label(
-                "cpu_sum",
-                case_builder(ALLOWED_METRIC_TYPES.get("user_cpu_percent")),
-            ),
-            label(
-                "memory_sum", case_builder(ALLOWED_METRIC_TYPES.get("vsize"))
-            ),
-        )
-        .join(
-            MetricBilling, MetricBilling.services_group_id == ServicesGroup.id
-        )
-        .outerjoin(Team, Team.id == ServicesGroup.team_id)
-        .outerjoin(Project, Project.id == ServicesGroup.project_id)
-        .join(BatchStoryBilling, BatchStoryBilling.id == MetricBilling.batch_id)
-        .filter(
-            MetricBilling.type != ALLOWED_METRIC_TYPES.get("system_cpu_percent")
-        )
-        .filter(BatchStoryBilling.time.between(time_from, time_until))
-        .group_by("services_group_title", "service_group_id", "team", "project")
+
+    # todo: add filster by projects, teams, clusters
+
+    memory_coef = 1.5 * 3 / 10 ** 9
+    cpu_coef = 9 * 3 / 100
+
+    memory_result = get_services_groups_resources(
+        "vsize", time_from, time_until, memory_coef
+    ).subquery()
+
+    cpu_result = get_services_groups_resources(
+        "user_cpu_percent", time_from, time_until, cpu_coef
+    ).subquery()
+
+    result_query = db.session.query(
+        memory_result.c.title,
+        memory_result.c.services_group_id,
+        memory_result.c.team,
+        memory_result.c.project,
+        memory_result.c.metric_sum,
+        cpu_result.c.metric_sum,
+    ).join(
+        cpu_result,
+        cpu_result.c.services_group_id == memory_result.c.services_group_id,
     )
-    if target_type == ALLOWED_TARGET_TYPES.get("all"):
-        pass
-    elif target_type == ALLOWED_TARGET_TYPES.get("services_group"):
-        query = query.filter(ServicesGroup.id.in_(target_ids))
-    elif target_type == ALLOWED_TARGET_TYPES.get("team"):
-        query = query.filter(Team.id.in_(target_ids))
-    elif target_type == ALLOWED_TARGET_TYPES.get("project"):
-        query = query.filter(Project.id.in_(target_ids))
-    elif target_type == ALLOWED_TARGET_TYPES.get(
-        "server"
-    ) or target_type == ALLOWED_TARGET_TYPES.get("cluster"):
-        query = query.join(
-            Service, Service.id == MetricBilling.service_id
-        ).join(Server, Service.server_id == Server.id)
-        if target_type == ALLOWED_TARGET_TYPES.get("server"):
-            query = query.filter(Server.id.in_(target_ids))
-        elif target_type == ALLOWED_TARGET_TYPES.get("cluster"):
-            query = query.join(Cluster, Cluster.id == Server.cluster_id)
-            query = query.filter(Cluster.id.in_(target_ids))
-    print(query.statement.compile().params)
-    result = query.paginate(per_page=metrics_per_page, page=page)
-    return result
+    return result_query.paginate(per_page=metrics_per_page, page=page)
 
 
 def get_services_group_data_group_by_services(
@@ -164,7 +138,9 @@ def get_services_group_data_chart(
     return metrics.all()
 
 
-def get_services_groups_resources(metric_type, time_from, time_until):
+def get_services_groups_resources(
+    metric_type, time_from, time_until, coefficient
+):
     """Return services_groups resources for `metric_type`"""
     services_average_values = (
         db.session.query(
@@ -179,14 +155,23 @@ def get_services_groups_resources(metric_type, time_from, time_until):
 
     services_groups_resources = (
         db.session.query(
-            ServicesGroup.title, func.sum(services_average_values.c.value)
+            ServicesGroup.title.label("title"),
+            ServicesGroup.id.label("services_group_id"),
+            Team.title.label("team"),
+            Project.title.label("project"),
+            func.sum(services_average_values.c.value * coefficient).label(
+                "metric_sum"
+            ),
         )
         .join(Service, Service.services_group_id == ServicesGroup.id)
         .join(
             services_average_values,
             Service.id == services_average_values.c.service_id,
         )
-        .group_by(ServicesGroup.title)
+        .outerjoin(Team, Team.id == ServicesGroup.team_id)
+        .outerjoin(Project, Project.id == ServicesGroup.project_id)
+        .group_by(
+            ServicesGroup.id, ServicesGroup.title, Project.title, Team.title
+        )
     )
-
-    return services_groups_resources.all()
+    return services_groups_resources

@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask.views import View
 
-from sqlalchemy import func, BigInteger, cast
+from sqlalchemy import func, case
 
 from griphook.server.models import (
     ServicesGroup,
@@ -14,8 +14,40 @@ from griphook.server.models import (
     Project,
 )
 
-from griphook.server.billing.validation import validators
-from griphook.server.billing.validation import schemas
+from griphook.server.billing.validation import validators, schemas
+
+
+def get_price_coefficients(time_from, time_until):
+    time_coefficient = (time_until - time_from).days / 30
+
+    memory_convert_coefficient = time_coefficient / (
+        10 ** 9
+    )  # need to multiply on memory price
+    cpu_convert_coefficient = (
+        time_coefficient / 100
+    )  # need to multiply on cpu price
+    return memory_convert_coefficient, cpu_convert_coefficient
+
+
+def get_average_metric_sum_func_with_cases(cpu_price_coef, memory_price_coef):
+    average_function = func.avg(
+        case(
+            [
+                (
+                    MetricBilling.type == "user_cpu_percent",
+                    MetricBilling.value * cpu_price_coef * Cluster.cpu_price,
+                ),
+                (
+                    MetricBilling.type == "vsize",
+                    MetricBilling.value
+                    * memory_price_coef
+                    * Cluster.memory_price,
+                ),
+            ],
+            else_=0,
+        )
+    )
+    return average_function
 
 
 class GetPieChartAbsoluteDataView(View):
@@ -30,7 +62,7 @@ class GetPieChartAbsoluteDataView(View):
       }
       response format:
       {
-        "labels": ["selected", "rest"],
+        "labels": ["selected", "other"],
         "values": [int, int],
       ]
     return metric sum of selected_part
@@ -95,7 +127,7 @@ class GetPieChartAbsoluteDataView(View):
         # todo: move this part to frontend
         if selected_metric_sum:
             response_data = {
-                "labels": ("selected", "rest"),
+                "labels": ("selected", "other"),
                 "values": (
                     # todo: solve problem with ceiling in big number
                     round(selected_metric_sum, 0),
@@ -233,9 +265,7 @@ class GetPieChartRelativeDataView(View):
             .order_by(func.sum(MetricBilling.value).desc())
             .with_entities(
                 ServicesGroup.title,
-                cast(func.sum(MetricBilling.value), BigInteger).label(
-                    "metric_sum"
-                ),
+                func.sum(MetricBilling.value).label("metric_sum"),
             )
         ).all()
         return total
