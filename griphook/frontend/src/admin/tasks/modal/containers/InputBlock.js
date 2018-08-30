@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { listDataType } from "../constants";
 
 class InputBlockContainer extends Component {
   constructor(props) {
@@ -18,6 +19,13 @@ class InputBlockContainer extends Component {
   }
 
   render() {
+    let inputAddButtonText = "";
+    if (this.props.listDataType === listDataType.projects) {
+      inputAddButtonText = "Add project";
+    } else if (this.props.listDataType === listDataType.teams) {
+      inputAddButtonText = "Add team";
+    }
+
     return (
       <div className="input-group mb-3 col-12 col-md-6">
         <input
@@ -34,7 +42,7 @@ class InputBlockContainer extends Component {
             id="button-addon2"
             onClick={this.handleClick}
           >
-            Add object
+            {inputAddButtonText}
           </button>
         </div>
       </div>
