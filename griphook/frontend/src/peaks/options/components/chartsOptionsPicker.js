@@ -36,16 +36,18 @@ const ChartsOptionsPickerComponent = props => (
 
     <div className="col-12 col-sm-8 offset-sm-2 offset-md-0 col-md-4">
       <div className="form-group">
-        <label>End date</label>
-        <div className="input-group">
-          <DatePicker
-            selected={props.timeUntil}
-            onChange={props.onChangeTimeUntil}
-          />
-          <div className="input-group-append d-md-none d-lg-flex">
-            <span className="input-group-text">
-              <i className="far fa-calendar-alt text-primary" />
-            </span>
+        <div className="float-right">
+          <label>End date</label>
+          <div className="input-group">
+            <DatePicker
+              selected={props.timeUntil}
+              onChange={props.onChangeTimeUntil}
+            />
+            <div className="input-group-append d-md-none d-lg-flex">
+              <span className="input-group-text">
+                <i className="far fa-calendar-alt text-primary" />
+              </span>
+            </div>
           </div>
         </div>
       </div>
