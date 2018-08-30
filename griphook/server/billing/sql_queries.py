@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from flask import current_app as app
 from sqlalchemy import func, case
-from sqlalchemy.sql import label, func, column, and_
+from sqlalchemy.sql import label, column, and_
 
 from griphook.server.models import (
     db,
@@ -139,7 +139,7 @@ def get_services_group_data_chart(
             func.coalesce(func.avg(column('value')), 0).label('value')
         )
         .outerjoin(
-            BatchStoryBilling, 
+            BatchStoryBilling,
             and_(BatchStoryBilling.time >= serie.c.date,
                  BatchStoryBilling.time < (serie.c.date + timedelta(hours=2)))
         )
@@ -154,6 +154,3 @@ def get_services_group_data_chart(
     )
 
     return metrics.all()
-
-
-
