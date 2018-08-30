@@ -29,12 +29,21 @@ class DataBase:
     def get_servers(session):
         servers_query = (
             session.query(
-                Server.id, Server.title, Server.cpu_price, Server.memory_price
+                Server.id,
+                Server.title,
+                Server.cpu_price,
+                Server.memory_price,
+                Server.cluster_id
             )
             .order_by(Server.title)
             .all()
         )
         return servers_query
+
+    @staticmethod
+    def get_cluster(session, cluster_id):
+        cluster = session.query(Cluster).filter_by(id=cluster_id).scalar()
+        return cluster
 
     @staticmethod
     def get_clusters(session):

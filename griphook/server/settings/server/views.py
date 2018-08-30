@@ -25,7 +25,8 @@ class GetServers(View):
         "id": integer,
         "title": string,
         "cpu_price": float,
-        "memory_price": float
+        "memory_price": float,
+        "cluster_title": float
     }
     """
 
@@ -39,12 +40,16 @@ class GetServers(View):
                 "title": server_title,
                 "cpu_price": server_cpu_price,
                 "memory_price": server_memory_price,
+                "cluster_title": DataBase.get_cluster(
+                    db.session, cluster_id
+                ).title
             }
             for (
                 server_id,
                 server_title,
                 server_cpu_price,
                 server_memory_price,
+                cluster_id
             ) in servers_query
         ]
         return jsonify({"servers": servers})
