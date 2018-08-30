@@ -1,1 +1,4 @@
-# griphook/server/tests/__init__.py
+import os
+
+# Set config to testing
+os.environ["APP_SETTINGS"] = "griphook.server.config.TestingConfig"
