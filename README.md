@@ -24,9 +24,15 @@ Choose installation method and go ahead
 
 ### How to run data fetcher:
 
+Worker
 ```bash
-python manage.py run_fetcher --celery_args='-l INFO'
-``` 
+celery -A griphook.tasks.tasks worker -l INFO
+```
+
+Scheduler
+```bash
+python3 griphook/tasks/task_scheduler.py
+```
 
 ## Cli usage
 
