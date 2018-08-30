@@ -83,9 +83,6 @@ class TeamManager(BaseManager):
         services_group = self._get_services_group(services_group_id)
         services_group.team_id = team_id
 
-        self._update_metrics_peaks_relationship(team_id, services_group_id)
-        self._update_metrics_billing_relationship(team_id, services_group_id)
-
         self.session.add(services_group)
         self.session.commit()
 

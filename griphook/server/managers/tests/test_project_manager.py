@@ -11,8 +11,6 @@ from griphook.server.managers.constants import (
 )
 from griphook.server.models import (
     ServicesGroup,
-    MetricBilling,
-    MetricPeak,
     Project,
 )
 
@@ -92,23 +90,7 @@ class TestAttachProject:
             .filter_by(id=test_services_group_id)
             .scalar()
         )
-        metrics_peaks_query = (
-            db_session.query(MetricPeak)
-            .filter_by(services_group_id=test_services_group_id)
-            .all()
-        )
-        metrics_billing_query = (
-            db_session.query(MetricBilling)
-            .filter_by(services_group_id=test_services_group_id)
-            .all()
-        )
         assert services_group_project_id == test_project_id
-
-        for metric_peaks in metrics_peaks_query:
-            assert metric_peaks.project_id == test_project_id
-
-        for metric_billing in metrics_billing_query:
-            assert metric_billing.project_id == test_project_id
 
     def test_attach_project_when_it_doesnt_exists(self, db_session):
         test_project_id = 1
@@ -149,19 +131,7 @@ class TestAttachProject:
             .filter_by(id=test_services_group_id)
             .scalar()
         )
-        metrics_peaks_query = (
-            db_session.query(MetricPeak)
-            .filter_by(services_group_id=test_services_group_id)
-            .all()
-        )
-        metrics_billing_query = (
-            db_session.query(MetricBilling)
-            .filter_by(services_group_id=test_services_group_id)
-            .all()
-        )
         assert services_group_project_id == test_project_id
-        assert not metrics_peaks_query
-        assert not metrics_billing_query
 
 
 class TestDetachProject:
@@ -175,23 +145,7 @@ class TestDetachProject:
             .filter_by(id=test_services_group_id)
             .scalar()
         )
-        metrics_peaks_query = (
-            db_session.query(MetricPeak)
-            .filter_by(services_group_id=test_services_group_id)
-            .all()
-        )
-        metrics_billing_query = (
-            db_session.query(MetricBilling)
-            .filter_by(services_group_id=test_services_group_id)
-            .all()
-        )
         assert services_group_project_id is None
-
-        for metric_peaks in metrics_peaks_query:
-            assert metric_peaks.project_id is None
-
-        for metric_billing in metrics_billing_query:
-            assert metric_billing.project_id is None
 
     def test_detach_project_when_service_group_doesnt_exists(self, db_session):
         test_services_group_id = 4

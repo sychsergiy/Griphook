@@ -89,9 +89,6 @@ class ProjectManager(BaseManager):
         services_group = self._get_services_group(services_group_id)
         services_group.project_id = project_id
 
-        self._update_metrics_peaks_relationship(project_id, services_group_id)
-        self._update_metrics_billing_relationship(project_id, services_group_id)
-
         self.session.add(services_group)
         self.session.commit()
 
