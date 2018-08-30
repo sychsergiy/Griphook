@@ -52,51 +52,49 @@ class GetPieChartAbsoluteDataView(View):
             response.status_code = 400
             return response
 
-        total_initial_query = Cluster.query.join(
+        initial_query = Cluster.query.join(
             Server, Server.cluster_id == Cluster.id
         ).join(Service, Server.id == Service.server_id)
+
         total_metric_sum = self.get_query_metric_sum(
-            total_initial_query, formatted_json
+            initial_query, formatted_json
         )
 
         target_type = request_data["target_type"]
         target_ids = request_data["target_ids"]
 
         if target_type == "all":
-            initial_query = total_initial_query
+            resulting_query = initial_query
 
         elif target_type == "cluster":
-            initial_query = (
-                Cluster.query.filter(Cluster.id.in_(target_ids))
-                .join(Server, Server.cluster_id == Cluster.id)
-                .join(Service, Server.id == Service.server_id)
-            )
-
+            resulting_query = initial_query.filter(Cluster.id.in_(target_ids))
         elif target_type == "server":
-            initial_query = Server.query.filter(Server.id.in_(target_ids)).join(
-                Service, Service.server_id == Server.id
-            )
+            resulting_query = initial_query.filter(Server.id.in_(target_ids))
         elif target_type == "services_group":
-            initial_query = ServicesGroup.query.filter(
-                ServicesGroup.id.in_(target_ids)
-            ).join(Service, Service.services_group_id == ServicesGroup.id)
+            resulting_query = initial_query.join(
+                ServicesGroup, Service.services_group_id == ServicesGroup.id
+            ).filter(ServicesGroup.id.in_(target_ids))
         elif target_type == "team":
-            initial_query = (
-                Team.query.filter(Team.id.in_(target_ids))
-                .join(ServicesGroup, ServicesGroup.team_id == Team.id)
-                .join(Service, Service.services_group_id == ServicesGroup.id)
+            resulting_query = (
+                initial_query.join(
+                    ServicesGroup, Service.services_group_id == ServicesGroup.id
+                )
+                .join(Team, ServicesGroup.team_id == Team.id)
+                .filter(Team.id.in_(target_ids))
             )
         elif target_type == "project":
-            initial_query = (
-                Project.query.filter(Project.id.in_(target_ids))
-                .join(ServicesGroup, ServicesGroup.team_id == Project.id)
-                .join(Service, Service.services_group_id == ServicesGroup.id)
+            resulting_query = (
+                initial_query.join(
+                    ServicesGroup, Service.services_group_id == ServicesGroup.id
+                )
+                .join(Project, ServicesGroup.team_id == Project.id)
+                .filter(Project.id.in_(target_ids))
             )
         else:
             raise Exception("Problem with request data validation")
 
         selected_metric_sum = self.get_query_metric_sum(
-            initial_query, formatted_json
+            resulting_query, formatted_json
         )
         # todo: move this part to frontend
         if selected_metric_sum:
