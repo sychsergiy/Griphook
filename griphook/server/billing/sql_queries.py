@@ -83,6 +83,7 @@ def get_billing_table_data(filters):
         elif target_type == ALLOWED_TARGET_TYPES.get("cluster"):
             query = query.join(Cluster, Cluster.id == Server.cluster_id)
             query = query.filter(Cluster.id.in_(target_ids))
+    print(query.statement.compile().params)
     result = query.paginate(per_page=metrics_per_page, page=page)
     return result
 
@@ -90,7 +91,9 @@ def get_billing_table_data(filters):
 def get_services_group_data_group_by_services(
     services_group_id, time_from, time_until
 ):
-    cpu = case_builder(ALLOWED_METRIC_TYPES.get("user_cpu_percent")).label("cpu")
+    cpu = case_builder(ALLOWED_METRIC_TYPES.get("user_cpu_percent")).label(
+        "cpu"
+    )
     memory = case_builder(ALLOWED_METRIC_TYPES.get("vsize")).label("memory")
     query = (
         MetricBilling.query.join(
@@ -126,37 +129,64 @@ def get_services_group_data_chart(
     # Compute interval (in hours) for grouping data, it can't be 0
     interval = delta.total_seconds() // (3600 * MAX_POINTS) or 1
 
-    serie = (
-        db.session
-        .query(
-            func.generate_series(
-                time_from,
-                time_until,
-                timedelta(hours=interval)
-            ).label('date')
-        ).subquery()
-    )
+    serie = db.session.query(
+        func.generate_series(
+            time_from, time_until, timedelta(hours=interval)
+        ).label("date")
+    ).subquery()
 
     metrics = (
-        db.session
-        .query(
-            serie.c.date.label('time'),
+        db.session.query(
+            serie.c.date.label("time"),
             serie.c.date + timedelta(hours=interval),
-            func.coalesce(func.avg(column('value')), 0).label('value')
+            func.coalesce(func.avg(column("value")), 0).label("value"),
         )
         .outerjoin(
             BatchStoryBilling,
-            and_(BatchStoryBilling.time >= serie.c.date,
-                 BatchStoryBilling.time < (serie.c.date + timedelta(hours=interval)))
+            and_(
+                BatchStoryBilling.time >= serie.c.date,
+                BatchStoryBilling.time
+                < (serie.c.date + timedelta(hours=interval)),
+            ),
         )
         .outerjoin(
             MetricBilling,
-            and_(MetricBilling.batch_id == BatchStoryBilling.id,
-                 MetricBilling.type == metric_type,
-                 MetricBilling.services_group_id == services_group_id)
+            and_(
+                MetricBilling.batch_id == BatchStoryBilling.id,
+                MetricBilling.type == metric_type,
+                MetricBilling.services_group_id == services_group_id,
+            ),
         )
         .group_by(serie.c.date)
         .order_by(serie.c.date)
     )
 
     return metrics.all()
+
+
+def get_services_groups_resources(metric_type, time_from, time_until):
+    """Return services_groups resources for `metric_type`"""
+    services_average_values = (
+        db.session.query(
+            MetricBilling.service_id.label("service_id"),
+            func.avg(MetricBilling.value).label("value"),
+        )
+        .join(BatchStoryBilling, BatchStoryBilling.id == MetricBilling.batch_id)
+        .filter(MetricBilling.type == metric_type)
+        .filter(BatchStoryBilling.time.between(time_from, time_until))
+        .group_by(MetricBilling.service_id)
+    ).subquery()
+
+    services_groups_resources = (
+        db.session.query(
+            ServicesGroup.title, func.sum(services_average_values.c.value)
+        )
+        .join(Service, Service.services_group_id == ServicesGroup.id)
+        .join(
+            services_average_values,
+            Service.id == services_average_values.c.service_id,
+        )
+        .group_by(ServicesGroup.title)
+    )
+
+    return services_groups_resources.all()
