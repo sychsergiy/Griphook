@@ -19,7 +19,7 @@ class DropDownBoxComponent extends Component {
     return (
       <select
         className="custom-select"
-        value={this.props.servicesGroupObjectId}
+        value={(this.props.servicesGroupObjectId).toString()}
         onChange={event =>
           this.props.attachObjectToServicesGroup(
             event,

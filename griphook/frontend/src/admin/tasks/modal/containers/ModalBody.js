@@ -5,7 +5,7 @@ import InputBlockContainer from "./InputBlock";
 
 import { listDataType } from "../constants";
 import { Spinner } from "../../../../common/spinner";
-
+import { getErrorInformation } from "../../../resources/utils";
 import { createObject, deleteObject, getObjects } from "../requestHelpers";
 
 class ModalBodyContainer extends Component {
@@ -33,6 +33,7 @@ class ModalBodyContainer extends Component {
       } else {
         response.json().then(data => {
           // TODO: output !data.error!
+          alert(getErrorInformation(data.error));
           this.setState({ loading: false });
         });
       }
@@ -53,7 +54,7 @@ class ModalBodyContainer extends Component {
         } else {
           response.json().then(data => {
             // TODO: output !data.error!
-            alert(data.error);
+            alert(getErrorInformation(data.error));
             this.setState({ loading: false });
           });
         }
@@ -83,7 +84,7 @@ class ModalBodyContainer extends Component {
         console.log(response.json());
         response.json().then(data => {
           // TODO: output !data.error!
-          alert(data.error);
+          alert(getErrorInformation(data.error));
           this.setState({ loading: false });
         });
       }
@@ -105,7 +106,7 @@ class ModalBodyContainer extends Component {
       } else {
         response.json().then(data => {
           // TODO: output !data.error!
-          alert(data.error);
+          alert(getErrorInformation(data.error));
           this.setState({ loading: false });
         });
       }
