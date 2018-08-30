@@ -12,7 +12,7 @@ from griphook.server.managers.constants import (
 
 
 class TestProjectCreateSettingsAPI:
-    def test_create_project(self, client, db_session):
+    def test_create_project(self, client, session):
         test_title = "test_project_1"
         test_data = {"title": test_title}
         resp = client.post(
@@ -20,7 +20,7 @@ class TestProjectCreateSettingsAPI:
             data=json.dumps(test_data),
         )
         project_id = (
-            db_session.query(Project.id).filter_by(title=test_title).scalar()
+            session.query(Project.id).filter_by(title=test_title).scalar()
         )
         assert resp.status_code == 200
         assert resp.json == {
@@ -73,7 +73,7 @@ class TestProjectCreateSettingsAPI:
 
 class TestProjectUpdateTitleSettingsAPI:
     def test_update_project(
-        self, client, db_session, create_project_settings_test_data
+        self, client, session, create_project_settings_test_data
     ):
         test_title = "test_new_title"
         test_project_id = 1

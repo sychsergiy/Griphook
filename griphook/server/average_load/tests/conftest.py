@@ -2,7 +2,7 @@ import pytest
 
 from griphook.server.models import Cluster, Server
 
-from griphook.tests.base_fixtures import app, session
+from griphook.tests.base_fixtures import app, session, client, client_class
 
 
 @pytest.fixture(scope="function")

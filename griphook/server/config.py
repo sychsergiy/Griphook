@@ -37,6 +37,7 @@ class TestingConfig(BaseConfig):
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_DATABASE_URI = options["db"]["DATABASE_TEST_URL"]
     TESTING = True
+    SERVER_NAME = "localhost.localdomain"
 
 
 class ProductionConfig(BaseConfig):
