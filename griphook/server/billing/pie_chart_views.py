@@ -85,49 +85,47 @@ class GetPieChartAbsoluteDataView(View):
             response.status_code = 400
             return response
 
-        initial_query = Cluster.query.join(
-            Server, Server.cluster_id == Cluster.id
-        ).join(Service, Server.id == Service.server_id)
-
+        total_initial_query = Service.query
         total_metric_sum = self.get_query_metric_sum(
-            initial_query, formatted_json
+            total_initial_query, request_data
         )
 
         target_type = request_data["target_type"]
         target_ids = request_data["target_ids"]
 
         if target_type == "all":
-            resulting_query = initial_query
-
+            initial_query = total_initial_query
         elif target_type == "cluster":
-            resulting_query = initial_query.filter(Cluster.id.in_(target_ids))
+            initial_query = (
+                Cluster.query.filter(Cluster.id.in_(target_ids))
+                .join(Server, Server.cluster_id == Cluster.id)
+                .join(Service, Server.id == Service.server_id)
+            )
         elif target_type == "server":
-            resulting_query = initial_query.filter(Server.id.in_(target_ids))
+            initial_query = Server.query.filter(Server.id.in_(target_ids)).join(
+                Service, Service.server_id == Server.id
+            )
         elif target_type == "services_group":
-            resulting_query = initial_query.join(
-                ServicesGroup, Service.services_group_id == ServicesGroup.id
-            ).filter(ServicesGroup.id.in_(target_ids))
+            initial_query = ServicesGroup.query.filter(
+                ServicesGroup.id.in_(target_ids)
+            ).join(Service, Service.services_group_id == ServicesGroup.id)
         elif target_type == "team":
-            resulting_query = (
-                initial_query.join(
-                    ServicesGroup, Service.services_group_id == ServicesGroup.id
-                )
-                .join(Team, ServicesGroup.team_id == Team.id)
-                .filter(Team.id.in_(target_ids))
+            initial_query = (
+                Team.query.filter(Team.id.in_(target_ids))
+                .join(ServicesGroup, ServicesGroup.team_id == Team.id)
+                .join(Service, Service.services_group_id == ServicesGroup.id)
             )
         elif target_type == "project":
-            resulting_query = (
-                initial_query.join(
-                    ServicesGroup, Service.services_group_id == ServicesGroup.id
-                )
-                .join(Project, ServicesGroup.team_id == Project.id)
-                .filter(Project.id.in_(target_ids))
+            initial_query = (
+                Project.query.filter(Project.id.in_(target_ids))
+                .join(ServicesGroup, ServicesGroup.team_id == Project.id)
+                .join(Service, Service.services_group_id == ServicesGroup.id)
             )
         else:
             raise Exception("Problem with request data validation")
 
         selected_metric_sum = self.get_query_metric_sum(
-            resulting_query, formatted_json
+            initial_query, request_data
         )
         # todo: move this part to frontend
         if selected_metric_sum:
@@ -146,40 +144,21 @@ class GetPieChartAbsoluteDataView(View):
     def get_query_metric_sum(self, initial_query, request_data):
         """
         :param initial_query: query before joining with
-         MetricBilling table, must be joined with Service or ServicesGroup
+         MetricBillling table, must be joined with Service or ServicesGroup
         """
-        memory_price_coef, cpu_price_coef = get_price_coefficients(
-            request_data["time_from"], request_data["time_until"]
-        )
-
-        aggregated_services_subquery = (
+        metric_sum = (
             initial_query.join(
-                MetricBilling,
-                and_(
-                    Service.id == MetricBilling.service_id,
-                    MetricBilling.type == request_data["metric_type"],
-                ),
+                MetricBilling, Service.id == MetricBilling.service_id
             )
             .join(BatchStoryBilling)
+            .filter(MetricBilling.type == request_data["metric_type"])
             .filter(
                 BatchStoryBilling.time.between(
                     request_data["time_from"], request_data["time_until"]
                 )
             )
-            .group_by(Service.instance, Service.title, Server.title)
-            .with_entities(
-                get_average_metric_sum_func_with_cases(
-                    cpu_price_coef, memory_price_coef
-                ).label("service_average_load")
-            )
-        ).subquery()
-
-        metric_sum = (
-            db.session.query(
-                func.sum(aggregated_services_subquery.c.service_average_load)
-            )
+            .with_entities(func.sum(MetricBilling.value).label("metric_sum"))
         ).scalar()
-
         return metric_sum
 
 
