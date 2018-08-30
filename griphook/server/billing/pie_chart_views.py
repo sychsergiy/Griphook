@@ -1,7 +1,10 @@
 from flask import request, jsonify
 from flask.views import View
 
-from sqlalchemy import func, BigInteger, cast
+from sqlalchemy import func, case
+from sqlalchemy.sql import and_
+
+from griphook.server import db
 
 from griphook.server.models import (
     ServicesGroup,
@@ -14,8 +17,7 @@ from griphook.server.models import (
     Project,
 )
 
-from griphook.server.billing.validation import validators
-from griphook.server.billing.validation import schemas
+from griphook.server.billing.validation import validators, schemas
 
 
 class GetPieChartAbsoluteDataView(View):
@@ -50,9 +52,11 @@ class GetPieChartAbsoluteDataView(View):
             response.status_code = 400
             return response
 
-        total_initial_query = Service.query
+        total_initial_query = Cluster.query.join(
+            Server, Server.cluster_id == Cluster.id
+        ).join(Service, Server.id == Service.server_id)
         total_metric_sum = self.get_query_metric_sum(
-            total_initial_query, request_data
+            total_initial_query, formatted_json
         )
 
         target_type = request_data["target_type"]
@@ -60,12 +64,14 @@ class GetPieChartAbsoluteDataView(View):
 
         if target_type == "all":
             initial_query = total_initial_query
+
         elif target_type == "cluster":
             initial_query = (
                 Cluster.query.filter(Cluster.id.in_(target_ids))
                 .join(Server, Server.cluster_id == Cluster.id)
                 .join(Service, Server.id == Service.server_id)
             )
+
         elif target_type == "server":
             initial_query = Server.query.filter(Server.id.in_(target_ids)).join(
                 Service, Service.server_id == Server.id
@@ -90,7 +96,7 @@ class GetPieChartAbsoluteDataView(View):
             raise Exception("Problem with request data validation")
 
         selected_metric_sum = self.get_query_metric_sum(
-            initial_query, request_data
+            initial_query, formatted_json
         )
         # todo: move this part to frontend
         if selected_metric_sum:
@@ -111,19 +117,61 @@ class GetPieChartAbsoluteDataView(View):
         :param initial_query: query before joining with
          MetricBillling table, must be joined with Service or ServicesGroup
         """
-        metric_sum = (
+        time_coefficient = (
+            request_data["time_until"] - request_data["time_from"]
+        ).days / 30
+
+        memory_convert_coefficient = time_coefficient / (
+            10 ** 9
+        )  # need to multiply on memory price
+        cpu_convert_coefficient = (
+            time_coefficient / 100
+        )  # need to multiply on cpu price
+
+        aggregated_services_subquery = (
             initial_query.join(
-                MetricBilling, Service.id == MetricBilling.service_id
+                MetricBilling,
+                and_(
+                    Service.id == MetricBilling.service_id,
+                    MetricBilling.type == request_data["metric_type"],
+                ),
             )
             .join(BatchStoryBilling)
-            .filter(MetricBilling.type == request_data["metric_type"])
             .filter(
                 BatchStoryBilling.time.between(
                     request_data["time_from"], request_data["time_until"]
                 )
             )
-            .with_entities(func.sum(MetricBilling.value).label("metric_sum"))
+            .group_by(Service.instance, Service.title, Server.title)
+            .with_entities(
+                func.avg(
+                    case(
+                        [
+                            (
+                                MetricBilling.type == "user_cpu_percent",
+                                MetricBilling.value
+                                * cpu_convert_coefficient
+                                * Cluster.cpu_price,
+                            ),
+                            (
+                                MetricBilling.type == "vsize",
+                                MetricBilling.value
+                                * memory_convert_coefficient
+                                * Cluster.memory_price,
+                            ),
+                        ],
+                        else_=0,
+                    )
+                ).label("service_average_load")
+            )
+        ).subquery()
+
+        metric_sum = (
+            db.session.query(
+                func.sum(aggregated_services_subquery.c.service_average_load)
+            )
         ).scalar()
+
         return metric_sum
 
 
@@ -233,9 +281,7 @@ class GetPieChartRelativeDataView(View):
             .order_by(func.sum(MetricBilling.value).desc())
             .with_entities(
                 ServicesGroup.title,
-                cast(func.sum(MetricBilling.value), BigInteger).label(
-                    "metric_sum"
-                ),
+                func.sum(MetricBilling.value).label("metric_sum"),
             )
         ).all()
         return total
