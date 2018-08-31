@@ -2,12 +2,13 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: migrations
+  namespace: griphook
 spec:
   template:
     spec:
       containers:
       - name: migrations
-        image: registry.gitlab.uaprom:7000/griphook/backend:CI_COMMIT_SHA
+        image: registry.gitlab.uaprom:7000/griphook/backend:b367311d
         command: ["python",  "manage.py", "db", "upgrade"]
         env:
             - name: GH_DATABASE_URL
