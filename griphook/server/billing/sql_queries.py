@@ -73,36 +73,38 @@ def get_billing_table_data(filters):
 
 
 def get_services_group_data_group_by_services(
-        services_group_id, time_from, time_until
+    services_group_id, time_from, time_until
 ):
     cpu = case_builder(ALLOWED_METRIC_TYPES.get("user_cpu_percent"), 100).label(
         "cpu"
     )
-    memory = case_builder(ALLOWED_METRIC_TYPES.get("vsize"), 1 / 10 ** 9).label("memory")
+    memory = case_builder(ALLOWED_METRIC_TYPES.get("vsize"), 1 / 10 ** 9).label(
+        "memory"
+    )
     query = (
         MetricBilling.query.join(
             Service, MetricBilling.service_id == Service.id
         )
-            .join(BatchStoryBilling, MetricBilling.batch_id == BatchStoryBilling.id)
-            .join(
+        .join(BatchStoryBilling, MetricBilling.batch_id == BatchStoryBilling.id)
+        .join(
             ServicesGroup, MetricBilling.services_group_id == ServicesGroup.id
         )
-            .filter(BatchStoryBilling.time.between(time_from, time_until))
-            .filter(ServicesGroup.id == services_group_id)
-            .with_entities(
+        .filter(BatchStoryBilling.time.between(time_from, time_until))
+        .filter(ServicesGroup.id == services_group_id)
+        .with_entities(
             cpu,
             memory,
             Service.title.label("service_title"),
             Service.id.label("service_id"),
         )
-            .group_by(Service.id, Service.title)
-            .order_by(Service.id)
+        .group_by(Service.id, Service.title)
+        .order_by(Service.id)
     )
     return query.all()
 
 
 def get_services_group_data_chart(
-        services_group_id, time_from, time_until, metric_type
+    services_group_id, time_from, time_until, metric_type
 ):
     """
     Return data for billing cpu/vsize charts.
@@ -125,7 +127,7 @@ def get_services_group_data_chart(
             serie.c.date + timedelta(hours=interval),
             func.coalesce(func.avg(column("value")), 0).label("value"),
         )
-            .outerjoin(
+        .outerjoin(
             BatchStoryBilling,
             and_(
                 BatchStoryBilling.time >= serie.c.date,
@@ -133,7 +135,7 @@ def get_services_group_data_chart(
                 < (serie.c.date + timedelta(hours=interval)),
             ),
         )
-            .outerjoin(
+        .outerjoin(
             MetricBilling,
             and_(
                 MetricBilling.batch_id == BatchStoryBilling.id,
@@ -141,15 +143,15 @@ def get_services_group_data_chart(
                 MetricBilling.services_group_id == services_group_id,
             ),
         )
-            .group_by(serie.c.date)
-            .order_by(serie.c.date)
+        .group_by(serie.c.date)
+        .order_by(serie.c.date)
     )
 
     return metrics.all()
 
 
 def get_services_groups_resources(
-        metric_type, time_from, time_until, coefficient, target_type, target_ids
+    metric_type, time_from, time_until, coefficient, target_type, target_ids
 ):
     """Return services_groups resources for `metric_type`"""
     services_average_values = (
@@ -157,10 +159,10 @@ def get_services_groups_resources(
             MetricBilling.service_id.label("service_id"),
             func.avg(MetricBilling.value).label("value"),
         )
-            .join(BatchStoryBilling, BatchStoryBilling.id == MetricBilling.batch_id)
-            .filter(MetricBilling.type == metric_type)
-            .filter(BatchStoryBilling.time.between(time_from, time_until))
-            .group_by(MetricBilling.service_id)
+        .join(BatchStoryBilling, BatchStoryBilling.id == MetricBilling.batch_id)
+        .filter(MetricBilling.type == metric_type)
+        .filter(BatchStoryBilling.time.between(time_from, time_until))
+        .group_by(MetricBilling.service_id)
     ).subquery()
 
     services_groups_resources = (
@@ -173,14 +175,14 @@ def get_services_groups_resources(
                 "metric_sum"
             ),
         )
-            .join(Service, Service.services_group_id == ServicesGroup.id)
-            .join(
+        .join(Service, Service.services_group_id == ServicesGroup.id)
+        .join(
             services_average_values,
             Service.id == services_average_values.c.service_id,
         )
-            .outerjoin(Team, Team.id == ServicesGroup.team_id)
-            .outerjoin(Project, Project.id == ServicesGroup.project_id)
-            .group_by(
+        .outerjoin(Team, Team.id == ServicesGroup.team_id)
+        .outerjoin(Project, Project.id == ServicesGroup.project_id)
+        .group_by(
             ServicesGroup.id, ServicesGroup.title, Project.title, Team.title
         )
     )
@@ -202,8 +204,8 @@ def get_services_groups_resources(
             services_groups_resources.join(
                 Server, Server.id == Service.server_id
             )
-                .join(Cluster, Cluster.id == Server.cluster_id)
-                .filter(Cluster.id.in_(target_ids))
+            .join(Cluster, Cluster.id == Server.cluster_id)
+            .filter(Cluster.id.in_(target_ids))
         )
     elif target_type == "services_group":
         services_groups_resources = services_groups_resources.filter(
