@@ -4,7 +4,7 @@ const TableRow = props => (
   <tr>
     <th scope="row">{props.index}</th>
     <td>{props.item.service_title}</td>
-    <td>{props.item.cpu}</td>
+    <td>{props.item.cpu / 100}</td>
     <td>{props.item.memory}</td>
   </tr>
 );
@@ -17,8 +17,8 @@ const ServicesTableComponent = props => (
         <tr>
           <th scope="col">#</th>
           <th scope="col">Service</th>
-          <th scope="col">CPU</th>
-          <th scope="col">Memory</th>
+          <th scope="col">CPU (core)</th>
+          <th scope="col">Memory (GB)</th>
         </tr>
       </thead>
       <tbody>
