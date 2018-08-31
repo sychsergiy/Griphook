@@ -222,7 +222,7 @@ class GetPieChartRelativeDataView(View):
             ).join(ServicesGroup, Project.id == ServicesGroup.project_id)
         elif target_type == "team":
             initial_query = Team.query.filter(Team.id.in_(target_ids)).join(
-                ServicesGroup, Team.id == ServicesGroup.project_id
+                ServicesGroup, Team.id == ServicesGroup.team_id
             )
         else:
             raise Exception(
